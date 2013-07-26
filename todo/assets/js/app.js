@@ -12,8 +12,8 @@ var App = new (Backbone.View.extend({
         this.toDoList.add(toDoItem);
     },
 
-    start: function (bootstrap) {
-        this.toDoList = new this.Collections.ToDoList(bootstrap.toDoList);
+    start: function () {
+        this.toDoList = new this.Collections.ToDoList();
         var toDoListView = new this.Views.ToDoList({collection: this.toDoList, el: $('#toDoList')});
         toDoListView.render();
     }
@@ -66,7 +66,7 @@ App.Views.ToDoItem = Backbone.View.extend({
         '<%= title %></label>'),
     */
 
-    itemTemplate: Handlebars.compile('<input type="checkbox"' +
+    itemTemplate: Handlebars.compile('<input type="checkbox" ' +
         '{{#if done}}checked {{/if}}/>' +
         '<span class="title">{{title}}</span>' +
         '<a class="delete" href="#">Delete</a>'),
@@ -140,12 +140,4 @@ App.Views.ToDoList = Backbone.View.extend({
 
 App.ToDoRouter = Backbone.Router.extend({});
 
-var bootstrap = {
-    toDoList: [
-        { id: 1, title: 'Task 1', done: false },
-        { id: 2, title: 'Task 2', done: false },
-        { id: 3, title: 'Task 3', done: true }
-    ]
-}
-
-App.start(bootstrap);
+App.start();
