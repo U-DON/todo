@@ -15,7 +15,6 @@ var App = new (Backbone.View.extend({
     start: function () {
         this.toDoList = new this.Collections.ToDoList();
         var toDoListView = new this.Views.ToDoList({collection: this.toDoList, el: $('#toDoList')});
-        toDoListView.render();
     }
 }))({el: document.body});
 
@@ -39,6 +38,20 @@ App.Collections.ToDoList = Backbone.Collection.extend({
     model: App.Models.ToDoItem,
 
     initialize: function () {
+        _.each($('.toDoItem'), function (toDoItemElement) {
+            var titleElement = $(toDoItemElement).children('span.title')[0]
+            var title = $(titleElement).text();
+            var done = $(toDoItemElement).children('input').is(':checked');
+            var toDoItem = new App.Models.ToDoItem({
+                title: title,
+                done: done
+            });
+            this.add(toDoItem);
+            var toDoItemView = new App.Views.ToDoItem({
+                model: toDoItem,
+                el: toDoItemElement
+            });
+        }, this);
         this.on('delete', this.remove);
         this.on('change', this.log);
     },
