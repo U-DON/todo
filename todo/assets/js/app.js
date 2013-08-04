@@ -45,6 +45,7 @@ App.Collections.ToDoList = Backbone.Collection.extend({
     url: '/todo',
 
     initialize: function () {
+        // Iterate over each todo item that has already been rendered and attach models and views to them.
         _.each($('.toDoItem'), function (toDoItemElement) {
             var id = $(toDoItemElement).data('id');
             var titleElement = $(toDoItemElement).children('span.title')[0]
@@ -62,10 +63,11 @@ App.Collections.ToDoList = Backbone.Collection.extend({
             });
         }, this);
         this.on('destroy', this.remove, this);
-        this.on('destroy', this.log, this);
-        this.on('change', this.log, this);
+        // this.on('destroy', this.log, this);
+        // this.on('sync', this.log, this);
     },
 
+    // Logging to inspect models in the collection after each successful change with the server.
     log: function () {
         console.log('-----------\n');
         console.log('To Do List:\n');
@@ -81,19 +83,19 @@ App.Collections.ToDoList = Backbone.Collection.extend({
 App.Views.ToDoItem = Backbone.View.extend({
     tagName: 'li',
     className: 'toDoItem',
+    attributes: function () {
+        return {
+            'data-id': this.model.id
+        };
+    },
 
-    /*
-    template: _.template('<label>' +
-        '<input type="checkbox" ' +
-        '<% if (done) print("checked ") %>/>' +
-        '<%= title %></label>'),
-    */
-
+    // Normal state template for todo item
     itemTemplate: Handlebars.compile('<input type="checkbox" ' +
         '{{#if done}}checked {{/if}}/>' +
         '<span class="title">{{title}}</span>' +
         '<a class="delete" href="#">Delete</a>'),
 
+    // Editing state template for todo item
     editorTemplate: Handlebars.compile('<form class="toDoEditor"><input class="edit" type="text" value="{{title}}" /></form>'),
 
     events: {
@@ -110,10 +112,12 @@ App.Views.ToDoItem = Backbone.View.extend({
         this.model.on('error', this.showError, this);
     },
 
+    // Mark todo item as done.
     checkItem: function () {
         this.model.check(this.$('input[type="checkbox"]').is(':checked'));
     },
 
+    // Transform the element into an editing state.
     editItem: function () {
         this.$('a.delete').hide();
         this.$('span.title').hide();
@@ -121,29 +125,35 @@ App.Views.ToDoItem = Backbone.View.extend({
         this.$('input.edit').focus();
     },
 
+    // Confirm user action to delete todo item.
     deleteItem: function () {
         if (confirm('Are you sure you want to delete?')) this.model.trigger('delete');
     },
 
+    // Display error when todo item is not successfully synced with server.
     showError: function (model, xhr) {
         console.log('There was a problem saving model:\n' + JSON.stringify(model.toJSON()) +
                     '\nxhr: ' + xhr.status + ' ' + xhr.responseText);
         this.render();
     },
 
+    // If user presses Enter or focuses out of the input, submit the changes to todo item.
     submitItem: function (e) {
         e.preventDefault();
         var title = this.$('input.edit').val()
         if (title)
             this.model.rename(title);
         else
+            // If missing a title, remove todo item if it hasn't been synced with server.
+            // Confirm user action to delete for an already existing todo item.
             if (this.model.isNew())
-                this.remove();
+                this.model.trigger('delete');
             else
                 this.deleteItem();
     },
 
     render: function () {
+        this.$el.attr(this.attributes());
         this.$el.html(this.itemTemplate(this.model.toJSON()));
         return this;
     }
@@ -161,11 +171,6 @@ App.Views.ToDoList = Backbone.View.extend({
         this.$el.append(toDoItemView.render().el);
         if (!toDoItem.get('title'))
             toDoItemView.editItem();
-    },
-
-    render: function () {
-        this.collection.forEach(this.addItem, this);
-        return this;
     }
 });
 
