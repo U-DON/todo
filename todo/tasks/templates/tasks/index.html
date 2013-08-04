@@ -8,7 +8,7 @@
     <body>
         <ul id="toDoList">
         {% for task in task_list %}
-            <li class="toDoItem">
+            <li class="toDoItem" data-id="{{ task.id }}">
                 <input type="checkbox" {% if task.done %}checked {% endif %}/><span class="title">{{ task.title }}</span><a class="delete" href="#">Delete</a>
             </li>
         {% endfor %}
