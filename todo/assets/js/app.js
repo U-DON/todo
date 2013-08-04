@@ -25,24 +25,33 @@ App.Models.ToDoItem = Backbone.Model.extend({
         done: false
     },
 
+    initialize: function () {
+        this.on('delete', this.destroy, this);
+    },
+
     check: function (checked) {
-       this.set('done', checked);
+        this.set('done', checked);
+        this.save();
     },
 
     rename: function (title) {
         this.set('title', title);
+        this.save();
     }
 });
 
 App.Collections.ToDoList = Backbone.Collection.extend({
     model: App.Models.ToDoItem,
+    url: '/todo',
 
     initialize: function () {
         _.each($('.toDoItem'), function (toDoItemElement) {
+            var id = $(toDoItemElement).data('id');
             var titleElement = $(toDoItemElement).children('span.title')[0]
             var title = $(titleElement).text();
             var done = $(toDoItemElement).children('input').is(':checked');
             var toDoItem = new App.Models.ToDoItem({
+                id: id,
                 title: title,
                 done: done
             });
@@ -52,8 +61,8 @@ App.Collections.ToDoList = Backbone.Collection.extend({
                 el: toDoItemElement
             });
         }, this);
-        this.on('delete', this.remove);
-        this.on('change', this.log);
+        this.on('destroy', this.remove, this);
+        this.on('change', this.log, this);
     },
 
     log: function () {
@@ -95,7 +104,9 @@ App.Views.ToDoItem = Backbone.View.extend({
     },
 
     initialize: function () {
-        this.model.on('delete', this.remove, this);
+        this.model.on('destroy', this.remove, this);
+        this.model.on('sync', this.render, this);
+        this.model.on('error', this.showError, this);
     },
 
     checkItem: function () {
@@ -110,7 +121,11 @@ App.Views.ToDoItem = Backbone.View.extend({
     },
 
     deleteItem: function () {
-        this.model.trigger('delete', this.model);
+        if (confirm('Are you sure you want to delete?')) this.model.trigger('delete');
+    },
+
+    showError: function (model, xhr) {
+        console.log('There was a problem saving model:\n' + model.toJSON() + '\nxhr: ' + xhr.statusText);
     },
 
     submitItem: function (e) {
