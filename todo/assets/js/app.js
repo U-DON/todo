@@ -62,6 +62,7 @@ App.Collections.ToDoList = Backbone.Collection.extend({
             });
         }, this);
         this.on('destroy', this.remove, this);
+        this.on('destroy', this.log, this);
         this.on('change', this.log, this);
     },
 
@@ -125,7 +126,9 @@ App.Views.ToDoItem = Backbone.View.extend({
     },
 
     showError: function (model, xhr) {
-        console.log('There was a problem saving model:\n' + model.toJSON() + '\nxhr: ' + xhr.statusText);
+        console.log('There was a problem saving model:\n' + JSON.stringify(model.toJSON()) +
+                    '\nxhr: ' + xhr.status + ' ' + xhr.responseText);
+        this.render();
     },
 
     submitItem: function (e) {
@@ -134,10 +137,10 @@ App.Views.ToDoItem = Backbone.View.extend({
         if (title)
             this.model.rename(title);
         else
-            this.deleteItem();
-        this.$('input.edit').remove();
-        this.$('span.title').text(this.model.get('title')).show();
-        this.$('a.delete').show();
+            if (this.model.isNew())
+                this.remove();
+            else
+                this.deleteItem();
     },
 
     render: function () {
