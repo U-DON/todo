@@ -1,3 +1,5 @@
+import redis
+
 from .base import *
 
 DEBUG = True
@@ -14,3 +16,15 @@ DATABASES = {
         'PORT': '',                      # Set to empty string for default.
     }
 }
+
+REDIS_CONF = {
+    'HOST': 'localhost',
+    'PORT': 6379,
+    'DB': 0
+}
+
+REDIS_POOL = redis.ConnectionPool(
+    host=REDIS_CONF['HOST'],
+    port=REDIS_CONF['PORT'],
+    db=REDIS_CONF['DB']
+)
