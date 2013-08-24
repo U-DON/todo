@@ -20,9 +20,10 @@ var App = new (Backbone.View.extend({
 
 App.Models.ToDoItem = Backbone.Model.extend({
     defaults: {
-        title: '',
+        active: false,
         description: '',
-        done: false
+        done: false,
+        title: ''
     },
 
     initialize: function () {
@@ -63,20 +64,18 @@ App.Collections.ToDoList = Backbone.Collection.extend({
             });
         }, this);
         this.on('destroy', this.remove, this);
-        // this.on('destroy', this.log, this);
-        // this.on('sync', this.log, this);
+        this.on('destroy', this.log, this);
+        this.on('sync', this.log, this);
     },
 
     // Logging to inspect models in the collection after each successful change with the server.
     log: function () {
-        console.log('-----------\n');
-        console.log('To Do List:\n');
+        console.log('-----------');
+        console.log('To Do List:');
         this.forEach(function (toDoItem) {
-            console.log(toDoItem.get('title') +
-                ': ' + (toDoItem.get('done') ? 'Done' : 'Not Done') +
-                '\n');
+            console.log(toDoItem.get('title') + ': ' + (toDoItem.get('done') ? 'Done' : 'Not Done'));
         });
-        console.log('-----------\n');
+        console.log('-----------');
     }
 });
 
