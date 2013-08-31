@@ -23,6 +23,7 @@ App.Models.ToDoItem = Backbone.Model.extend({
         active: false,
         description: '',
         done: false,
+        routine: false,
         title: ''
     },
 
