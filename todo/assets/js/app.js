@@ -14,13 +14,13 @@ var App = new (Backbone.View.extend({
 
     start: function () {
         this.toDoList = new this.Collections.ToDoList();
-        var toDoListView = new this.Views.ToDoList({collection: this.toDoList, el: $('#toDoList')});
+        var toDoListView = new this.Views.ToDoList({collection: this.toDoList, el: $('#to-do-list')});
     }
 }))({el: document.body});
 
 App.Models.ToDoItem = Backbone.Model.extend({
     defaults: {
-        active: false,
+        current: false,
         description: '',
         done: false,
         routine: false,
@@ -32,13 +32,30 @@ App.Models.ToDoItem = Backbone.Model.extend({
     },
 
     check: function (checked) {
-        this.set('done', checked);
-        this.save();
+        this.save({ done: checked }, {
+            success: _.bind(function (model, xhr, options) {
+                // Server returns done time in milliseconds once task is successfully marked done, so that needs to be updated.
+                this.set('doneTime', model.attributes['done_time']);
+            }, this),
+            error: _.bind(function (model, xhr, options) {
+                this.set(model.previousAttributes());
+            }, this),
+            wait: true
+        });
+    },
+
+    readableDoneTime: function () {
+        // Done time is in milliseconds from the epoch, so convert to be readable.
+        return (new Date(this.get('doneTime'))).toString();
     },
 
     rename: function (title) {
-        this.set('title', title);
-        this.save();
+        this.save({ title: title }, {
+            error: _.bind(function (model, xhr, options) {
+                this.set(model.previousAttributes());
+            }, this),
+            wait: true
+        });
     }
 });
 
@@ -48,15 +65,17 @@ App.Collections.ToDoList = Backbone.Collection.extend({
 
     initialize: function () {
         // Iterate over each todo item that has already been rendered and attach models and views to them.
-        _.each($('.toDoItem'), function (toDoItemElement) {
+        _.each($('.to-do-item'), function (toDoItemElement) {
             var id = $(toDoItemElement).data('id');
-            var titleElement = $(toDoItemElement).children('span.title')[0]
+            var titleElement = $(toDoItemElement).children('span.title')[0];
             var title = $(titleElement).text();
             var done = $(toDoItemElement).children('input').is(':checked');
+            var doneTime = (new Date($(toDoItemElement).data('done-time')));
             var toDoItem = new App.Models.ToDoItem({
                 id: id,
                 title: title,
-                done: done
+                done: done,
+                doneTime: doneTime
             });
             this.add(toDoItem);
             var toDoItemView = new App.Views.ToDoItem({
@@ -74,7 +93,7 @@ App.Collections.ToDoList = Backbone.Collection.extend({
         console.log('-----------');
         console.log('To Do List:');
         this.forEach(function (toDoItem) {
-            console.log(toDoItem.get('title') + ': ' + (toDoItem.get('done') ? 'Done' : 'Not Done'));
+            console.log(toDoItem.get('title') + ': ' + (toDoItem.get('done') ? 'Done (' + toDoItem.readableDoneTime() + ')' : 'Not Done'));
         });
         console.log('-----------');
     }
@@ -82,10 +101,11 @@ App.Collections.ToDoList = Backbone.Collection.extend({
 
 App.Views.ToDoItem = Backbone.View.extend({
     tagName: 'li',
-    className: 'toDoItem',
+    className: 'to-do-item',
     attributes: function () {
         return {
-            'data-id': this.model.id
+            'data-id': this.model.id,
+            'data-done-time': this.model.get('doneTime')
         };
     },
 
@@ -121,6 +141,7 @@ App.Views.ToDoItem = Backbone.View.extend({
     editItem: function () {
         this.$('a.delete').hide();
         this.$('span.title').hide();
+        this.$('span.done-time').hide();
         this.$el.append(this.editorTemplate({title: this.model.get('title')}));
         this.$('input.edit').focus();
     },
@@ -154,6 +175,7 @@ App.Views.ToDoItem = Backbone.View.extend({
 
     render: function () {
         this.$el.attr(this.attributes());
+        console.log(this.attributes());
         this.$el.html(this.itemTemplate(this.model.toJSON()));
         return this;
     }

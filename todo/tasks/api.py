@@ -1,14 +1,19 @@
+from datetime import datetime
+
 from django.conf import settings
+from django.utils import timezone
 
 import redis
 from tastypie import fields
 from tastypie.authorization import Authorization
 from tastypie.resources import ModelResource
+
 from .models import Task
 
 class TaskResource(ModelResource):
-    active = fields.BooleanField(default=False)
+    current = fields.BooleanField(default=False)
     done = fields.BooleanField(default=False)
+    done_time = fields.DateTimeField()
 
     class Meta:
         always_return_data = True
@@ -16,24 +21,30 @@ class TaskResource(ModelResource):
         queryset = Task.objects.all()
         resource_name = 'todo'
 
-    def dehydrate_active(self, bundle):
-        return bundle.obj.active()
+    def dehydrate_current(self, bundle):
+        return bundle.obj.is_current()
 
     def dehydrate_done(self, bundle):
-        return bundle.obj.done()
+        return bundle.obj.is_done()
 
-    def hydrate_active(self, bundle):
-        r = redis.StrictRedis(connection_pool=settings.REDIS_POOL)
-        if bundle.data['active']:
-            r.sadd('active', bundle.obj.pk)
+    def dehydrate_done_time(self, bundle):
+        return bundle.obj.epoch_done_time()
+
+    def hydrate_current(self, bundle):
+        redis_client = redis.StrictRedis(connection_pool=settings.REDIS_POOL)
+        if bundle.data['current']:
+            redis_client.sadd('todo:current', bundle.obj.pk)
         else:
-            r.srem('active', bundle.obj.pk)
+            redis_client.srem('todo:current', bundle.obj.pk)
         return bundle
 
     def hydrate_done(self, bundle):
-        r = redis.StrictRedis(connection_pool=settings.REDIS_POOL)
+        redis_client = redis.StrictRedis(connection_pool=settings.REDIS_POOL)
         if bundle.data['done']:
-            r.sadd('done', bundle.obj.pk)
+            done_time = timezone.make_aware(datetime.utcnow(), timezone.utc)
+            redis_client.sadd('todo:done', bundle.obj.pk)
+            redis_client.set('todo#{task_id}'.format(task_id=bundle.obj.pk), done_time)
         else:
-            r.srem('done', bundle.obj.pk)
+            redis_client.srem('todo:done', bundle.obj.pk)
+            redis_client.delete('todo#{task_id}'.format(task_id=bundle.obj.pk))
         return bundle
