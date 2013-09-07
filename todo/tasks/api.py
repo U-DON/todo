@@ -40,11 +40,14 @@ class TaskResource(ModelResource):
 
     def hydrate_done(self, bundle):
         redis_client = redis.StrictRedis(connection_pool=settings.REDIS_POOL)
+        redis_pipeline = redis_client.pipeline()
         if bundle.data['done']:
             done_time = timezone.make_aware(datetime.utcnow(), timezone.utc)
-            redis_client.sadd('todo:done', bundle.obj.pk)
-            redis_client.set('todo#{task_id}'.format(task_id=bundle.obj.pk), done_time)
+            redis_pipeline.sadd('todo:done', bundle.obj.pk)
+            redis_pipeline.hset('todo#{task_id}'.format(task_id=bundle.obj.pk), 'done_time', done_time)
+            redis_pipeline.execute()
         else:
-            redis_client.srem('todo:done', bundle.obj.pk)
-            redis_client.delete('todo#{task_id}'.format(task_id=bundle.obj.pk))
+            redis_pipeline.srem('todo:done', bundle.obj.pk)
+            redis_pipeline.hdel('todo#{task_id}'.format(task_id=bundle.obj.pk), 'done_time')
+            redis_pipeline.execute()
         return bundle

@@ -16,13 +16,11 @@ class TaskManager(models.Manager):
     def current_task_ids(self):
         """Return set of task ids for tasks that are in progress."""
         redis_client = redis.StrictRedis(connection_pool=settings.REDIS_POOL)
-        redis_client.set_response_callback('SMEMBERS', (lambda s: set([int(e) for e in s])))
         return redis_client.smembers('todo:current')
 
     def done_task_ids(self):
         """Return set of task ids for tasks that have been done today."""
         redis_client = redis.StrictRedis(connection_pool=settings.REDIS_POOL)
-        redis_client.set_response_callback('SMEMBERS', (lambda s: set([int(e) for e in s])))
         return redis_client.smembers('todo:done')
 
     def current(self):
@@ -39,7 +37,6 @@ class TaskManager(models.Manager):
         """Return all tasks that are done."""
         done_tasks = self.done_task_ids()
         return self.filter(pk__in=done_tasks)
-        # return self.filter(Q(pk__in=done_tasks) | Q(routine=False, activity__done_date__lte=date.today()))
 
 class Task(models.Model):
     description = models.TextField()
@@ -50,18 +47,18 @@ class Task(models.Model):
 
     def is_current(self):
         """Return True if the task is in progress."""
-        return self.pk in Task.objects.current_task_ids()
+        redis_client = redis.StrictRedis(connection_pool=settings.REDIS_POOL)
+        return redis_client.sismember('todo:current', self.pk)
 
     def is_done(self):
         """Return True if the task has been completed today if it's a routine or if it has been completed ever if it only ever happens once."""
-        # if self.routine:
-        return self.pk in Task.objects.done_task_ids()
-        # return self.activities.count() > 0 
+        redis_client = redis.StrictRedis(connection_pool=settings.REDIS_POOL)
+        return redis_client.sismember('todo:done', self.pk)
 
     def done_time(self):
         """Return the time (in UTC) the task was completed."""
         redis_client = redis.StrictRedis(connection_pool=settings.REDIS_POOL)
-        done_time = redis_client.get('todo#{task_id}'.format(task_id=self.pk))
+        done_time = redis_client.hget('todo#{task_id}'.format(task_id=self.pk), 'done_time')
         return dateutil.parser.parse(done_time) if done_time is not None else None
 
     def epoch_done_time(self):
