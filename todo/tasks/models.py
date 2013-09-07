@@ -37,10 +37,11 @@ class TaskManager(models.Manager):
         """Return all tasks that are done."""
         done_tasks = self.done_task_ids()
         return self.filter(pk__in=done_tasks)
+        # return self.filter(Q(pk__in=done_tasks) | Q(is_routine=False, activity__done_date__lte=date.today()))
 
 class Task(models.Model):
     description = models.TextField()
-    routine = models.BooleanField(default=False)
+    is_routine = models.BooleanField(default=False)
     title = models.CharField(max_length=200)
 
     objects = TaskManager()
@@ -52,8 +53,10 @@ class Task(models.Model):
 
     def is_done(self):
         """Return True if the task has been completed today if it's a routine or if it has been completed ever if it only ever happens once."""
+        # if self.is_routine:
         redis_client = redis.StrictRedis(connection_pool=settings.REDIS_POOL)
         return redis_client.sismember('todo:done', self.pk)
+        # return self.activities.count() > 0 
 
     def done_time(self):
         """Return the time (in UTC) the task was completed."""

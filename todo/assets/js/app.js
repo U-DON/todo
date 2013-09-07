@@ -35,7 +35,8 @@ App.Models.ToDoItem = Backbone.Model.extend({
         this.save({ done: checked }, {
             success: _.bind(function (model, xhr, options) {
                 // Server returns done time in milliseconds once task is successfully marked done, so that needs to be updated.
-                this.set('doneTime', model.attributes['done_time']);
+                // Just to keep all attributes up-to-date, set everything according to the response.
+                this.set(model.attributes);
             }, this),
             error: _.bind(function (model, xhr, options) {
                 this.set(model.previousAttributes());
