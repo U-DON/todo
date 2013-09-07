@@ -1,3 +1,4 @@
+import djcelery
 from unipath import Path
 
 PROJECT_DIR = Path(__file__).ancestor(3)
@@ -112,6 +113,7 @@ INSTALLED_APPS = (
     # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
+    'djcelery',
     'south',
     'tastypie',
     'tasks',
@@ -145,5 +147,7 @@ LOGGING = {
         },
     }
 }
+
+djcelery.setup_loader()
 
 TASTYPIE_ALLOW_MISSING_SLASH = True
