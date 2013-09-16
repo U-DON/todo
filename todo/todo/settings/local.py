@@ -16,6 +16,12 @@ DATABASES = {
     }
 }
 
+LOGGING['loggers']['django'] = {
+    'handlers': ['console'],
+    'level': 'DEBUG',
+    'propagate': True
+}
+
 REDIS_CONF = {
     'HOST': 'localhost',
     'PORT': 6379,
@@ -35,3 +41,7 @@ BROKER_URL = "redis://{host}:{port}/{db}".format(
 )
 
 CELERY_RESULT_BACKEND = BROKER_URL
+
+BROKER_TRANSPORT_OPTIONS = {
+    'visibility_timeout': 86400
+}
