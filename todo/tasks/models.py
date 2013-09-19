@@ -69,5 +69,9 @@ class Task(models.Model):
         done_time = self.done_time()
         return int(calendar.timegm(done_time.timetuple())) * 1000 if done_time is not None else None
 
+    def __iter__(self):
+        for field in self._meta.get_all_field_names():
+            yield (field, getattr(self, field))
+
     def __unicode__(self):
         return self.title
