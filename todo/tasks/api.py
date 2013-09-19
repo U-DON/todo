@@ -42,6 +42,10 @@ class TaskResource(ModelResource):
         redis_client = redis.StrictRedis(connection_pool=settings.REDIS_POOL)
         redis_pipeline = redis_client.pipeline()
 
+        # Hack to avoid extraneous hydrate with invalid object.
+        if bundle.obj.pk is None:
+            return bundle
+
         if bundle.data['current']:
             redis_pipeline.sadd('todo:current', bundle.obj.pk)
         else:
@@ -58,8 +62,16 @@ class TaskResource(ModelResource):
             clean_tasks.apply_async(eta=midnight)
         else:
             redis_pipeline.srem('todo:done', bundle.obj.pk) \
-                          .hdel('todo#{task_id}'.format(task_id=bundle.obj.pk), 'done_time')
+                          .delete('todo#{task_id}'.format(task_id=bundle.obj.pk), 'done_time')
 
         redis_pipeline.execute()
 
         return bundle
+
+    def obj_delete(self, bundle, **kwargs):
+        obj = self.obj_get(bundle, **kwargs)
+        redis_client = redis.StrictRedis(connection_pool=settings.REDIS_POOL)
+        redis_client.srem('todo:current', obj.pk)
+        redis_client.srem('todo:done', obj.pk)
+        redis_client.delete('todo#{task_id}'.format(task_id=obj.pk))
+        super(TaskResource, self).obj_delete(bundle, **kwargs)
