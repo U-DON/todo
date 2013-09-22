@@ -1,5 +1,5 @@
 import calendar
-from datetime import date
+from datetime import datetime, time, timedelta
 import dateutil.parser
 import pytz
 
@@ -8,6 +8,8 @@ from django.db import models
 from django.utils import timezone
 
 import redis
+
+from .tasks import clean_tasks
 
 class TaskManager(models.Manager):
     def get_query_set(self):
@@ -57,6 +59,31 @@ class Task(models.Model):
         redis_client = redis.StrictRedis(connection_pool=settings.REDIS_POOL)
         return redis_client.sismember('todo:done', self.pk)
         # return self.activities.count() > 0 
+
+    def set_current(self, current):
+        redis_client = redis.StrictRedis(connection_pool=settings.REDIS_POOL)
+        if current:
+            redis_client.sadd('todo:current', self.pk)
+        else:
+            redis_client.srem('todo:current', self.pk)
+
+    def set_done(self, done):
+        redis_client = redis.StrictRedis(connection_pool=settings.REDIS_POOL)
+        redis_pipeline = redis_client.pipeline()
+        if done:
+            utc_datetime = timezone.utc.localize(datetime.utcnow())
+            local_timezone = pytz.timezone('America/New_York')
+            local_datetime = utc_datetime.astimezone(local_timezone)
+            local_midnight = local_timezone.localize(datetime.combine(local_datetime.date() + timedelta(days=1), time()))
+            midnight = local_midnight.astimezone(timezone.utc)
+            celery_result = clean_tasks.apply_async(eta=midnight)
+            redis_pipeline.sadd('todo:done', self.pk) \
+                          .hset('todo#{task_id}'.format(task_id=self.pk), 'done_time', utc_datetime)
+        else:
+            redis_pipeline.srem('todo:done', self.pk) \
+                          .delete('todo#{task_id}'.format(task_id=self.pk), 'done_time')
+
+        redis_pipeline.execute()
 
     def done_time(self):
         """Return the time (in UTC) the task was completed."""
