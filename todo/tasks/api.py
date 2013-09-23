@@ -30,14 +30,14 @@ class TaskResource(ModelResource):
             bundle.data['doneTime'] = done_time
         return bundle
 
-    def obj_update(self, bundle, skip_errors=False, **kwargs):
-        obj = self.obj_get(bundle, **kwargs)
-        obj.set_current(bundle.data['current'])
-        obj.set_done(bundle.data['done'])
-        return super(TaskResource, self).obj_update(bundle, skip_errors, **kwargs)
-
     def obj_delete(self, bundle, **kwargs):
         obj = self.obj_get(bundle, **kwargs)
         obj.set_current(False)
         obj.set_done(False)
         return super(TaskResource, self).obj_delete(bundle, **kwargs)
+
+    def obj_update(self, bundle, skip_errors=False, **kwargs):
+        obj = self.obj_get(bundle, **kwargs)
+        obj.set_current(bundle.data['current'])
+        obj.set_done(bundle.data['done'])
+        return super(TaskResource, self).obj_update(bundle, skip_errors, **kwargs)
