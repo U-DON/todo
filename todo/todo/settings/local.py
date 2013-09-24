@@ -23,22 +23,14 @@ LOGGING['loggers']['django'] = {
 }
 
 REDIS_CONF = {
-    'HOST': 'localhost',
-    'PORT': 6379,
-    'DB': 0
+    'host': 'localhost',
+    'port': 6379,
+    'db': 0
 }
 
-REDIS_POOL = redis.ConnectionPool(
-    host=REDIS_CONF['HOST'],
-    port=REDIS_CONF['PORT'],
-    db=REDIS_CONF['DB']
-)
+REDIS_POOL = redis.ConnectionPool(**REDIS_CONF)
 
-BROKER_URL = "redis://{host}:{port}/{db}".format(
-    host=REDIS_CONF['HOST'],
-    port=REDIS_CONF['PORT'],
-    db=REDIS_CONF['DB']
-)
+BROKER_URL = "redis://{host}:{port}/{db}".format(**REDIS_CONF)
 
 CELERY_RESULT_BACKEND = BROKER_URL
 

@@ -1,13 +1,13 @@
 import calendar
 from datetime import datetime, time, timedelta
 import dateutil.parser
-import pytz
 
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
 
 import celery
+import pytz
 import redis
 
 from .tasks import archive_task

@@ -160,4 +160,6 @@ LOGGING = {
 
 djcelery.setup_loader()
 
+SOUTH_TESTS_MIGRATE = False
+
 TASTYPIE_ALLOW_MISSING_SLASH = True
