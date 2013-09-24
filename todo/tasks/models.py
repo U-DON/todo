@@ -87,7 +87,7 @@ class Task(models.Model):
             archive_task_id = redis_client.hget('todo#{task_id}'.format(task_id=self.pk), 'archive_task_id')
             celery.current_app.control.revoke(archive_task_id, terminate=True)
             redis_pipeline.srem('todo:done', self.pk) \
-                          .delete('todo#{task_id}'.format(task_id=self.pk), 'done_time')
+                          .delete('todo#{task_id}'.format(task_id=self.pk))
         redis_pipeline.execute()
 
     def done_time(self):
