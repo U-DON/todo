@@ -8,20 +8,46 @@ from django.utils import timezone
 from django.utils.http import urlencode
 
 import redis
+from tastypie.test import ResourceTestCase
 
 from .models import Task
 
 @override_settings(
-    CELERY_ALWAYS_EAGER = True,
     REDIS_POOL = redis.ConnectionPool(
         host='localhost',
         port=6380,
         db=0
     )
 )
+class TaskResourceTest(ResourceTestCase):
+    def setUp(self):
+        Task.objects.create(title="Task 1")
+        super(TaskResourceTest, self).setUp()
+
+    def test_get_task(self):
+        task = Task.objects.get(title="Task 1")
+        task_uri = reverse('tasks:api_dispatch_detail', kwargs={'resource_name': 'todo', 'pk': task.pk})
+        response = self.api_client.get(task_uri)
+        self.assertValidJSONResponse(response)
+        self.assertEqual(
+            self.deserialize(response),
+            {
+                'id': task.pk,
+                'title': task.title,
+                'current': False,
+                'done': False,
+                'routine': False,
+                'resource_uri': task_uri
+            }
+        )
+
+@override_settings(
+    CELERY_ALWAYS_EAGER = True,
+    REDIS_POOL = redis.ConnectionPool(host='localhost', port=6380, db=0)
+)
 class TaskTest(TestCase):
     def setUp(self):
-        Task.objects.create(title="Task 1", is_routine=False)
+        Task.objects.create(title="Task 1")
 
     def tearDown(self):
         redis.StrictRedis(connection_pool=settings.REDIS_POOL).flushdb()
