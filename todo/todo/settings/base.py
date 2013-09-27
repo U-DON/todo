@@ -115,6 +115,9 @@ INSTALLED_APPS = (
     # 'django.contrib.admindocs',
     'djcelery',
     'south',
+    # Include `django-nose` after `south` to make sure `django-nose`'s test command is used instead of South's;
+    # South installs its own test command that turns off migrations during testing. (https://github.com/jbalogh/django-nose#using-with-south)
+    'django_nose',
     'tastypie',
     'tasks',
 )
@@ -163,3 +166,5 @@ djcelery.setup_loader()
 SOUTH_TESTS_MIGRATE = False
 
 TASTYPIE_ALLOW_MISSING_SLASH = True
+
+TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
