@@ -1,5 +1,6 @@
 from tastypie import fields
 from tastypie.authorization import Authorization
+from tastypie.bundle import Bundle
 from tastypie.resources import ModelResource
 
 from .models import Task
@@ -12,6 +13,7 @@ class TaskResource(ModelResource):
     class Meta:
         always_return_data = True
         authorization = Authorization()
+        fields = ['id', 'title']
         queryset = Task.objects.all()
         resource_name = 'todo'
 
@@ -29,6 +31,14 @@ class TaskResource(ModelResource):
         if done_time is not None:
             bundle.data['doneTime'] = done_time
         return bundle
+
+    def get_resource_uri(self, bundle_or_obj=None, url_name='api_dispatch_list'):
+        if bundle_or_obj is not None:
+            url_name = 'api_dispatch_detail'
+        try:
+            return self._build_reverse_url('tasks:{url_name}'.format(url_name=url_name), kwargs=self.resource_uri_kwargs(bundle_or_obj))
+        except NoReverseMatch:
+            return ''
 
     def obj_delete(self, bundle, **kwargs):
         obj = self.obj_get(bundle, **kwargs)

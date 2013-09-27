@@ -7,5 +7,5 @@ task_resource = TaskResource()
 
 urlpatterns = patterns('',
     url(r'^$', views.IndexView.as_view(), name='index'),
-    url(r'^', include(task_resource.urls, namespace='tasks_api')),
+    url(r'^', include(task_resource.urls)),
 )
