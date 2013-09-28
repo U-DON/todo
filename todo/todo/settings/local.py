@@ -28,6 +28,9 @@ REDIS_CONF = {
     'db': 0
 }
 
+TEST_REDIS_CONF = REDIS_CONF.copy()
+TEST_REDIS_CONF['port'] = 6380
+
 REDIS_POOL = redis.ConnectionPool(**REDIS_CONF)
 
 BROKER_URL = "redis://{host}:{port}/{db}".format(**REDIS_CONF)
