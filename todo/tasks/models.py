@@ -1,16 +1,14 @@
 import calendar
-from datetime import datetime, time, timedelta
+from datetime import datetime
 import dateutil.parser
 
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
 
-import celery
-import pytz
 import redis
 
-from .tasks import archive_task
+from .helpers import schedule_archival, unschedule_archival
 
 class TaskManager(models.Manager):
     def get_query_set(self):
@@ -74,21 +72,16 @@ class Task(models.Model):
         redis_client = redis.StrictRedis(connection_pool=settings.REDIS_POOL)
         redis_pipeline = redis_client.pipeline()
         if done:
-            utc_datetime = timezone.utc.localize(datetime.utcnow())
-            local_timezone = pytz.timezone('America/New_York')
-            local_datetime = utc_datetime.astimezone(local_timezone)
-            local_midnight = local_timezone.localize(datetime.combine(local_datetime.date() + timedelta(days=1), time()))
-            midnight = local_midnight.astimezone(timezone.utc)
-            celery_result = archive_task.apply_async((self.pk,), eta=midnight)
+            now = timezone.utc.localize(datetime.utcnow())
             redis_pipeline.sadd('todo:done', self.pk) \
-                          .hset('todo#{task_id}'.format(task_id=self.pk), 'done_time', utc_datetime) \
-                          .hset('todo#{task_id}'.format(task_id=self.pk), 'archive_task_id', celery_result.id)
+                          .hset('todo#{task_id}'.format(task_id=self.pk), 'done_time', now) \
+                          .execute()
+            schedule_archival()
         else:
-            archive_task_id = redis_client.hget('todo#{task_id}'.format(task_id=self.pk), 'archive_task_id')
-            celery.current_app.control.revoke(archive_task_id, terminate=True)
             redis_pipeline.srem('todo:done', self.pk) \
-                          .delete('todo#{task_id}'.format(task_id=self.pk))
-        redis_pipeline.execute()
+                          .delete('todo#{task_id}'.format(task_id=self.pk)) \
+                          .execute()
+            unschedule_archival()
 
     def done_time(self):
         """Return the time (in UTC) the task was completed."""
