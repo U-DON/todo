@@ -13,9 +13,8 @@ from tastypie.test import ResourceTestCase
 from .models import Task
 
 @override_settings(
-    REDIS_POOL = redis.ConnectionPool(**settings.TEST_REDIS_CONF),
-    BROKER_URL = "redis://{host}:{port}/{db}".format(**settings.TEST_REDIS_CONF),
-    CELERY_RESULT_BACKEND = settings.BROKER_URL
+    CELERY_ALWAYS_EAGER = True,
+    REDIS_POOL = redis.ConnectionPool(**settings.TEST_REDIS_CONF)
 )
 class TaskResourceTest(ResourceTestCase):
     def setUp(self):
@@ -102,7 +101,7 @@ class TaskResourceTest(ResourceTestCase):
 
 @override_settings(
     CELERY_ALWAYS_EAGER = True,
-    REDIS_POOL = redis.ConnectionPool(**settings.TEST_REDIS_CONF),
+    REDIS_POOL = redis.ConnectionPool(**settings.TEST_REDIS_CONF)
 )
 class TaskTest(TestCase):
     def setUp(self):
