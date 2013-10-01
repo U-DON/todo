@@ -114,6 +114,7 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
     'djcelery',
+    'gunicorn',
     'south',
     # Include `django-nose` after `south` to make sure `django-nose`'s test command is used instead of South's;
     # South installs its own test command that turns off migrations during testing. (https://github.com/jbalogh/django-nose#using-with-south)
@@ -168,23 +169,3 @@ SOUTH_TESTS_MIGRATE = False
 TASTYPIE_ALLOW_MISSING_SLASH = True
 
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
-
-# Parse database configuration from $DATABASE_URL
-import dj_database_url
-DATABASES['default'] =  dj_database_url.config()
-
-# Honor the 'X-Forwarded-Proto' header for request.is_secure()
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-
-# Allow all host headers
-ALLOWED_HOSTS = ['*']
-
-# Static asset configuration
-import os
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-STATIC_ROOT = 'staticfiles'
-STATIC_URL = '/static/'
-
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'static'),
-)
