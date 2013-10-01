@@ -1,5 +1,6 @@
 *.log
 *.pot
 *.pyc
+*.rdb
 local_settings.py
 todo/static/*

@@ -1,3 +1,5 @@
+import redis
+
 from .base import *
 
 DEBUG = True
@@ -5,12 +7,36 @@ TEMPLATE_DEBUG = DEBUG
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'todo',                      # Or path to database file if using sqlite3.
-        # The following settings are not used with sqlite3:
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'todo',
         'USER': '',
         'PASSWORD': '',
-        'HOST': 'localhost',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
-        'PORT': '',                      # Set to empty string for default.
+        'HOST': 'localhost',
+        'PORT': '',
     }
+}
+
+LOGGING['loggers']['django'] = {
+    'handlers': ['console'],
+    'level': 'DEBUG',
+    'propagate': True
+}
+
+REDIS_CONF = {
+    'host': 'localhost',
+    'port': 6379,
+    'db': 0
+}
+
+TEST_REDIS_CONF = REDIS_CONF.copy()
+TEST_REDIS_CONF['port'] = 6380
+
+REDIS_POOL = redis.ConnectionPool(**REDIS_CONF)
+
+BROKER_URL = "redis://{host}:{port}/{db}".format(**REDIS_CONF)
+
+CELERY_RESULT_BACKEND = BROKER_URL
+
+BROKER_TRANSPORT_OPTIONS = {
+    'visibility_timeout': 86400
 }

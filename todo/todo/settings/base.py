@@ -1,3 +1,4 @@
+import djcelery
 from unipath import Path
 
 PROJECT_DIR = Path(__file__).ancestor(3)
@@ -112,7 +113,11 @@ INSTALLED_APPS = (
     # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
+    'djcelery',
     'south',
+    # Include `django-nose` after `south` to make sure `django-nose`'s test command is used instead of South's;
+    # South installs its own test command that turns off migrations during testing. (https://github.com/jbalogh/django-nose#using-with-south)
+    'django_nose',
     'tastypie',
     'tasks',
 )
@@ -130,7 +135,17 @@ LOGGING = {
             '()': 'django.utils.log.RequireDebugFalse'
         }
     },
+    'formatters': {
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        }
+    },
     'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+        },
         'mail_admins': {
             'level': 'ERROR',
             'filters': ['require_debug_false'],
@@ -142,8 +157,34 @@ LOGGING = {
             'handlers': ['mail_admins'],
             'level': 'ERROR',
             'propagate': True,
-        },
+        }
     }
 }
 
+djcelery.setup_loader()
+
+SOUTH_TESTS_MIGRATE = False
+
 TASTYPIE_ALLOW_MISSING_SLASH = True
+
+TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+
+# Parse database configuration from $DATABASE_URL
+import dj_database_url
+DATABASES['default'] =  dj_database_url.config()
+
+# Honor the 'X-Forwarded-Proto' header for request.is_secure()
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# Allow all host headers
+ALLOWED_HOSTS = ['*']
+
+# Static asset configuration
+import os
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+STATIC_ROOT = 'staticfiles'
+STATIC_URL = '/static/'
+
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'static'),
+)
