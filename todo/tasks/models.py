@@ -72,6 +72,8 @@ class Task(models.Model):
         redis_client = redis.StrictRedis(connection_pool=settings.REDIS_POOL)
         redis_pipeline = redis_client.pipeline()
         if done:
+            if not self.is_current():
+                self.set_current(done)
             now = timezone.utc.localize(datetime.utcnow())
             redis_pipeline.sadd('todo:done', self.pk) \
                           .hset('todo#{task_id}'.format(task_id=self.pk), 'done_time', now) \
