@@ -15,11 +15,7 @@ def archive_tasks():
     no guarantees that it will be cleaned up next midnight, particularly \
     if no subsequent tasks are marked done later that day.
 
-    Skip this job if the request is eager, mainly for testing.
-
     """
-    if self.request.is_eager:
-        pass
     redis_client = redis.StrictRedis(connection_pool=settings.REDIS_POOL)
     redis_pipeline = redis_client.pipeline()
     while True:
@@ -33,6 +29,7 @@ def archive_tasks():
                               .delete('todo#{task_id}'.format(task_id=task_id))
             redis_pipeline.delete('archive_task_id') \
                           .execute()
+            break
         except WatchError:
             continue
         finally:
