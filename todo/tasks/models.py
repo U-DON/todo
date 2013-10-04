@@ -8,7 +8,7 @@ from django.utils import timezone
 
 import redis
 
-from .helpers import schedule_archival, unschedule_archival
+from .helpers import schedule_archival
 
 class TaskManager(models.Manager):
     def get_query_set(self):
@@ -83,7 +83,6 @@ class Task(models.Model):
             redis_pipeline.srem('todo:done', self.pk) \
                           .delete('todo#{task_id}'.format(task_id=self.pk)) \
                           .execute()
-            unschedule_archival()
 
     def done_time(self):
         """Return the time (in UTC) the task was completed."""

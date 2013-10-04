@@ -102,13 +102,11 @@ class TaskResourceTest(ResourceTestCase):
         self.assertTrue(task.is_current())
         self.assertTrue(task.is_done())
 
-    @patch('tasks.models.unschedule_archival')
-    def test_delete_task(self, mock_unschedule_archival):
+    def test_delete_task(self):
         """Make a DELETE request for a single task and check that it's deleted."""
         self.assertEqual(Task.objects.count(), 2)
         task_uri = self.get_task_uri(self.task_1.pk)
         self.api_client.delete(task_uri)
-        mock_unschedule_archival.assert_called_once()
         self.assertEqual(Task.objects.count(), 1)
 
 @override_settings(
@@ -128,6 +126,13 @@ class TaskTest(TestCase):
         self.task_1.set_current(True)
         self.assertTrue(self.task_1.is_current())
 
+    def test_set_current_task_not_current(self):
+        """Mark a current task as not current and check that it's not current."""
+        self.task_1.set_current(True)
+        self.assertTrue(self.task_1.is_current())
+        self.task_1.set_current(False)
+        self.assertFalse(self.task_1.is_current())
+
     @patch('tasks.models.schedule_archival')
     def test_set_task_done(self, mock_schedule_archival):
         """Mark a task as done and check that it's done and current."""
@@ -136,6 +141,17 @@ class TaskTest(TestCase):
         mock_schedule_archival.assert_called_once()
         self.assertTrue(self.task_1.is_done())
         self.assertTrue(self.task_1.is_current())
+
+    @patch('tasks.models.schedule_archival')
+    def test_set_done_task_not_done(self, mock_schedule_archival):
+        """Mark a done task as not done and check that it's not done and not current."""
+        self.task_1.set_done(True)
+        mock_schedule_archival.assert_called_once()
+        self.assertTrue(self.task_1.is_done())
+        self.assertTrue(self.task_1.is_current())
+        self.task_1.set_done(False)
+        self.assertFalse(self.task_1.is_done())
+        self.assertFalse(self.task_1.is_current())
 
     @patch('tasks.models.schedule_archival')
     def test_get_task_done_time(self, mock_schedule_archival):

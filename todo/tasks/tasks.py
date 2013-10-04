@@ -27,6 +27,7 @@ def archive_tasks():
                 redis_pipeline.srem('todo:current', task_id) \
                               .srem('todo:done', task_id) \
                               .delete('todo#{task_id}'.format(task_id=task_id))
+            # Remove the stored archival task id so a new archival can be scheduled later.
             redis_pipeline.delete('archive_task_id') \
                           .execute()
             break
