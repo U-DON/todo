@@ -101,3 +101,7 @@ class Task(models.Model):
 
     def __unicode__(self):
         return self.title
+
+class History(models.Model):
+    task = models.ForeignKey(Task, related_name='history')
+    done_time = models.DateTimeField()
