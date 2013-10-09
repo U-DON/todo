@@ -11,7 +11,7 @@ from mock import patch
 import redis
 from tastypie.test import ResourceTestCase
 
-from .models import Task
+from .models import Task, History
 from .tasks import archive_tasks
 
 @override_settings(
@@ -194,6 +194,27 @@ class TaskTest(TestCase):
         self.assertTrue(self.task_2.is_done())
         archive_tasks.apply()
         self.assertFalse(self.task_2.is_done())
+
+@override_settings(
+    REDIS_POOL = redis.ConnectionPool(**settings.TEST_REDIS_CONF)
+)
+class HistoryTest(TestCase):
+    def setUp(self):
+        self.task_1 = Task.objects.create(title='Task 1')
+
+    @patch('tasks.models.schedule_archival')
+    def test_history_exists_after_task_archival(self, mock_schedule_archival):
+        self.task_1.set_done(True)
+        mock_schedule_archival.assert_called_once()
+        archive_tasks.apply()
+        self.assertEqual(self.task_1.history.count(), 1)
+
+    @patch('tasks.models.schedule_archival')
+    def test_task_done_time_is_history_done_time(self, mock_schedule_archival):
+        self.task_1.set_done(True)
+        mock_schedule_archival.assert_called_once()
+        archive_tasks.apply()
+        self.assertEqual(self.task_1.done_time(), self.task_1.history.all()[0].done_time)
 
 @override_settings(
     REDIS_POOL = redis.ConnectionPool(**settings.TEST_REDIS_CONF)
