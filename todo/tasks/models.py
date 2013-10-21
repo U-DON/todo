@@ -116,11 +116,11 @@ class Task(models.Model):
 
     def done_time(self):
         """Return the time (in UTC) the task was completed. For routines, return the most recent done time."""
-        redis_client = redis.StrictRedis(connection_pool=settings.REDIS_POOL)
-        done_time = redis_client.hget('todo#{task_id}'.format(task_id=self.pk), 'done_time')
-        if done_time is None:
+        if not self.is_routine and self.is_archived():
             history = self.history.order_by('-done_time')
             return history[0].done_time
+        redis_client = redis.StrictRedis(connection_pool=settings.REDIS_POOL)
+        done_time = redis_client.hget('todo#{task_id}'.format(task_id=self.pk), 'done_time')
         return dateutil.parser.parse(done_time) if done_time is not None else None
 
     def epoch_done_time(self):
