@@ -109,3 +109,16 @@ class TaskManagerTest(TestCase):
         self.assertFalse(self.task_2 in Task.objects.later())
         archive_tasks.apply()
         self.assertTrue(self.task_2 in Task.objects.later())
+
+    @patch('tasks.models.schedule_archival')
+    def test_done_reminder_never_in_done_query_set_after_archival(self, mock_schedule_archival):
+        """Check that a reminder can never return to the set of current done tasks after archival."""
+        self.assertFalse(self.task_1.id in Task.objects.done_task_ids())
+        self.task_1.set_done(True)
+        mock_schedule_archival.assert_called_once()
+        self.assertTrue(str(self.task_1.id) in Task.objects.done_task_ids())
+        archive_tasks.apply()
+        self.assertFalse(str(self.task_1.id) in Task.objects.done_task_ids())
+        self.task_1.set_done(True)
+        self.assertFalse(str(self.task_1.id) in Task.objects.current_task_ids())
+        self.assertFalse(str(self.task_1.id) in Task.objects.done_task_ids())

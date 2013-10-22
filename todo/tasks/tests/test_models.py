@@ -97,12 +97,57 @@ class TaskTest(TestCase):
         archive_tasks.apply()
         self.assertFalse(self.task_2.is_done())
 
-    # def test_reminder_is_never_current_after_archival
-    # def test_set_reminder_done_after_archival
-    # def test_set_reminder_not_done_after_archival
-    # def test_routine_is_never_current_after_archival
-    # def test_set_routine_done_after_archival
-    # def test_set_routine_not_done_after_archival
+    @patch('tasks.models.schedule_archival')
+    def test_reminder_is_never_current_after_archival(self, mock_schedule_archival):
+        """Check that a reminder can never be set current after archival."""
+        self.assertFalse(self.task_1.is_done())
+        self.task_1.set_done(True)
+        mock_schedule_archival.assert_called_once()
+        self.assertTrue(self.task_1.is_done())
+        archive_tasks.apply()
+        self.assertTrue(self.task_1.is_done())
+        self.task_1.set_current(True)
+        self.assertFalse(self.task_1.is_current())
+        self.task_1.set_done(True)
+        self.assertFalse(self.task_1.is_current())
+
+    @patch('tasks.models.schedule_archival')
+    def test_set_reminder_not_done_after_archival(self, mock_schedule_archival):
+        """Mark an archived reminder not done and check that it reverts to a not current, not done task."""
+        self.assertFalse(self.task_1.is_done())
+        self.task_1.set_done(True)
+        mock_schedule_archival.assert_called_once()
+        self.assertTrue(self.task_1.is_done())
+        archive_tasks.apply()
+        self.assertTrue(self.task_1.is_done())
+        self.task_1.set_done(False)
+        self.assertFalse(self.task_1.is_current())
+        self.assertFalse(self.task_1.is_done())
+
+    @patch('tasks.models.schedule_archival')
+    def test_set_routine_current_after_archival(self, mock_schedule_archival):
+        """Check that a routine can be marked current after archival."""
+        self.assertFalse(self.task_2.is_done())
+        self.task_2.set_done(True)
+        mock_schedule_archival.assert_called_once()
+        self.assertTrue(self.task_2.is_done())
+        archive_tasks.apply()
+        self.assertFalse(self.task_2.is_done())
+        self.task_2.set_current(True)
+        self.assertTrue(self.task_2.is_current())
+
+    @patch('tasks.models.schedule_archival')
+    def test_set_routine_done_after_archival(self, mock_schedule_archival):
+        """Check that a routine can be marked done after archival."""
+        self.assertFalse(self.task_2.is_done())
+        self.task_2.set_done(True)
+        mock_schedule_archival.assert_called_once()
+        self.assertTrue(self.task_2.is_done())
+        archive_tasks.apply()
+        self.assertFalse(self.task_2.is_done())
+        self.task_2.set_done(True)
+        self.assertTrue(self.task_2.is_current())
+        self.assertTrue(self.task_2.is_done())
 
 @override_settings(
     REDIS_POOL = redis.ConnectionPool(**settings.TEST_REDIS_CONF)
@@ -144,3 +189,9 @@ class HistoryTest(TestCase):
         archive_tasks.apply()
         self.task_1.set_done(False)
         self.assertEqual(self.task_1.history.count(), 0)
+
+    # def test_single_history_entry_for_reminder(self, mock_schedule_archival):
+        """Archive a reminder and check that marking it done and archiving it again does not create new history."""
+
+    # def test_multiple_history_entries_for_routine(self, mock_schedule_archival):
+        """Archive a routine and check that marking it done and archiving it again creates a new history entry."""
