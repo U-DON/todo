@@ -39,10 +39,10 @@ class TaskManager(models.Manager):
 
     def done(self):
         """Return all tasks that are done.
-        
+
         Tasks that are done are either tasks in the set of current done tasks \
         or reminders that have a history entry.
-        
+
         """
         done_tasks = self.done_task_ids()
         return self.filter(
@@ -61,26 +61,27 @@ class Task(models.Model):
     objects = TaskManager()
 
     def is_archived(self):
+        """Return True if the task has at least one history entry."""
         return self.history.count() > 0
 
     def is_current(self):
         """Return True if the task is in progress.
 
         A task is in progress if it exists in the set of current tasks.
-        
+
         """
         redis_client = redis.StrictRedis(connection_pool=settings.REDIS_POOL)
         return redis_client.sismember('todo:current', self.pk)
 
     def is_done(self):
         """Return True if the task is done.
-        
+
         A routine is done if it has been completed today (exists in the set \
         of current done tasks).
 
         A reminder is done if it has been completed ever (exists in the set \
         of current done tasks or has a history entry).
-        
+
         """
         redis_client = redis.StrictRedis(connection_pool=settings.REDIS_POOL)
         is_done_today = redis_client.sismember('todo:done', self.pk)
@@ -91,11 +92,15 @@ class Task(models.Model):
 
     def set_current(self, current):
         """Mark a task as current or not current.
-        
+
         If current, add the task to the set of current tasks. \
         Remove if not current.
-        
+
+        If the task is a reminder that has been archived, do nothing.
+
         """
+        if not self.is_routine and self.is_archived():
+            return
         redis_client = redis.StrictRedis(connection_pool=settings.REDIS_POOL)
         if current:
             redis_client.sadd('todo:current', self.pk)
@@ -104,16 +109,19 @@ class Task(models.Model):
 
     def set_done(self, done):
         """Mark a task as done or not done.
-                
+
         If done, add the task to the set of current done tasks and \
-        schedule the task for archival.
-           
+        schedule the task for archival. If the task is a reminder \
+        that has been archived, do nothing.
+
         If not done, remove the task from the set of current done tasks. \
         If the task is a reminder that has been archived, remove its history.
-        
+
         """
-        if not done and not self.is_routine and self.is_archived():
-            self.history.all()[0].delete()
+        if not self.is_routine and self.is_archived():
+            if not done:
+                self.history.all()[0].delete()
+            return
         redis_client = redis.StrictRedis(connection_pool=settings.REDIS_POOL)
         redis_pipeline = redis_client.pipeline()
         if done:
@@ -131,9 +139,9 @@ class Task(models.Model):
 
     def done_time(self):
         """Return the time (in UTC) the task was completed.
-        
+
         For routines, return the most recent done time.
-        
+
         """
         if not self.is_routine and self.is_archived():
             history = self.history.order_by('-done_time')
