@@ -143,7 +143,7 @@ class Task(models.Model):
         For routines, return the most recent done time.
 
         """
-        if not self.is_routine and self.is_archived():
+        if self.is_archived():
             history = self.history.order_by('-done_time')
             return history[0].done_time
         redis_client = redis.StrictRedis(connection_pool=settings.REDIS_POOL)
@@ -165,3 +165,9 @@ class Task(models.Model):
 class History(models.Model):
     task = models.ForeignKey(Task, related_name='history')
     done_time = models.DateTimeField()
+
+    def __unicode__(self):
+        return "{task_title} - {done_time}".format(
+            task_title=self.task.title,
+            done_time=self.done_time
+        )
