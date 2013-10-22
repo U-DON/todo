@@ -155,7 +155,7 @@ class TaskTest(TestCase):
 class HistoryTest(TestCase):
     def setUp(self):
         self.task_1 = Task.objects.create(title='Task 1')
-        self.task_2 = Task.objects.create(title='Task 2')
+        self.task_2 = Task.objects.create(title='Task 2', is_routine=True)
 
     @patch('tasks.models.schedule_archival')
     def test_history_exists_after_task_archival(self, mock_schedule_archival):
@@ -190,8 +190,31 @@ class HistoryTest(TestCase):
         self.task_1.set_done(False)
         self.assertEqual(self.task_1.history.count(), 0)
 
-    # def test_single_history_entry_for_reminder(self, mock_schedule_archival):
-        """Archive a reminder and check that marking it done and archiving it again does not create new history."""
+    @patch('tasks.models.schedule_archival')
+    def test_single_history_entry_for_reminder(self, mock_schedule_archival):
+        """Archive a reminder and check that marking it done and archiving again does not create new history.
+        
+        Mark the other task done as well to ensure the archival occurs. Assuming correct behavior, marking \
+        the reminder done after archival will not schedule another archival.
 
-    # def test_multiple_history_entries_for_routine(self, mock_schedule_archival):
+        """
+        self.task_1.set_done(True)
+        mock_schedule_archival.assert_called_once()
+        archive_tasks.apply()
+        self.task_1.set_done(True)
+        self.task_2.set_done(True)
+        mock_schedule_archival.assert_called_once()
+        archive_tasks.apply()
+        self.assertEqual(self.task_1.history.count(), 1)
+
+    @patch('tasks.models.schedule_archival')
+    def test_multiple_history_entries_for_routine(self, mock_schedule_archival):
         """Archive a routine and check that marking it done and archiving it again creates a new history entry."""
+        self.task_2.set_done(True)
+        mock_schedule_archival.assert_called_once()
+        archive_tasks.apply()
+        self.assertEqual(self.task_2.history.count(), 1)
+        self.task_2.set_done(True)
+        mock_schedule_archival.assert_called_once()
+        archive_tasks.apply()
+        self.assertEqual(self.task_2.history.count(), 2)
