@@ -5,8 +5,8 @@ from django.test.utils import override_settings
 from mock import patch
 import redis
 
-from tasks.models import Task, History
-from tasks.tasks import archive_tasks
+from ..models import Task, History
+from ..tasks import archive_tasks
 
 @override_settings(
     REDIS_POOL = redis.ConnectionPool(**settings.TEST_REDIS_CONF)

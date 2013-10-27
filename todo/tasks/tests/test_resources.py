@@ -7,7 +7,7 @@ from mock import patch
 import redis
 from tastypie.test import ResourceTestCase
 
-from tasks.models import Task, History
+from ..models import Task, History
 
 @override_settings(
     REDIS_POOL = redis.ConnectionPool(**settings.TEST_REDIS_CONF)
