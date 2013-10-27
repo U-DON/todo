@@ -120,6 +120,7 @@ INSTALLED_APPS = (
     # South installs its own test command that turns off migrations during testing. (https://github.com/jbalogh/django-nose#using-with-south)
     'django_nose',
     'tastypie',
+    'profiles',
     'tasks',
 )
 
