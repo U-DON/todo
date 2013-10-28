@@ -3,6 +3,6 @@ from django.conf.urls import patterns, include, url
 from . import views
 
 urlpatterns = patterns('',
-    url('^register/', views.RegistrationView.as_view()),
-    url('^accounts/', include('django.contrib.auth.urls')),
+    url(r'^register/', views.RegistrationView.as_view(), name='register'),
+    url(r'^login/', 'django.contrib.auth.views.login', {'template_name': 'profiles/login.html'}, name='login')
 )
