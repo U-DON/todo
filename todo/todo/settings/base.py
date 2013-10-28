@@ -3,6 +3,8 @@ from unipath import Path
 
 PROJECT_DIR = Path(__file__).ancestor(3)
 
+AUTH_USER_MODEL = 'profiles.User'
+
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
 )
