@@ -3,10 +3,6 @@ from unipath import Path
 
 PROJECT_DIR = Path(__file__).ancestor(3)
 
-AUTH_USER_MODEL = 'profiles.User'
-
-LOGIN_REDIRECT_URL = '/'
-
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
 )
@@ -166,6 +162,12 @@ LOGGING = {
         }
     }
 }
+
+AUTH_USER_MODEL = 'profiles.User'
+
+LOGIN_URL = '/login/'
+LOGOUT_URL = '/logout/'
+LOGIN_REDIRECT_URL = '/'
 
 djcelery.setup_loader()
 
