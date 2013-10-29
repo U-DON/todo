@@ -1,8 +1,11 @@
 <form method="POST" action="{% url 'profiles:login' %}">
     {% csrf_token %}
+    {% if form.errors %}
+        <p>No matching email or password. Please try again.</p>
+    {% endif %}
     {% for field in form %}
-        <p>{{ field.errors }}</p>
         <p>{{ field.label_tag }} {{ field }}</p>
     {% endfor %}
+    <input type="hidden" name="next" value="{{ next }}" />
     <input type="submit" value="Login" />
 </form>

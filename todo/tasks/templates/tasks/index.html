@@ -6,6 +6,10 @@
         <link rel="stylesheet" href="{% static 'css/style.css' %}" />
     </head>
     <body>
+        {% if user %}
+        <p>User: {{ user.email }}</p>
+        <p><a href="{% url 'profiles:logout' %}">Logout</a></p>
+        {% endif %}
         <ul id="to-do-list">
         {% for task in task_list %}
         <li class="to-do-item" data-id="{{ task.id }}"{% if task.is_done %} data-done-time="{{ task.epoch_done_time }}"{% endif %}>

@@ -16,7 +16,7 @@ class UserManager(BaseUserManager):
 
         user = self.model(
             name=name,
-            email=UserManager.normalize_email(email)
+            email=self.normalize_email(email)
         )
 
         user.set_password(password)
@@ -27,7 +27,7 @@ class UserManager(BaseUserManager):
         """Create a superuser with a given email, name, and password."""
         user = self.create_user(
             name=name,
-            email=UserManager.normalize_email(email),
+            email=self.normalize_email(email),
             password=password
         )
 
