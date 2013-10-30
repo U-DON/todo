@@ -1,21 +1,29 @@
+from django.contrib.auth import get_user_model
+from django.core.urlresolvers import NoReverseMatch
+
 from tastypie import fields
-from tastypie.authorization import Authorization
 from tastypie.bundle import Bundle
 from tastypie.resources import ModelResource
+
+from profiles.api import UserResource, UserAuthorization
 
 from .models import Task
 
 class TaskResource(ModelResource):
+    user = fields.ForeignKey(UserResource, 'user')
     current = fields.BooleanField(default=False)
     done = fields.BooleanField(default=False)
     routine = fields.BooleanField(default=False)
 
     class Meta:
         always_return_data = True
-        authorization = Authorization()
+        authorization = UserAuthorization()
         fields = ['id', 'title']
         queryset = Task.objects.all()
         resource_name = 'todo'
+
+    def dehydrate_user(self, bundle):
+        return bundle.obj.user
 
     def dehydrate_current(self, bundle):
         return bundle.obj.is_current()
@@ -30,6 +38,10 @@ class TaskResource(ModelResource):
         done_time = bundle.obj.epoch_done_time()
         if done_time is not None:
             bundle.data['doneTime'] = done_time
+        return bundle
+
+    def hydrate_user(self, bundle):
+        bundle.data['user'] = get_user_model().objects.get(pk=bundle.request.user.pk)
         return bundle
 
     def get_resource_uri(self, bundle_or_obj=None, url_name='api_dispatch_list'):

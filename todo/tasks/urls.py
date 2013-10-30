@@ -8,5 +8,4 @@ task_resource = TaskResource()
 
 urlpatterns = patterns('',
     url(r'^$', login_required(views.IndexView.as_view()), name='index'),
-    url(r'^', include(task_resource.urls)),
 )

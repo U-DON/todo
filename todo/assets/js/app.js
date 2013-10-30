@@ -62,7 +62,7 @@ App.Models.ToDoItem = Backbone.Model.extend({
 
 App.Collections.ToDoList = Backbone.Collection.extend({
     model: App.Models.ToDoItem,
-    url: '/todo',
+    url: '/api/todo',
 
     initialize: function () {
         // Iterate over each todo item that has already been rendered and attach models and views to them.
