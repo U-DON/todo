@@ -6,6 +6,11 @@
         <link rel="stylesheet" href="{% static 'css/style.css' %}" />
     </head>
     <body>
+        {% if messages %}
+        {% for message in messages %}
+        <p>{{ message }}</p>
+        {% endfor %}
+        {% endif %}
         {% if user %}
         <p>User: {{ user.email }}</p>
         <p><a href="{% url 'profiles:logout' %}">Logout</a></p>

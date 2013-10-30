@@ -22,6 +22,8 @@ LOGGING['loggers']['django'] = {
     'propagate': True
 }
 
+EMAIL_BACKEND = 'django.core.mail.backends.locmem.EmailBackend'
+
 REDIS_CONF = {
     'host': 'localhost',
     'port': 6379,
