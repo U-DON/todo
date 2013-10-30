@@ -9,6 +9,11 @@
         <p>No matching email or password. Please try again.</p>
     {% endif %}
     {% for field in form %}
+        {% if field.errors %}
+            {% for error in field.errors %}
+                <p>{{ error }}</p>
+            {% endfor %}
+        {% endif %}
         <p>{{ field.label_tag }} {{ field }}</p>
     {% endfor %}
     <input type="hidden" name="next" value="{{ next }}" />
