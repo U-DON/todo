@@ -9,7 +9,7 @@ import redis
 from .tasks import archive_tasks
 
 def schedule_archival():
-    """Schedule a job to archive done tasks at midnight."""
+    """Schedules a job to archive done tasks at midnight."""
     redis_client = redis.StrictRedis(connection_pool=settings.REDIS_POOL)
     if not redis_client.exists('archive_task_id') and redis_client.exists('todo:done'):
         utc_datetime = timezone.utc.localize(datetime.utcnow())

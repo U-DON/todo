@@ -6,7 +6,7 @@ from redis.exceptions import WatchError
 
 @celery.task
 def archive_tasks():
-    """Clear done tasks from Redis and archive information in main database.
+    """Clears done tasks from Redis and archives information in main database.
 
     If a new task is marked done during archiving, restart the job so \
     it gets cleaned up as well.

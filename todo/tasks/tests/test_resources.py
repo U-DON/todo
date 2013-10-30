@@ -22,20 +22,20 @@ class TaskResourceTest(ResourceTestCase):
         redis.StrictRedis(connection_pool=settings.REDIS_POOL).flushdb()
 
     def get_task_list_uri(self):
-        """Return the URI for all tasks."""
+        """Returns the URI for all tasks."""
         return reverse('tasks:api_dispatch_list', kwargs={'resource_name': 'todo'})
 
     def get_task_uri(self, pk):
-        """Return the URI for a specific task."""
+        """Returns the URI for a specific task."""
         return reverse('tasks:api_dispatch_detail', kwargs={'resource_name': 'todo', 'pk': pk})
 
     def test_resource_uris(self):
-        """Check that the generated URIs are correct."""
+        """Checks that the generated URIs are correct."""
         self.assertEqual(self.get_task_list_uri(), '/todo')
         self.assertEqual(self.get_task_uri(self.task_1.pk), '/todo/{pk}'.format(pk=self.task_1.pk))
 
     def test_get_task_list(self):
-        """Make a GET request for all tasks and check that the response contains all."""
+        """Makes a GET request for all tasks and checks that the response contains all."""
         task_list_uri = self.get_task_list_uri()
         response = self.api_client.get(task_list_uri)
         self.assertValidJSONResponse(response)
@@ -65,7 +65,7 @@ class TaskResourceTest(ResourceTestCase):
         )
 
     def test_get_task(self):
-        """Make a GET request for a single task and check that the response is correct."""
+        """Makes a GET request for a single task and checks that the response is correct."""
         task_uri = self.get_task_uri(self.task_1.pk)
         response = self.api_client.get(task_uri)
         self.assertValidJSONResponse(response)
@@ -83,7 +83,7 @@ class TaskResourceTest(ResourceTestCase):
 
     @patch('tasks.models.schedule_archival')
     def test_put_task(self, mock_schedule_archival):
-        """Make a PUT request for a single task and check that the task data is updated."""
+        """Make a PUT request for a single task and checks that the task data is updated."""
         task_uri = self.get_task_uri(self.task_1.pk)
         old_data = self.deserialize(self.api_client.get(task_uri))
         new_data = old_data.copy()
@@ -98,7 +98,7 @@ class TaskResourceTest(ResourceTestCase):
         self.assertTrue(task.is_done())
 
     def test_delete_task(self):
-        """Make a DELETE request for a single task and check that it's deleted."""
+        """Makes a DELETE request for a single task and checks that it's deleted."""
         self.assertEqual(Task.objects.count(), 2)
         task_uri = self.get_task_uri(self.task_1.pk)
         self.api_client.delete(task_uri)

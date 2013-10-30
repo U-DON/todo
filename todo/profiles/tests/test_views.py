@@ -90,6 +90,7 @@ class PasswordResetViewTest(TestCase):
         self.user = get_user_model().objects.create_user(email='test@test.com', name='test', password='test')
 
     def test_password_reset_sends_email(self):
+        """Checks that requesting a password reset sends the email."""
         form_data = {'email': self.user.email}
         response = self.client.post(reverse('profiles:password_reset'), form_data)
         self.assertEqual(response.status_code, 302)

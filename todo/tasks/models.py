@@ -15,22 +15,22 @@ class TaskManager(models.Manager):
         return super(TaskManager, self).get_query_set()
 
     def current_task_ids(self):
-        """Return set of task ids for tasks that are in progress."""
+        """Returns set of task ids for tasks that are in progress."""
         redis_client = redis.StrictRedis(connection_pool=settings.REDIS_POOL)
         return redis_client.smembers('todo:current')
 
     def done_task_ids(self):
-        """Return set of task ids for tasks that have been done today."""
+        """Returns set of task ids for tasks that have been done today."""
         redis_client = redis.StrictRedis(connection_pool=settings.REDIS_POOL)
         return redis_client.smembers('todo:done')
 
     def current(self):
-        """Return all tasks in progress."""
+        """Returns all tasks in progress."""
         current_tasks = self.current_task_ids()
         return self.filter(pk__in=current_tasks)
 
     def later(self):
-        """Return all tasks queued for later."""
+        """Returns all tasks queued for later."""
         current_tasks = self.current_task_ids()
         return self.exclude(pk__in=current_tasks).exclude(
             is_routine=False,
@@ -38,7 +38,7 @@ class TaskManager(models.Manager):
         )
 
     def done(self):
-        """Return all tasks that are done.
+        """Returns all tasks that are done.
 
         Tasks that are done are either tasks in the set of current done tasks \
         or reminders that have a history entry.
@@ -61,11 +61,11 @@ class Task(models.Model):
     objects = TaskManager()
 
     def is_archived(self):
-        """Return True if the task has at least one history entry."""
+        """Returns True if the task has at least one history entry."""
         return self.history.count() > 0
 
     def is_current(self):
-        """Return True if the task is in progress.
+        """Returns True if the task is in progress.
 
         A task is in progress if it exists in the set of current tasks.
 
@@ -74,7 +74,7 @@ class Task(models.Model):
         return redis_client.sismember('todo:current', self.pk)
 
     def is_done(self):
-        """Return True if the task is done.
+        """Returns True if the task is done.
 
         A routine is done if it has been completed today (exists in the set \
         of current done tasks).
@@ -91,7 +91,7 @@ class Task(models.Model):
             return is_done_today or self.is_archived()
 
     def set_current(self, current):
-        """Mark a task as current or not current.
+        """Marks a task as current or not current.
 
         If current, add the task to the set of current tasks. \
         Remove if not current.
@@ -108,7 +108,7 @@ class Task(models.Model):
             redis_client.srem('todo:current', self.pk)
 
     def set_done(self, done):
-        """Mark a task as done or not done.
+        """Marks a task as done or not done.
 
         If done, add the task to the set of current done tasks and \
         schedule the task for archival. If the task is a reminder \
@@ -138,7 +138,7 @@ class Task(models.Model):
                           .execute()
 
     def done_time(self):
-        """Return the time (in UTC) the task was completed.
+        """Returns the time (in UTC) the task was completed.
 
         For routines, return the most recent done time.
 
@@ -151,7 +151,7 @@ class Task(models.Model):
         return dateutil.parser.parse(done_time) if done_time is not None else None
 
     def epoch_done_time(self):
-        """Return the done time (in milliseconds) relative to the epoch."""
+        """Returns the done time (in milliseconds) relative to the epoch."""
         done_time = self.done_time()
         return int(calendar.timegm(done_time.timetuple())) * 1000 if done_time is not None else None
 

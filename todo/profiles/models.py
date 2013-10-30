@@ -4,7 +4,7 @@ from django.db import models
 
 class UserManager(BaseUserManager):
     def create_user(self, email, name, password):
-        """Create and save a user with a given email, name, and password."""
+        """Creates and saves a user with a given email, name, and password."""
         if not email:
             raise ValueError("Email is required.")
 
@@ -24,7 +24,7 @@ class UserManager(BaseUserManager):
         return user
 
     def create_superuser(self, email, name, password):
-        """Create a superuser with a given email, name, and password."""
+        """Creates and saves a superuser with a given email, name, and password."""
         user = self.create_user(
             name=name,
             email=self.normalize_email(email),
@@ -69,4 +69,4 @@ class Profile(models.Model):
     timezone = models.CharField(max_length=10)
 
     def __unicode__(self):
-        return self.user.username
+        return self.user.email
