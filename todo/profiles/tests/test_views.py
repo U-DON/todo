@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.core import mail
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 
@@ -83,3 +84,15 @@ class LoginViewTest(TestCase):
         response = self.client.post(reverse('profiles:login'), form_data)
         self.assertEqual(response.status_code, 200)
         self.assertFormError(response, 'form', 'password', [])
+
+class PasswordResetViewTest(TestCase):
+    def setUp(self):
+        self.user = get_user_model().objects.create_user(email='test@test.com', name='test', password='test')
+
+    def test_password_reset_sends_email(self):
+        form_data = {'email': self.user.email}
+        response = self.client.post(reverse('profiles:password_reset'), form_data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(len(mail.outbox), 1)
+        # self.assertEqual(mail.outbox[0].subject, "Password reset")
+        # self.assertEqual(mail.outbox[0].body, "")
