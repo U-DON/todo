@@ -3,6 +3,7 @@ from datetime import datetime
 import dateutil.parser
 
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils import timezone
 
@@ -57,6 +58,7 @@ class Task(models.Model):
     description = models.TextField()
     is_routine = models.BooleanField(default=False)
     title = models.CharField(max_length=200)
+    user = models.ForeignKey(get_user_model(), related_name='tasks')
 
     objects = TaskManager()
 
