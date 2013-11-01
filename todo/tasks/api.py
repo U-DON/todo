@@ -2,10 +2,11 @@ from django.contrib.auth import get_user_model
 from django.core.urlresolvers import NoReverseMatch
 
 from tastypie import fields
+from tastypie.authentication import SessionAuthentication
 from tastypie.bundle import Bundle
 from tastypie.resources import ModelResource
 
-from profiles.api import UserResource, UserAuthorization
+from profiles.api import UserAuthorization, UserResource
 
 from .models import Task
 
@@ -17,6 +18,7 @@ class TaskResource(ModelResource):
 
     class Meta:
         always_return_data = True
+        authentication = SessionAuthentication()
         authorization = UserAuthorization()
         fields = ['id', 'title']
         queryset = Task.objects.all()
@@ -53,13 +55,13 @@ class TaskResource(ModelResource):
             return ''
 
     def obj_delete(self, bundle, **kwargs):
-        obj = self.obj_get(bundle, **kwargs)
-        obj.set_current(False)
-        obj.set_done(False)
-        return super(TaskResource, self).obj_delete(bundle, **kwargs)
+        bundle = super(TaskResource, self).obj_delete(bundle, **kwargs)
+        bundle.obj.set_current(False)
+        bundle.obj.set_done(False)
+        return bundle
 
     def obj_update(self, bundle, skip_errors=False, **kwargs):
-        obj = self.obj_get(bundle, **kwargs)
-        obj.set_current(bundle.data['current'])
-        obj.set_done(bundle.data['done'])
-        return super(TaskResource, self).obj_update(bundle, skip_errors, **kwargs)
+        bundle = super(TaskResource, self).obj_update(bundle, skip_errors, **kwargs)
+        bundle.obj.set_current(bundle.data['current'])
+        bundle.obj.set_done(bundle.data['done'])
+        return bundle
