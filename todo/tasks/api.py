@@ -50,15 +50,15 @@ class TaskResource(ModelResource):
         if bundle_or_obj is not None:
             url_name = 'api_dispatch_detail'
         try:
-            return self._build_reverse_url('tasks:{url_name}'.format(url_name=url_name), kwargs=self.resource_uri_kwargs(bundle_or_obj))
+            return self._build_reverse_url('{url_name}'.format(url_name=url_name), kwargs=self.resource_uri_kwargs(bundle_or_obj))
         except NoReverseMatch:
             return ''
 
     def obj_delete(self, bundle, **kwargs):
-        bundle = super(TaskResource, self).obj_delete(bundle, **kwargs)
+        bundle.obj = self.obj_get(bundle=bundle, **kwargs)
         bundle.obj.set_current(False)
         bundle.obj.set_done(False)
-        return bundle
+        return super(TaskResource, self).obj_delete(bundle, **kwargs)
 
     def obj_update(self, bundle, skip_errors=False, **kwargs):
         bundle = super(TaskResource, self).obj_update(bundle, skip_errors, **kwargs)
