@@ -106,19 +106,13 @@ class TaskResourceTest(ResourceTestCase):
     def test_put_task_unauthorized(self):
         """Makes a PUT request for a single task without the proper credentials and checks that it's invalid."""
         task_uri = self.get_task_uri(self.reminder.pk)
-        new_data = self.serialize(
-            {
-                'id': self.reminder.pk,
-                'title': 'Reminder',
-                'current': False,
-                'done': True,
-                'routine': False,
-                'resource_uri': task_uri,
-                'user': self.user.email
-            }
-        )
-        self.api_client.put(task_uri, data=new_data)
-        self.assertHttpUnauthorized(self.api_client.get(task_uri))
+        old_data = self.deserialize(self.api_client.get(task_uri, authentication=self.get_credentials()))
+        self.api_client.client.logout()
+        new_data = old_data.copy()
+        new_data['title'] = 'Task X'
+        new_data['current'] = True
+        new_data['done'] = True
+        self.assertHttpUnauthorized(self.api_client.put(task_uri, data=new_data))
         task = Task.objects.get(pk=self.reminder.pk)
         self.assertFalse(task.is_current())
         self.assertFalse(task.is_done())
