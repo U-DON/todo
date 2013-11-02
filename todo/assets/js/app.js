@@ -23,7 +23,7 @@ var App = new (Backbone.View.extend({
 
     start: function () {
         this.toDoList = new this.Collections.ToDoList();
-        var toDoListView = new this.Views.ToDoList({collection: this.toDoList, el: $('#to-do-list')});
+        var toDoListView = new this.Views.ToDoList({ collection: this.toDoList, el: $('#to-do-list') });
     }
 }))({el: document.body});
 
@@ -37,7 +37,7 @@ App.Models.ToDoItem = Backbone.Model.extend({
     },
 
     initialize: function () {
-        this.on('delete', this.destroy, this);
+        this.on('delete', this.remove, this);
     },
 
     check: function (checked) {
@@ -57,6 +57,10 @@ App.Models.ToDoItem = Backbone.Model.extend({
     readableDoneTime: function () {
         // Done time is in milliseconds from the epoch, so convert to be readable.
         return (new Date(this.get('doneTime'))).toString();
+    },
+
+    remove: function () {
+        this.destroy({ wait: true });
     },
 
     rename: function (title) {
@@ -137,9 +141,9 @@ App.Views.ToDoItem = Backbone.View.extend({
     },
 
     initialize: function () {
-        this.model.on('destroy', this.remove, this);
-        this.model.on('sync', this.render, this);
-        this.model.on('error', this.showError, this);
+        this.listenTo(this.model, 'destroy', this.remove);
+        this.listenTo(this.model, 'sync', this.render);
+        this.listenTo(this.model, 'error', this.showError);
     },
 
     // Mark todo item as done.
@@ -195,7 +199,7 @@ App.Views.ToDoList = Backbone.View.extend({
     tagName: 'ul',
 
     initialize: function () {
-        this.collection.on('add', this.addItem, this);
+        this.listenTo(this.collection, 'add', this.addItem);
     },
 
     addItem: function (toDoItem) {
