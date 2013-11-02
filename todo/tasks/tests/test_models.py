@@ -82,7 +82,7 @@ class TaskManagerTest(TestCase):
         self.reminder.set_done(True)
         mock_schedule_archival.assert_called_once()
         self.assertTrue(self.reminder in Task.objects.done())
-        archive_tasks.apply()
+        archive_tasks.apply(args=[self.user.pk])
         self.assertTrue(self.reminder in Task.objects.done())
 
     @patch('tasks.models.schedule_archival')
@@ -92,7 +92,7 @@ class TaskManagerTest(TestCase):
         self.routine.set_done(True)
         mock_schedule_archival.assert_called_once()
         self.assertTrue(self.routine in Task.objects.done())
-        archive_tasks.apply()
+        archive_tasks.apply(args=[self.user.pk])
         self.assertFalse(self.routine in Task.objects.done())
 
     @patch('tasks.models.schedule_archival')
@@ -102,7 +102,7 @@ class TaskManagerTest(TestCase):
         self.reminder.set_done(True)
         mock_schedule_archival.assert_called_once()
         self.assertFalse(self.reminder in Task.objects.later())
-        archive_tasks.apply()
+        archive_tasks.apply(args=[self.user.pk])
         self.assertFalse(self.reminder in Task.objects.later())
 
     @patch('tasks.models.schedule_archival')
@@ -112,7 +112,7 @@ class TaskManagerTest(TestCase):
         self.routine.set_done(True)
         mock_schedule_archival.assert_called_once()
         self.assertFalse(self.routine in Task.objects.later())
-        archive_tasks.apply()
+        archive_tasks.apply(args=[self.user.pk])
         self.assertTrue(self.routine in Task.objects.later())
 
     @patch('tasks.models.schedule_archival')
@@ -122,7 +122,7 @@ class TaskManagerTest(TestCase):
         self.reminder.set_done(True)
         mock_schedule_archival.assert_called_once()
         self.assertTrue(str(self.reminder.id) in Task.objects.done_task_ids())
-        archive_tasks.apply()
+        archive_tasks.apply(args=[self.user.pk])
         self.assertFalse(str(self.reminder.id) in Task.objects.done_task_ids())
         self.reminder.set_done(True)
         self.assertFalse(str(self.reminder.id) in Task.objects.current_task_ids())
@@ -192,7 +192,8 @@ class TaskTest(TestCase):
         self.reminder.set_done(True)
         mock_schedule_archival.assert_called_once()
         self.assertTrue(self.reminder.is_current())
-        archive_tasks.apply()
+        archive_tasks.apply(args=[self.user.pk])
+        print redis.StrictRedis(connection_pool=settings.REDIS_POOL).hvals('user#{user_id}'.format(user_id=self.user.pk))
         self.assertFalse(self.reminder.is_current())
 
     @patch('tasks.models.schedule_archival')
@@ -202,7 +203,7 @@ class TaskTest(TestCase):
         self.reminder.set_done(True)
         mock_schedule_archival.assert_called_once()
         self.assertTrue(self.reminder.is_done())
-        archive_tasks.apply()
+        archive_tasks.apply(args=[self.user.pk])
         self.assertTrue(self.reminder.is_done())
 
     @patch('tasks.models.schedule_archival')
@@ -212,7 +213,7 @@ class TaskTest(TestCase):
         self.routine.set_done(True)
         mock_schedule_archival.assert_called_once()
         self.assertTrue(self.routine.is_done())
-        archive_tasks.apply()
+        archive_tasks.apply(args=[self.user.pk])
         self.assertFalse(self.routine.is_done())
 
     @patch('tasks.models.schedule_archival')
@@ -222,7 +223,7 @@ class TaskTest(TestCase):
         self.reminder.set_done(True)
         mock_schedule_archival.assert_called_once()
         self.assertTrue(self.reminder.is_done())
-        archive_tasks.apply()
+        archive_tasks.apply(args=[self.user.pk])
         self.assertTrue(self.reminder.is_done())
         self.reminder.set_current(True)
         self.assertFalse(self.reminder.is_current())
@@ -236,7 +237,7 @@ class TaskTest(TestCase):
         self.reminder.set_done(True)
         mock_schedule_archival.assert_called_once()
         self.assertTrue(self.reminder.is_done())
-        archive_tasks.apply()
+        archive_tasks.apply(args=[self.user.pk])
         self.assertTrue(self.reminder.is_done())
         self.reminder.set_done(False)
         self.assertFalse(self.reminder.is_current())
@@ -249,7 +250,7 @@ class TaskTest(TestCase):
         self.routine.set_done(True)
         mock_schedule_archival.assert_called_once()
         self.assertTrue(self.routine.is_done())
-        archive_tasks.apply()
+        archive_tasks.apply(args=[self.user.pk])
         self.assertFalse(self.routine.is_done())
         self.routine.set_current(True)
         self.assertTrue(self.routine.is_current())
@@ -261,7 +262,7 @@ class TaskTest(TestCase):
         self.routine.set_done(True)
         mock_schedule_archival.assert_called_once()
         self.assertTrue(self.routine.is_done())
-        archive_tasks.apply()
+        archive_tasks.apply(args=[self.user.pk])
         self.assertFalse(self.routine.is_done())
         self.routine.set_done(True)
         self.assertTrue(self.routine.is_current())
@@ -281,7 +282,7 @@ class HistoryTest(TestCase):
         """Checks that a history entry is created when a task is archived."""
         self.reminder.set_done(True)
         mock_schedule_archival.assert_called_once()
-        archive_tasks.apply()
+        archive_tasks.apply(args=[self.user.pk])
         self.assertEqual(self.reminder.history.count(), 1)
 
     @patch('tasks.models.schedule_archival')
@@ -289,7 +290,7 @@ class HistoryTest(TestCase):
         """Checks that the done time for a reminder returns the done time of its history."""
         self.reminder.set_done(True)
         mock_schedule_archival.assert_called_once()
-        archive_tasks.apply()
+        archive_tasks.apply(args=[self.user.pk])
         self.assertEqual(self.reminder.done_time(), self.reminder.history.all()[0].done_time)
 
     @patch('tasks.models.schedule_archival')
@@ -297,7 +298,7 @@ class HistoryTest(TestCase):
         """Checks that the done time for a routine returns the done time of its latest history."""
         self.routine.set_done(True)
         mock_schedule_archival.assert_called_once()
-        archive_tasks.apply()
+        archive_tasks.apply(args=[self.user.pk])
         self.assertEqual(self.routine.done_time(), self.routine.history.all()[0].done_time)
 
     @patch('tasks.models.schedule_archival')
@@ -305,7 +306,7 @@ class HistoryTest(TestCase):
         """Marks a reminder as done and then not done and checks that it no longer has a history."""
         self.reminder.set_done(True)
         mock_schedule_archival.assert_called_once()
-        archive_tasks.apply()
+        archive_tasks.apply(args=[self.user.pk])
         self.reminder.set_done(False)
         self.assertEqual(self.reminder.history.count(), 0)
 
@@ -319,11 +320,11 @@ class HistoryTest(TestCase):
         """
         self.reminder.set_done(True)
         mock_schedule_archival.assert_called_once()
-        archive_tasks.apply()
+        archive_tasks.apply(args=[self.user.pk])
         self.reminder.set_done(True)
         self.routine.set_done(True)
         mock_schedule_archival.assert_called_once()
-        archive_tasks.apply()
+        archive_tasks.apply(args=[self.user.pk])
         self.assertEqual(self.reminder.history.count(), 1)
 
     @patch('tasks.models.schedule_archival')
@@ -331,9 +332,9 @@ class HistoryTest(TestCase):
         """Archives a routine and checks that marking it done and archiving it again creates a new history entry."""
         self.routine.set_done(True)
         mock_schedule_archival.assert_called_once()
-        archive_tasks.apply()
+        archive_tasks.apply(args=[self.user.pk])
         self.assertEqual(self.routine.history.count(), 1)
         self.routine.set_done(True)
         mock_schedule_archival.assert_called_once()
-        archive_tasks.apply()
+        archive_tasks.apply(args=[self.user.pk])
         self.assertEqual(self.routine.history.count(), 2)
