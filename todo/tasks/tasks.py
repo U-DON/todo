@@ -5,8 +5,9 @@ import redis
 from redis.exceptions import WatchError
 
 @celery.task
-def archive_tasks():
-    """Clears done tasks from Redis and archives information in main database.
+def archive_tasks(user_id):
+    """Clears done tasks from Redis and archives information in the main \
+    database for the user with the given user id.
 
     If a new task is marked done during archiving, restart the job so \
     it gets cleaned up as well.
@@ -18,6 +19,7 @@ def archive_tasks():
     """
     redis_client = redis.StrictRedis(connection_pool=settings.REDIS_POOL)
     redis_pipeline = redis_client.pipeline()
+    user_key = 'user#{user_id}'.format(user_id=user_id)
     while True:
         try:
             task_history = {}
@@ -38,7 +40,7 @@ def archive_tasks():
                               .srem('todo:done', task_id) \
                               .delete(task_key)
             # Remove the stored archival task id so a new archival can be scheduled later.
-            redis_pipeline.delete('archive_task_id') \
+            redis_pipeline.hdel(user_key, 'archive_task_id') \
                           .execute()
             break
         except WatchError:

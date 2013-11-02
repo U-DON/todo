@@ -133,7 +133,7 @@ class Task(models.Model):
             redis_pipeline.sadd('todo:done', self.pk) \
                           .hset('todo#{task_id}'.format(task_id=self.pk), 'done_time', now) \
                           .execute()
-            schedule_archival()
+            schedule_archival(self.user.pk)
         else:
             redis_pipeline.srem('todo:done', self.pk) \
                           .delete('todo#{task_id}'.format(task_id=self.pk)) \
