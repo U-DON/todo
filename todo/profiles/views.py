@@ -1,5 +1,5 @@
 from django.contrib import messages
-from django.contrib.auth import get_user_model
+from django.contrib.auth import authenticate, get_user_model, login
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.http import HttpResponseRedirect
@@ -26,6 +26,17 @@ class RegistrationView(CreateView):
     form_class = RegistrationForm
     template_name = 'profiles/register.html'
     success_url = reverse_lazy('tasks:index')
+
+    def form_valid(self, form):
+        redirect = super(RegistrationView, self).form_valid(form)
+        username = form.cleaned_data['email']
+        password = form.cleaned_data['password']
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            login(self.request, user)
+            # Set user's timezone here.
+            messages.info(self.request, 'Your timezone has been automatically determined. You may manually change it in your settings.')
+        return redirect
 
 class PasswordChangeDoneView(View):
     def get(self, request, *args, **kwargs):
