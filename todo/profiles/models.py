@@ -66,7 +66,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 class Profile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL)
-    timezone = models.CharField(max_length=10)
+    timezone = models.CharField(max_length=50)
 
     def __unicode__(self):
         return self.user.email
