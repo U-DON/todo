@@ -1,34 +1,23 @@
-{% load staticfiles %}
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta name="csrf-token" content="{{ csrf_token }}" />
-        <link rel="stylesheet" href="{% static 'css/reset.css' %}" />
-        <link rel="stylesheet" href="{% static 'css/style.css' %}" />
-    </head>
-    <body>
-        {% if messages %}
-        {% for message in messages %}
-        <p>{{ message }}</p>
-        {% endfor %}
-        {% endif %}
-        {% if user %}
-        <p>User: {{ user.email }}</p>
-        <p><a href="{% url 'profiles:logout' %}">Logout</a></p>
-        {% endif %}
-        <ul id="to-do-list">
-        {% for task in task_list %}
-        <li class="to-do-item" data-id="{{ task.id }}"{% if task.is_done %} data-done-time="{{ task.epoch_done_time }}"{% endif %}>
-                <input type="checkbox" {% if task.is_done %}checked {% endif %}/><span class="title">{{ task.title }}</span><a class="delete" href="#">Delete</a>
-            </li>
-        {% endfor %}
-        </ul>
-        <a id="add" href="#">Add</a>
-    </body>
-    <script src="{% static 'js/jquery.min.js' %}"></script>
-    <script src="{% static 'js/json2.js' %}"></script>
-    <script src="{% static 'js/underscore.min.js' %}"></script>
-    <script src="{% static 'js/handlebars.js' %}"></script>
-    <script src="{% static 'js/backbone.min.js' %}"></script>
-    <script src="{% static 'js/app.js' %}"></script>
-</html>
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% if messages %}
+{% for message in messages %}
+<p>{{ message }}</p>
+{% endfor %}
+{% endif %}
+{% if user %}
+<p>User: {{ user.email }}</p>
+<p><a href="{% url 'profiles:logout' %}">Logout</a></p>
+{% endif %}
+<ul id="to-do-list">
+{% for task in task_list %}
+<li class="to-do-item" data-id="{{ task.id }}"{% if task.is_done %} data-done-time="{{ task.epoch_done_time }}"{% endif %}>
+        <input type="checkbox" {% if task.is_done %}checked {% endif %}/><span class="title">{{ task.title }}</span><a class="delete" href="#">Delete</a>
+    </li>
+{% endfor %}
+</ul>
+<a id="add" href="#">Add</a>
+
+{% endblock %}
