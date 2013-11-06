@@ -34,8 +34,6 @@ class RegistrationView(CreateView):
         user = authenticate(username=username, password=password)
         if user is not None:
             login(self.request, user)
-            # Set user's timezone here.
-            messages.info(self.request, 'Your timezone has been automatically determined. You may manually change it in your settings.')
         return redirect
 
 class PasswordChangeDoneView(View):
