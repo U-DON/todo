@@ -30,13 +30,19 @@ class TaskResourceTest(ResourceTestCase):
     def get_credentials(self):
         return self.api_client.client.login(username=self.username, password=self.password)
 
+    def reverse_api_url(self, url_name, **kwargs):
+        api_kwargs = {'api_name': 'api', 'resource_name': 'todo'}
+        api_kwargs.update(kwargs)
+        return reverse(url_name, kwargs=api_kwargs)
+
     def get_task_list_uri(self):
         """Returns the URI for all tasks."""
-        return reverse('api_dispatch_list', kwargs={'api_name': 'api', 'resource_name': 'todo'})
+        # return reverse('api_dispatch_list', kwargs={'api_name': 'api', 'resource_name': 'todo'})
+        return self.reverse_api_url('api_dispatch_list')
 
     def get_task_uri(self, pk):
         """Returns the URI for a specific task."""
-        return reverse('api_dispatch_detail', kwargs={'api_name': 'api', 'resource_name': 'todo', 'pk': pk})
+        return self.reverse_api_url('api_dispatch_detail', pk=pk)
 
     def test_resource_uris(self):
         """Checks that the generated URIs are correct."""
@@ -76,6 +82,69 @@ class TaskResourceTest(ResourceTestCase):
                 'done': False,
                 'routine': True,
                 'resource_uri': '/api/todo/{pk}'.format(pk=self.routine.pk),
+                'user': self.user.email
+            }
+        )
+
+    def test_get_current_task_list(self):
+        """Makes a GET request for a list of tasks and filter on current tasks."""
+        self.reminder.set_current(True)
+        response = self.api_client.get(self.reverse_api_url('api_get_current_tasks'), authentication=self.get_credentials())
+        self.assertValidJSONResponse(response)
+        response = self.deserialize(response)
+        self.assertEqual(len(response['objects']), 1)
+        self.assertEqual(
+            response['objects'][0],
+            {
+                'id': self.reminder.pk,
+                'title': 'Reminder',
+                'current': True,
+                'done': False,
+                'routine': False,
+                'resource_uri': '/api/todo/{pk}'.format(pk=self.reminder.pk),
+                'user': self.user.email
+            }
+        )
+
+    def test_get_later_task_list(self):
+        """Makes a GET request for a list of tasks and filter on later tasks."""
+        self.reminder.set_current(True)
+        response = self.api_client.get(self.reverse_api_url('api_get_later_tasks'), authentication=self.get_credentials())
+        self.assertValidJSONResponse(response)
+        response = self.deserialize(response)
+        self.assertEqual(len(response['objects']), 1)
+        self.assertEqual(
+            response['objects'][0],
+            {
+                'id': self.routine.pk,
+                'title': 'Routine',
+                'current': False,
+                'done': False,
+                'routine': True,
+                'resource_uri': '/api/todo/{pk}'.format(pk=self.routine.pk),
+                'user': self.user.email
+            }
+        )
+
+    @patch('tasks.models.schedule_archival')
+    def test_get_done_task_list(self, mock_schedule_archival):
+        """Makes a GET request for a list of tasks and filter on done tasks."""
+        self.reminder.set_done(True)
+        mock_schedule_archival.assert_called_once()
+        response = self.api_client.get(self.reverse_api_url('api_get_done_tasks'), authentication=self.get_credentials())
+        self.assertValidJSONResponse(response)
+        response = self.deserialize(response)
+        self.assertEqual(len(response['objects']), 1)
+        self.assertEqual(
+            response['objects'][0],
+            {
+                'id': self.reminder.pk,
+                'title': 'Reminder',
+                'current': True,
+                'done': True,
+                'doneTime': self.reminder.epoch_done_time(),
+                'routine': False,
+                'resource_uri': '/api/todo/{pk}'.format(pk=self.reminder.pk),
                 'user': self.user.email
             }
         )

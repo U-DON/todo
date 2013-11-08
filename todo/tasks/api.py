@@ -1,10 +1,11 @@
+from django.conf.urls import url
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import NoReverseMatch
 
 from tastypie import fields
 from tastypie.authentication import SessionAuthentication
 from tastypie.bundle import Bundle
-from tastypie.resources import ModelResource
+from tastypie.resources import ModelResource, trailing_slash
 
 from profiles.api import UserAuthorization, UserResource
 
@@ -23,6 +24,22 @@ class TaskResource(ModelResource):
         fields = ['id', 'title']
         queryset = Task.objects.all()
         resource_name = 'todo'
+
+    def get_object_list(self, request):
+        if request.path == self.get_resource_uri(url_name='api_get_current_tasks'):
+            return Task.objects.current()
+        if request.path == self.get_resource_uri(url_name='api_get_later_tasks'):
+            return Task.objects.later()
+        if request.path == self.get_resource_uri(url_name='api_get_done_tasks'):
+            return Task.objects.done()
+        return super(TaskResource, self).get_object_list(request)
+
+    def prepend_urls(self):
+        return [
+            url(r'^(?P<resource_name>%s)/now%s$' % (self._meta.resource_name, trailing_slash()), self.wrap_view('get_list'), name='api_get_current_tasks'),
+            url(r'^(?P<resource_name>%s)/later%s$' % (self._meta.resource_name, trailing_slash()), self.wrap_view('get_list'), name='api_get_later_tasks'),
+            url(r'^(?P<resource_name>%s)/done%s$' % (self._meta.resource_name, trailing_slash()), self.wrap_view('get_list'), name='api_get_done_tasks'),
+        ]
 
     def dehydrate_user(self, bundle):
         return bundle.obj.user
