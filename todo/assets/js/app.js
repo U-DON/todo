@@ -13,17 +13,51 @@ var App = new (Backbone.View.extend({
     Collections: {},
 
     events: {
-        'click #add': 'addToDoItem'
+        'click a[href="add"]': 'addToDoItem',
+        'click a[href="now"]': 'showNowList',
+        'click a[href="later"]': 'showLaterList',
+        'click a[href="done"]': 'showDoneList'
     },
 
-    addToDoItem: function () {
+    addToDoItem: function (e) {
+        e.preventDefault();
         var toDoItem = new App.Models.ToDoItem();
         this.toDoList.add(toDoItem);
     },
 
     start: function () {
-        this.toDoList = new this.Collections.ToDoList();
+        this.toDoList = new this.Collections.ToDoList({ url: 'api/todo/now' });
         var toDoListView = new this.Views.ToDoList({ collection: this.toDoList, el: $('#to-do-list') });
+    },
+
+    showNowList: function (e) {
+        e.preventDefault();
+        currentList = this.toDoList;
+        currentList.fetch({ url: 'api/todo/now',
+            success: function (collection, response, options) {
+                currentList.set(response.objects);
+            }
+        });
+    },
+
+    showLaterList: function (e) {
+        e.preventDefault();
+        currentList = this.toDoList;
+        currentList.fetch({ url: 'api/todo/later',
+            success: function (collection, response, options) {
+                currentList.set(response.objects);
+            }
+        });
+    },
+
+    showDoneList: function (e) {
+        e.preventDefault();
+        currentList = this.toDoList;
+        currentList.fetch({ url: 'api/todo/done',
+            success: function (collection, response, options) {
+                currentList.set(response.objects);
+            }
+        });
     }
 }))({el: document.body});
 
@@ -141,9 +175,11 @@ App.Views.ToDoItem = Backbone.View.extend({
     },
 
     initialize: function () {
+        this.listenTo(this.model, 'remove', this.remove);
         this.listenTo(this.model, 'destroy', this.remove);
         this.listenTo(this.model, 'sync', this.render);
         this.listenTo(this.model, 'error', this.showError);
+        this.listenTo(this.model, 'show', this.show);
     },
 
     // Mark todo item as done.
@@ -189,7 +225,6 @@ App.Views.ToDoItem = Backbone.View.extend({
 
     render: function () {
         this.$el.attr(this.attributes());
-        console.log(this.attributes());
         this.$el.html(this.itemTemplate(this.model.toJSON()));
         return this;
     }
