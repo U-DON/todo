@@ -26,34 +26,28 @@ var App = new (Backbone.View.extend({
     },
 
     start: function () {
-        this.toDoList = new this.Collections.ToDoList({ url: 'api/todo/now' });
+        this.toDoList = new this.Collections.ToDoList();
         var toDoListView = new this.Views.ToDoList({ collection: this.toDoList, el: $('#to-do-list') });
     },
 
     showNowList: function (e) {
         e.preventDefault();
-        currentList = this.toDoList;
-        currentList.fetch({ url: 'api/todo/now',
-            success: function (collection, response, options) {
-                currentList.set(response.objects);
-            }
-        });
+        this.setCurrentList('now');
     },
 
     showLaterList: function (e) {
         e.preventDefault();
-        currentList = this.toDoList;
-        currentList.fetch({ url: 'api/todo/later',
-            success: function (collection, response, options) {
-                currentList.set(response.objects);
-            }
-        });
+        this.setCurrentList('later');
     },
 
     showDoneList: function (e) {
         e.preventDefault();
+        this.setCurrentList('done');
+    },
+
+    setCurrentList: function (listName) {
         currentList = this.toDoList;
-        currentList.fetch({ url: 'api/todo/done',
+        currentList.fetch({ url: '/api/todo/' + listName,
             success: function (collection, response, options) {
                 currentList.set(response.objects);
             }
@@ -171,7 +165,7 @@ App.Views.ToDoItem = Backbone.View.extend({
         'click span.title': 'editItem',
         'click a.delete': 'deleteItem',
         'focusout input.edit': 'submitItem',
-        'submit form': 'submitItem'
+        'submit form.toDoEditor': 'submitItem'
     },
 
     initialize: function () {
@@ -179,7 +173,6 @@ App.Views.ToDoItem = Backbone.View.extend({
         this.listenTo(this.model, 'destroy', this.remove);
         this.listenTo(this.model, 'sync', this.render);
         this.listenTo(this.model, 'error', this.showError);
-        this.listenTo(this.model, 'show', this.show);
     },
 
     // Mark todo item as done.
