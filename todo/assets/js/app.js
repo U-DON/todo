@@ -69,7 +69,6 @@ App.Models.ToDoItem = Backbone.Model.extend({
 
     initialize: function () {
         this.on('delete', this.remove, this);
-        this.on('invalid', this.log, this);
     },
 
     validate: function (attrs, options) {
@@ -77,10 +76,10 @@ App.Models.ToDoItem = Backbone.Model.extend({
         if (!attrs.title) {
             errors.push({ name: 'title', message: 'Title is required.' });
         }
-        if (attrs.current === undefined) {
+        if (attrs.current == undefined) {
             errors.push({ name: 'current', message: 'Need to know when to do.' });
         }
-        if (attrs.routine === undefined) {
+        if (attrs.routine == undefined) {
             errors.push({ name: 'routine', message: 'Need to know if it repeats.' });
         }
         return errors.length > 0 ? errors : false;
@@ -97,17 +96,6 @@ App.Models.ToDoItem = Backbone.Model.extend({
                 this.set(model.previousAttributes());
             }, this),
             wait: true
-        });
-    },
-
-    log: function (model, errors, options) {
-        console.log('errors');
-        console.log(errors);
-        $.each(errors, function () {
-            console.log('error name');
-            console.log(this.name);
-            console.log('error message');
-            console.log(this.message);
         });
     },
 
@@ -273,27 +261,20 @@ App.Views.ToDoList = Backbone.View.extend({
 
 App.Views.ToDoForm = Backbone.View.extend({
     events: {
-        'submit form.new-to-do-item': 'submitItem'
+        'click a.close': 'close',
+        'submit form.to-do-form': 'submitItem'
     },
 
-    submitItem: function (e) {
-        e.preventDefault();
-        var toDoItem = new App.Models.ToDoItem();
-        console.log(this.serialize());
-        toDoItem.save(this.serialize(), {
-            success: function (model, response, options) {
-                console.log('success save');
-                this.$('form.new-to-do-item').remove();
-            },
-            error: function (model, xhr, options) {
-                console.log('error save');
-            },
-            wait: true
-        });
+    initialize: function () {
+        this.listenTo(this.model, 'invalid', this.showErrors);
+    },
+
+    close: function () {
+        this.$el.remove();
     },
 
     serialize: function () {
-        var title = this.$('input[name="title"]').val();
+        var title = $.trim(this.$('input[name="title"]').val());
         var routine = this.$('select[name="routine"]').val() == 1;
         var current = this.$('select[name="current"]').val() == 1;
         return {
@@ -303,8 +284,31 @@ App.Views.ToDoForm = Backbone.View.extend({
         };
     },
 
+    showErrors: function (model, errors, options) {
+        var that = this;
+        $.each(errors, function () {
+            console.log(this.name);
+            console.log(this.message);
+            that.$('div.form-errors').html('');
+            that.$('div.form-errors').append('<p>' + this.message + '</p>');
+        });
+    },
+
+    submitItem: function (e) {
+        e.preventDefault();
+        this.model.save(this.serialize(), {
+            success: _.bind(function (model, response, options) {
+                this.close();
+                App.toDoList.add(model);
+            }, this),
+            error: function (model, xhr, options) {
+            },
+            wait: true
+        });
+    },
+
     render: function () {
-        this.$el.html('<form class="new-to-do-item">\n' +
+        this.$el.html('<form class="to-do-form">\n' +
             '<label>Title</label> <input type="text" name="title" value="" />\n' +
             '<select name="routine">\n' +
             '<option value="0">once</option>\n' +
@@ -314,7 +318,8 @@ App.Views.ToDoForm = Backbone.View.extend({
             '<option value="1">now</option>\n' +
             '<option value="0">later</option>\n' +
             '</select>\n' +
-            '</form>'
+            '</form><a class="close" href="#">x</a>\n' + 
+            '<div class="form-errors"></div>'
         );
         return this;
     }
