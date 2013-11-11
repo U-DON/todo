@@ -172,6 +172,44 @@ class TaskResourceTest(ResourceTestCase):
             }
         )
 
+    def test_post_task_unauthorized(self):
+        """Makes a POST request to create a single task without the proper credentials and checks that it's invalid."""
+        self.assertEqual(Task.objects.count(), 2)
+        data = {
+            'title': 'New Task',
+            'current': True,
+            'done': False,
+            'routine': True
+        }
+        response = self.api_client.post(self.get_task_list_uri(), data=data)
+        self.assertHttpUnauthorized(response)
+        self.assertEqual(Task.objects.count(), 2)
+
+    def test_post_task(self):
+        """Makes a POST request to create a single task and checks that a new task is created."""
+        self.assertEqual(Task.objects.count(), 2)
+        data = {
+            'title': 'New Task',
+            'current': True,
+            'done': False,
+            'routine': True
+        }
+        response = self.api_client.post(self.get_task_list_uri(), data=data, authentication=self.get_credentials())
+        self.assertHttpCreated(response)
+        self.assertEqual(Task.objects.count(), 3)
+        self.assertEqual(
+            self.deserialize(response),
+            {
+                'id': self.routine.pk + 1,
+                'title': 'New Task',
+                'current': True,
+                'done': False,
+                'routine': True,
+                'resource_uri': self.get_task_uri(self.routine.pk + 1),
+                'user': self.user.email
+            }
+        )
+
     def test_put_task_unauthorized(self):
         """Makes a PUT request for a single task without the proper credentials and checks that it's invalid."""
         task_uri = self.get_task_uri(self.reminder.pk)
