@@ -59,6 +59,10 @@ class TaskResource(ModelResource):
             bundle.data['doneTime'] = done_time
         return bundle
 
+    def hydrate(self, bundle):
+        bundle.obj.is_routine = bundle.data['routine']
+        return bundle
+
     def hydrate_user(self, bundle):
         bundle.data['user'] = get_user_model().objects.get(pk=bundle.request.user.pk)
         return bundle
@@ -70,6 +74,12 @@ class TaskResource(ModelResource):
             return self._build_reverse_url('{url_name}'.format(url_name=url_name), kwargs=self.resource_uri_kwargs(bundle_or_obj))
         except NoReverseMatch:
             return ''
+
+    def obj_create(self, bundle, **kwargs):
+        bundle = super(TaskResource, self).obj_create(bundle, **kwargs)
+        bundle.obj.set_current(bundle.data['current'])
+        bundle.obj.set_done(bundle.data['done'])
+        return bundle
 
     def obj_delete(self, bundle, **kwargs):
         bundle.obj = self.obj_get(bundle=bundle, **kwargs)
