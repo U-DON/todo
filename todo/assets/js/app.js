@@ -13,21 +13,24 @@ var App = new (Backbone.View.extend({
     Collections: {},
 
     events: {
-        'click a[href="add"]': 'addToDoItem',
+        'click a[href="add"]': 'showToDoForm',
         'click a[href="now"]': 'showNowList',
         'click a[href="later"]': 'showLaterList',
         'click a[href="done"]': 'showDoneList'
     },
 
-    addToDoItem: function (e) {
-        e.preventDefault();
-        var toDoItem = new App.Models.ToDoItem();
-        this.toDoList.add(toDoItem);
-    },
-
     start: function () {
         this.toDoList = new this.Collections.ToDoList();
         var toDoListView = new this.Views.ToDoList({ collection: this.toDoList, el: $('#to-do-list') });
+    },
+
+    setCurrentList: function (listName) {
+        currentList = this.toDoList;
+        currentList.fetch({ url: '/api/todo/' + listName,
+            success: function (collection, response, options) {
+                currentList.set(response.objects);
+            }
+        });
     },
 
     showNowList: function (e) {
@@ -45,17 +48,17 @@ var App = new (Backbone.View.extend({
         this.setCurrentList('done');
     },
 
-    setCurrentList: function (listName) {
-        currentList = this.toDoList;
-        currentList.fetch({ url: '/api/todo/' + listName,
-            success: function (collection, response, options) {
-                currentList.set(response.objects);
-            }
-        });
+    showToDoForm: function (e) {
+        e.preventDefault();
+        var toDoItem = new this.Models.ToDoItem();
+        var toDoForm = new this.Views.ToDoForm({ model: toDoItem });
+        this.$el.append(toDoForm.render().el);
     }
 }))({el: document.body});
 
 App.Models.ToDoItem = Backbone.Model.extend({
+    urlRoot: '/api/todo',
+
     defaults: {
         current: false,
         description: '',
@@ -66,6 +69,21 @@ App.Models.ToDoItem = Backbone.Model.extend({
 
     initialize: function () {
         this.on('delete', this.remove, this);
+        this.on('invalid', this.log, this);
+    },
+
+    validate: function (attrs, options) {
+        var errors = [];
+        if (!attrs.title) {
+            errors.push({ name: 'title', message: 'Title is required.' });
+        }
+        if (attrs.current === undefined) {
+            errors.push({ name: 'current', message: 'Need to know when to do.' });
+        }
+        if (attrs.routine === undefined) {
+            errors.push({ name: 'routine', message: 'Need to know if it repeats.' });
+        }
+        return errors.length > 0 ? errors : false;
     },
 
     check: function (checked) {
@@ -79,6 +97,17 @@ App.Models.ToDoItem = Backbone.Model.extend({
                 this.set(model.previousAttributes());
             }, this),
             wait: true
+        });
+    },
+
+    log: function (model, errors, options) {
+        console.log('errors');
+        console.log(errors);
+        $.each(errors, function () {
+            console.log('error name');
+            console.log(this.name);
+            console.log('error message');
+            console.log(this.message);
         });
     },
 
@@ -155,17 +184,21 @@ App.Views.ToDoItem = Backbone.View.extend({
     itemTemplate: Handlebars.compile('<input type="checkbox" ' +
         '{{#if done}}checked {{/if}}/>' +
         '<span class="title">{{title}}</span>' +
-        '<a class="delete" href="#">Delete</a>'),
+        '<a class="delete" href="#">Delete</a>'
+    ),
 
     // Editing state template for todo item
-    editorTemplate: Handlebars.compile('<form class="toDoEditor"><input class="edit" type="text" value="{{title}}" /></form>'),
+    editorTemplate: Handlebars.compile('<form class="to-do-editor">' +
+        '<input class="edit" type="text" value="{{title}}" />' +
+        '</form>'
+    ),
 
     events: {
         'change input[type="checkbox"]': 'checkItem',
         'click span.title': 'editItem',
         'click a.delete': 'deleteItem',
         'focusout input.edit': 'submitItem',
-        'submit form.toDoEditor': 'submitItem'
+        'submit form.to-do-editor': 'submitItem'
     },
 
     initialize: function () {
@@ -185,7 +218,7 @@ App.Views.ToDoItem = Backbone.View.extend({
         this.$('a.delete').hide();
         this.$('span.title').hide();
         this.$('span.done-time').hide();
-        this.$el.append(this.editorTemplate({title: this.model.get('title')}));
+        this.$el.append(this.editorTemplate({ title: this.model.get('title') }));
         this.$('input.edit').focus();
     },
 
@@ -231,10 +264,59 @@ App.Views.ToDoList = Backbone.View.extend({
     },
 
     addItem: function (toDoItem) {
-        var toDoItemView = new App.Views.ToDoItem({model: toDoItem});
+        var toDoItemView = new App.Views.ToDoItem({ model: toDoItem });
         this.$el.append(toDoItemView.render().el);
         if (!toDoItem.get('title'))
             toDoItemView.editItem();
+    }
+});
+
+App.Views.ToDoForm = Backbone.View.extend({
+    events: {
+        'submit form.new-to-do-item': 'submitItem'
+    },
+
+    submitItem: function (e) {
+        e.preventDefault();
+        var toDoItem = new App.Models.ToDoItem();
+        console.log(this.serialize());
+        toDoItem.save(this.serialize(), {
+            success: function (model, response, options) {
+                console.log('success save');
+                this.$('form.new-to-do-item').remove();
+            },
+            error: function (model, xhr, options) {
+                console.log('error save');
+            },
+            wait: true
+        });
+    },
+
+    serialize: function () {
+        var title = this.$('input[name="title"]').val();
+        var routine = this.$('select[name="routine"]').val() == 1;
+        var current = this.$('select[name="current"]').val() == 1;
+        return {
+            title: title,
+            routine: routine,
+            current: current
+        };
+    },
+
+    render: function () {
+        this.$el.html('<form class="new-to-do-item">\n' +
+            '<label>Title</label> <input type="text" name="title" value="" />\n' +
+            '<select name="routine">\n' +
+            '<option value="0">once</option>\n' +
+            '<option value="1">repeatedly</option>\n' +
+            '</select>\n' +
+            '<select name="current">\n' +
+            '<option value="1">now</option>\n' +
+            '<option value="0">later</option>\n' +
+            '</select>\n' +
+            '</form>'
+        );
+        return this;
     }
 });
 
