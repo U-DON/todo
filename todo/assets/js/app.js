@@ -13,39 +13,32 @@ var App = new (Backbone.View.extend({
     Collections: {},
 
     events: {
-        'click a[href="add"]': 'showToDoForm',
-        'click a[href="now"]': 'showNowList',
-        'click a[href="later"]': 'showLaterList',
-        'click a[href="done"]': 'showDoneList'
+        'click a[href="/add"]': 'showToDoForm',
+        'click a[href="/now"]': 'route',
+        'click a[href="/later"]': 'route',
+        'click a[href="/done"]': 'route',
     },
 
     start: function () {
         this.toDoList = new this.Collections.ToDoList();
         var toDoListView = new this.Views.ToDoList({ collection: this.toDoList, el: $('#to-do-list') });
+        this.router = new this.ToDoRouter();
+        Backbone.history.start({ pushState: true });
+    },
+
+    route: function (e) {
+        e.preventDefault();
+        this.router.navigate(e.target.pathname, { trigger: true });
+        console.log(this.router);
+        console.log(Backbone.history);
     },
 
     setCurrentList: function (listName) {
-        currentList = this.toDoList;
-        currentList.fetch({ url: '/api/todo/' + listName,
-            success: function (collection, response, options) {
-                currentList.set(response.objects);
-            }
+        this.toDoList.fetch({ url: '/api/todo/' + listName,
+            success: _.bind(function (collection, response, options) {
+                this.toDoList.set(response.objects);
+            }, this)
         });
-    },
-
-    showNowList: function (e) {
-        e.preventDefault();
-        this.setCurrentList('now');
-    },
-
-    showLaterList: function (e) {
-        e.preventDefault();
-        this.setCurrentList('later');
-    },
-
-    showDoneList: function (e) {
-        e.preventDefault();
-        this.setCurrentList('done');
     },
 
     showToDoForm: function (e) {
@@ -143,6 +136,7 @@ App.Collections.ToDoList = Backbone.Collection.extend({
             });
         }, this);
         this.on('destroy', this.remove, this);
+        this.on('change', this.log, this);
         this.on('destroy', this.log, this);
         this.on('sync', this.log, this);
     },
@@ -325,6 +319,25 @@ App.Views.ToDoForm = Backbone.View.extend({
     }
 });
 
-App.ToDoRouter = Backbone.Router.extend({});
+App.ToDoRouter = Backbone.Router.extend({
+    routes: {
+        '': 'now',
+        'now': 'now',
+        'later': 'later',
+        'done': 'done'
+    },
+
+    now: function () {
+        App.setCurrentList('now');
+    },
+
+    later: function () {
+        App.setCurrentList('later');
+    },
+
+    done: function () {
+        App.setCurrentList('done');
+    }
+});
 
 App.start();
