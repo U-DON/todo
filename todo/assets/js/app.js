@@ -26,6 +26,10 @@ var App = new (Backbone.View.extend({
         Backbone.history.start({ pushState: true });
     },
 
+    getListName: function () {
+        return this.router.routes[Backbone.history.fragment];
+    },
+
     route: function (e) {
         e.preventDefault();
         this.router.navigate(e.target.pathname, { trigger: true });
@@ -33,7 +37,7 @@ var App = new (Backbone.View.extend({
         console.log(Backbone.history);
     },
 
-    setCurrentList: function (listName) {
+    setList: function (listName) {
         this.toDoList.fetch({ url: '/api/todo/' + listName,
             success: _.bind(function (collection, response, options) {
                 this.toDoList.set(response.objects);
@@ -293,9 +297,18 @@ App.Views.ToDoForm = Backbone.View.extend({
         this.model.save(this.serialize(), {
             success: _.bind(function (model, response, options) {
                 this.close();
-                App.toDoList.add(model);
+                var listName = App.getListName();
+                var current = model.get('current');
+                var done = model.get('done');
+                if (listName === 'now' && current ||
+                    listName === 'later' && !current ||
+                    listName === 'done' && done)
+                {
+                    App.toDoList.add(model);
+                }
             }, this),
             error: function (model, xhr, options) {
+                console.log('Problem saving model: ' + model);
             },
             wait: true
         });
@@ -328,15 +341,15 @@ App.ToDoRouter = Backbone.Router.extend({
     },
 
     now: function () {
-        App.setCurrentList('now');
+        App.setList('now');
     },
 
     later: function () {
-        App.setCurrentList('later');
+        App.setList('later');
     },
 
     done: function () {
-        App.setCurrentList('done');
+        App.setList('done');
     }
 });
 
