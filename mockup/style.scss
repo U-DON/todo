@@ -1,0 +1,320 @@
+// Theme Palette 1
+$red: rgb(221, 155, 161);
+$yellow: rgb(221, 220, 160);
+$light-blue: rgb(211, 244, 242);
+$blue: rgb(158, 222, 219);
+$purple: rgb(158, 159, 219);
+
+// Theme Palette 2
+$blue-1: rgb(57, 166, 204);     // Medium Blue
+$blue-2: rgb(47, 126, 153);     // Dark Blue
+$blue-3: rgb(147, 255, 224);    // Light Blue
+$pink-1: rgb(255, 161, 153);    // Light Pink
+$pink-2: rgb(204, 93, 120);     // Dark Pink
+
+$header-background: $blue-1;
+
+$content-font-color: #222;
+$content-padding: 1em;
+
+$panel-border-radius: 6px;
+
+$sidebar-link-background-hover: #f6f6f6;
+$sidebar-link-background-selected: $blue-3;
+
+body
+{
+    background: #e6e6e6;
+    display: flex;
+    flex-direction: column;
+    color: $content-font-color;
+    font-family: sans-serif;
+    min-height: 100vh;
+
+    & > header,
+    & > footer
+    {
+        background: $header-background;
+        color: #fff;
+        height: 40px;
+        line-height: 40px;
+        margin: 0;
+        padding: 0 1em;
+    }
+}
+
+h1,
+h2,
+h3,
+h4,
+h5
+{
+    font-weight: normal;
+    margin: 0;
+}
+
+#main
+{
+    display: flex;
+    flex: 1;
+    margin: 1em auto;
+}
+
+.panel
+{
+    background: #fff;
+    border-radius: $panel-border-radius;
+    display: inline-block;
+
+    & > header
+    {
+        background: $header-background;
+        border-radius: $panel-border-radius $panel-border-radius 0 0;
+        color: #fff;
+        height: 2.5em;
+        line-height: 2.5em;
+        margin: 0;
+        padding: 0 1em;
+    }
+}
+
+#sidebar
+{
+    margin-right: 1em;
+    padding: $content-padding 0;
+    padding-top: 0;
+    width: 240px;
+
+    & header
+    {
+        text-align: center;
+    }
+
+    & nav
+    {
+        & a
+        {
+            border-top: 1px solid $sidebar-link-background-hover;
+            color: #666;
+            display: block;
+            font-size: 14px;
+            line-height: 1.4em;
+            padding: 0.5em;
+            text-decoration: none;
+
+            &:hover
+            {
+                background: $sidebar-link-background-hover;
+            }
+
+            &:last-child
+            {
+                border-bottom: 1px solid $sidebar-link-background-hover;
+
+                &.selected
+                {
+                    border-bottom: 1px solid $sidebar-link-background-selected;
+                }
+            }
+
+            &.selected
+            {
+                background: $sidebar-link-background-selected;
+                border-top: 1px solid $sidebar-link-background-selected;
+
+                & + a
+                {
+                    border-top: 1px solid transparent;
+                }
+            }
+
+            & span.to-do-category
+            {
+            }
+
+            & span.to-do-count
+            {
+                background: #aaa;
+                border-radius: 10px;
+                color: #fff;
+                float: right;
+                font-size: 0.8em;
+                font-weight: bold;
+                min-height: 0.8em;
+                min-width: 0.8em;
+                padding: 0 0.5em;
+                text-align: center;
+            }
+        }
+    }
+
+    & section
+    {
+        & > header
+        {
+            padding: 0.5em;
+            text-align: left;
+        }
+    }
+}
+
+#content
+{
+    width: 480px;
+}
+
+#to-do-list
+{
+    padding: $content-padding;
+}
+
+form.to-do-editor
+{
+    display: inline-block;
+}
+
+#new-to-do-form
+{
+    background: #f6f6f6;
+    border-bottom: 1px solid #ddd;
+    display: block;
+    font-size: 14px;
+    padding: $content-padding;
+
+    & .text-field
+    {
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 0.5em;
+        position: relative;
+
+        & input[type="text"]
+        {
+            border: 0;
+            display: inline-block;
+            margin: 0;
+            padding: 0;
+            width: 89%;
+        }
+
+        & input[type="submit"]
+        {
+            background: $blue-1;
+            border: none;
+            border-radius: 4px;
+            color: #fff;
+            font-size: 14px;
+            margin-top: -0.2em;
+            padding: 0.2em 0.6em;
+            position: absolute;
+            right: 0.4em;
+        }
+
+        & + .field,
+        & + .field-set
+        {
+            margin-top: 1em;
+        }
+    }
+
+    & > .field-set
+    {
+        width: 100%;
+
+        & + .field-set
+        {
+            margin-top: 1em;
+        }
+    }
+
+    & .field
+    {
+        background: #f6f6f6;
+        border: none;
+        margin: 0 0.5em;
+
+        & > p
+        {
+            display: inline-block;
+            margin: 0;
+            padding: 0;
+        }
+
+        & + .field
+        {
+            margin-top: 1em;
+        }
+    }
+}
+
+div.to-do
+{
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    cursor: default;
+    display: block;
+    font-size: 14px;
+    height: 20px;
+    line-height: 20px;
+    padding-bottom: 1em;
+
+    &:hover div.details
+    {
+        display: inline-block;
+    }
+
+    & input[type="checkbox"]
+    {
+        display: none;
+
+        &:checked + label
+        {
+            background: url("checkbox-checked.png") transparent left center no-repeat;
+        }
+    }
+
+    & label
+    {
+        background: url("checkbox-unchecked.png") transparent left center no-repeat;
+        cursor: pointer;
+        display: inline-block;
+        padding-left: 36px;
+        position: relative;
+    }
+
+    & div.details
+    {
+        display: none;
+        float: right;
+
+        & div.details-badge
+        {
+            cursor: pointer;
+            display: inline-block;
+
+            & img
+            {
+                background: #eee;
+                border-radius: 4px;
+                display: inline-block;
+                margin-top: -3px;
+                padding: 3px;
+            }
+
+            & + div.details-badge
+            {
+            }
+        }
+    }
+
+    & + &
+    {
+        border-top: 1px dotted #aaa;
+        padding-top: 1em;
+    }
+}

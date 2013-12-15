@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<head>
+    <link rel="stylesheet" href="normalize.css" />
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <header><h2>Actionist</h2></header>
+    <div id="main">
+        <div id="sidebar" class="panel">
+            <header>
+                <h3>Eugene Doan</h3>
+            </header>
+            <section>
+                <header>
+                    <h4>Lists</h4>
+                </header>
+                <nav>
+                    <a href="#"><span class="to-do-category">Today</span><span class="to-do-count">8</span></a>
+                    <a class="selected" href="#"><span class="to-do-category">Later</span><span class="to-do-count">20</span></a>
+                    <a href="#"><span class="to-do-category">Done</span><span class="to-do-count">500</span></a>
+                    <a href="#"><span class="to-do-category">Custom</span><span class="to-do-count">2</span></a>
+                </nav>
+            </section>
+            <section>
+                <header>
+                    <h4>Messages</h4>
+                </header>
+                <nav>
+                    <a href="#">Inbox</a>
+                    <a href="#">Deleted</a>
+                </nav>
+            </section>
+            <section>
+                <header>
+                    <h4>Account</h4>
+                </header>
+                <nav>
+                    <a href="#">Settings</a>
+                    <a href="#">Log Out</a>
+                </nav>
+            </section>
+        </div>
+        <div id="content" class="panel">
+            <header>
+                <h3>Today</h3>
+            </header>
+            <section>
+                <form id="new-to-do-form">
+                    <div class="text-field">
+                        <input name="title" type="text" placeholder="What are you going to do?" />
+                        <input type="submit" value="Add" />
+                    </div>
+                    <div class="field-set">
+                        <div class="field">
+                            <p>When do you want to start?</p>
+                            <label><input name="current" type="radio" value="0" checked />Later</label>
+                            <label><input name="current" type="radio" value="1" />Today</label>
+                        </div>
+                        <div class="field">
+                            <p>How often are you going to do this?</p>
+                            <label><input name="routine" type="radio" value="0" checked />Once</label>
+                            <label><input name="routine" type="radio" value="1" />Repeats</label>
+                        </div>
+                    </div>
+                </form>
+            </section>
+            <section id="to-do-list">
+                <div class="to-do">
+                    <input id="1" type="checkbox" /><label for="1">Task 1</label>
+                    <div class="details">
+                        <div class="details-badge"><img src="routine.png" /></div>
+                        <div class="details-badge"><img src="delete.png" /></div>
+                    </div>
+                </div>
+                <div class="to-do">
+                    <input id="2" type="checkbox" /><label for="2">Task 2</label>
+                    <div class="details">
+                        <div class="details-badge"><img src="routine.png" /></div>
+                        <div class="details-badge"><img src="delete.png" /></div>
+                    </div>
+                </div>
+                <div class="to-do">
+                    <input id="3" type="checkbox" /><label for="3">Task 3</label>
+                    <div class="details">
+                        <div class="details-badge"><img src="routine.png" /></div>
+                        <div class="details-badge"><img src="delete.png" /></div>
+                    </div>
+                </div>
+                <div class="to-do">
+                    <input id="4" type="checkbox" /><label for="4">Task 4</label>
+                    <div class="details">
+                        <div class="details-badge"><img src="routine.png" /></div>
+                        <div class="details-badge"><img src="delete.png" /></div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+    <footer>Footer</footer>
+</body>
+</html>
