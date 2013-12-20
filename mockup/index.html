@@ -46,21 +46,24 @@
             </header>
             <section>
                 <form id="new-to-do-form">
-                    <div class="text-field">
+                    <div class="text-field field">
                         <input name="title" type="text" placeholder="What are you going to do?" />
                         <input type="submit" value="Add" />
                     </div>
                     <div class="field-set">
-                        <div class="field">
-                            <p>When do you want to start?</p>
-                            <label><input name="current" type="radio" value="0" checked />Later</label>
-                            <label><input name="current" type="radio" value="1" />Today</label>
+                        <div class="radio-field field">
+                            <input id="new-to-do-later" name="current" type="radio" value="0" />
+                            <label for="new-to-do-later">Later</label>
                         </div>
-                        <div class="field">
-                            <p>How often are you going to do this?</p>
-                            <label><input name="routine" type="radio" value="0" checked />Once</label>
-                            <label><input name="routine" type="radio" value="1" />Repeats</label>
+                        <div class="radio-field field">
+                            <input id="new-to-do-today" name="current" type="radio" value="0" checked />
+                            <label for="new-to-do-today">Today</label>
                         </div>
+                        <div class="checkbox-field field">
+                            <input id="new-to-do-repeats" name="repeat" type="checkbox" />
+                            <label for="new-to-do-repeats">Repeats</label>
+                        </div>
+                        <div class="clear"></div>
                     </div>
                 </form>
             </section>

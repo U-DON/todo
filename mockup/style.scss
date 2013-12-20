@@ -15,6 +15,7 @@ $pink-2: rgb(204, 93, 120);     // Dark Pink
 $header-background: $blue-1;
 
 $content-font-color: #222;
+$content-font-size: 14px;
 $content-padding: 1em;
 
 $panel-border-radius: 6px;
@@ -22,14 +23,90 @@ $panel-border-radius: 6px;
 $sidebar-link-background-hover: #f6f6f6;
 $sidebar-link-background-selected: $blue-3;
 
+$new-to-do-checkbox-background-checked: $blue-1;
+
+@mixin unselectable
+{
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+@mixin checked-input
+{
+    @include unselectable;
+
+    cursor: pointer;
+    display: inline-block;
+    float: left;
+
+    & > input
+    {
+        display: none;
+
+        &:checked
+        {
+            & + label
+            {
+                background: $new-to-do-checkbox-background-checked;
+                border: 1px solid $new-to-do-checkbox-background-checked;
+                color: #fff;
+
+                &:before
+                {
+                    border-right: 1px solid $new-to-do-checkbox-background-checked;
+                }
+            }
+        }
+    }
+
+    & > label
+    {
+        background: #e6e6e6;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        color: #555;
+        cursor: pointer;
+        display: inline-block;
+        float: left;
+        height: 1.5em;
+        line-height: 1.5em;
+        margin: 0;
+        padding: 0.25em 0;
+        padding-left: 0;
+        text-align: center;
+        width: 7em;
+
+        &:before
+        {
+            background: #fff;
+            border-bottom-left-radius: 3px;
+            border-right: 1px solid #ddd;
+            border-top-left-radius: 3px;
+            content: "";
+            display: inline-block;
+            float: left;
+            margin: 0;
+            margin-top: -0.25em;
+            padding: 0;
+            height: 2em;
+            width: 2em;
+        }
+    }
+}
+
 body
 {
     background: #e6e6e6;
     display: flex;
     flex-direction: column;
     color: $content-font-color;
-    font-family: sans-serif;
+    font-family: "Helvetica Neue", Arial, sans-serif;
     min-height: 100vh;
+    text-rendering: optimizelegibility;
 
     & > header,
     & > footer
@@ -51,6 +128,12 @@ h5
 {
     font-weight: normal;
     margin: 0;
+    padding: 0;
+}
+
+.clear
+{
+    clear: both;
 }
 
 #main
@@ -71,6 +154,7 @@ h5
         background: $header-background;
         border-radius: $panel-border-radius $panel-border-radius 0 0;
         color: #fff;
+        font-size: 16px;
         height: 2.5em;
         line-height: 2.5em;
         margin: 0;
@@ -97,9 +181,10 @@ h5
             border-top: 1px solid $sidebar-link-background-hover;
             color: #666;
             display: block;
-            font-size: 14px;
-            line-height: 1.4em;
-            padding: 0.5em;
+            font-size: $content-font-size;
+            height: 1.5em;
+            line-height: 1.5em;
+            padding: 0.5em 0.6em;
             text-decoration: none;
 
             &:hover
@@ -128,19 +213,16 @@ h5
                 }
             }
 
-            & span.to-do-category
-            {
-            }
-
             & span.to-do-count
             {
                 background: #aaa;
                 border-radius: 10px;
                 color: #fff;
                 float: right;
-                font-size: 0.8em;
+                font-size: 12px;
                 font-weight: bold;
-                min-height: 0.8em;
+                line-height: 1.5em;
+                height: 1.5em;
                 min-width: 0.8em;
                 padding: 0 0.5em;
                 text-align: center;
@@ -178,15 +260,122 @@ form.to-do-editor
     background: #f6f6f6;
     border-bottom: 1px solid #ddd;
     display: block;
-    font-size: 14px;
+    font-size: $content-font-size;
     padding: $content-padding;
+
+    & .field
+    {
+        display: inline-block;
+        font-size: $content-font-size;
+
+        & + .field-set
+        {
+            margin-top: 1em;
+        }
+    }
+
+    & .checkbox-field
+    {
+        @include checked-input;
+        
+        float: right;
+
+        & > input[type="checkbox"]:checked
+        {
+            & + label:before
+            {
+                background: url('routine.png') center center no-repeat #fff;
+            }
+        }
+    }
+
+    & .radio-field
+    {
+        @include checked-input;
+
+        & > input[type="radio"]
+        {
+            &:checked + label
+            {
+                &[for="new-to-do-later"]:before
+                {
+                    background: url('later.png') center center no-repeat #fff;
+                }
+
+                &[for="new-to-do-today"]:before
+                {
+                    background: url('today.png') center no-repeat #fff;
+                }
+            }
+        }
+
+        & + .radio-field
+        {
+            margin-left: 1em;
+        }
+    }
+
+    & .select-field
+    {
+        background: $blue-1;
+        border: 1px solid $blue-1;
+        border-radius: 4px;
+
+        & > label
+        {
+            color: #fff;
+            display: inline-block;
+            float: left;
+            height: 1.4em;
+            line-height: 1.5em;
+            margin-right: 0.6em;
+            padding: 0.2em 0.2em 0.2em 0.6em;
+        }
+
+        & > .select-input
+        {
+            background: url("dropdown.png") no-repeat 90% center #fff;
+            border-bottom-right-radius: 3px;
+            border-top-right-radius: 3px;
+            display: inline-block;
+            float: left;
+            height: 1.5em;
+            line-height: 1.5em;
+            overflow: hidden;
+            padding: 0.2em 0.2em 0.2em 0.6em;
+            width: 5em;
+
+            & > select
+            {
+                -moz-appearance: none;
+                -webkit-appearance: none;
+                background: transparent;
+                border: none;
+                color: #555;
+                cursor: pointer;
+                display: inline-block;
+                height: 1.4em;
+                line-height: 1.4em;
+                margin: 0;
+                outline: none;
+                width: 8em;
+
+                &:-moz-focusring
+                {
+                    color: transparent;
+                    text-shadow: 0 0 0 #555;
+                }
+            }
+        }
+    }
 
     & .text-field
     {
         background: #fff;
         border: 1px solid #ddd;
         border-radius: 4px;
-        padding: 0.5em;
+        display: block;
+        padding: 0.8em;
         position: relative;
 
         & input[type="text"]
@@ -194,8 +383,9 @@ form.to-do-editor
             border: 0;
             display: inline-block;
             margin: 0;
+            outline: none;
             padding: 0;
-            width: 89%;
+            width: 87%;
         }
 
         & input[type="submit"]
@@ -204,61 +394,22 @@ form.to-do-editor
             border: none;
             border-radius: 4px;
             color: #fff;
-            font-size: 14px;
-            margin-top: -0.2em;
-            padding: 0.2em 0.6em;
+            margin-top: -0.5em;
+            padding: 0.5em 1em;
             position: absolute;
-            right: 0.4em;
-        }
-
-        & + .field,
-        & + .field-set
-        {
-            margin-top: 1em;
-        }
-    }
-
-    & > .field-set
-    {
-        width: 100%;
-
-        & + .field-set
-        {
-            margin-top: 1em;
-        }
-    }
-
-    & .field
-    {
-        background: #f6f6f6;
-        border: none;
-        margin: 0 0.5em;
-
-        & > p
-        {
-            display: inline-block;
-            margin: 0;
-            padding: 0;
-        }
-
-        & + .field
-        {
-            margin-top: 1em;
+            right: 0.3em;
         }
     }
 }
 
 div.to-do
 {
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+    @include unselectable;
+
+    color: #333;
     cursor: default;
     display: block;
-    font-size: 14px;
+    font-size: $content-font-size;
     height: 20px;
     line-height: 20px;
     padding-bottom: 1em;
