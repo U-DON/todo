@@ -52,16 +52,21 @@
                     </div>
                     <div class="field-set">
                         <div class="radio-field field">
-                            <input id="new-to-do-later" name="current" type="radio" value="0" />
+                            <input id="new-to-do-later" name="current" type="radio" value="0" checked />
                             <label for="new-to-do-later">Later</label>
                         </div>
                         <div class="radio-field field">
-                            <input id="new-to-do-today" name="current" type="radio" value="0" checked />
+                            <input id="new-to-do-today" name="current" type="radio" value="0" />
                             <label for="new-to-do-today">Today</label>
                         </div>
+                        <div class="divider"></div>
                         <div class="checkbox-field field">
                             <input id="new-to-do-repeats" name="repeat" type="checkbox" />
                             <label for="new-to-do-repeats">Repeats</label>
+                        </div>
+                        <div class="divider"></div>
+                        <div class="cancel field">
+                            <a href="#">Cancel</a>
                         </div>
                         <div class="clear"></div>
                     </div>
@@ -71,29 +76,33 @@
                 <div class="to-do">
                     <input id="1" type="checkbox" /><label for="1">Task 1</label>
                     <div class="details">
-                        <div class="details-badge"><img src="routine.png" /></div>
-                        <div class="details-badge"><img src="delete.png" /></div>
+                        <div class="today detail"></div>
+                        <div class="repeats detail"></div>
+                        <div class="delete detail"></div>
                     </div>
                 </div>
                 <div class="to-do">
                     <input id="2" type="checkbox" /><label for="2">Task 2</label>
                     <div class="details">
-                        <div class="details-badge"><img src="routine.png" /></div>
-                        <div class="details-badge"><img src="delete.png" /></div>
+                        <div class="later detail"></div>
+                        <div class="no-repeats detail"></div>
+                        <div class="delete detail"></div>
                     </div>
                 </div>
                 <div class="to-do">
                     <input id="3" type="checkbox" /><label for="3">Task 3</label>
                     <div class="details">
-                        <div class="details-badge"><img src="routine.png" /></div>
-                        <div class="details-badge"><img src="delete.png" /></div>
+                        <div class="today detail"></div>
+                        <div class="repeats detail"></div>
+                        <div class="delete detail"></div>
                     </div>
                 </div>
                 <div class="to-do">
                     <input id="4" type="checkbox" /><label for="4">Task 4</label>
                     <div class="details">
-                        <div class="details-badge"><img src="routine.png" /></div>
-                        <div class="details-badge"><img src="delete.png" /></div>
+                        <div class="today detail"></div>
+                        <div class="repeats detail"></div>
+                        <div class="delete detail"></div>
                     </div>
                 </div>
             </section>

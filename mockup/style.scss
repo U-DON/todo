@@ -18,12 +18,14 @@ $content-font-color: #222;
 $content-font-size: 14px;
 $content-padding: 1em;
 
+$delete-color: $red;
+
 $panel-border-radius: 6px;
 
 $sidebar-link-background-hover: #f6f6f6;
 $sidebar-link-background-selected: $blue-3;
 
-$new-to-do-checkbox-background-checked: $blue-1;
+$new-to-do-checked-input-background: $blue-1;
 
 @mixin unselectable
 {
@@ -41,7 +43,6 @@ $new-to-do-checkbox-background-checked: $blue-1;
 
     cursor: pointer;
     display: inline-block;
-    float: left;
 
     & > input
     {
@@ -51,13 +52,13 @@ $new-to-do-checkbox-background-checked: $blue-1;
         {
             & + label
             {
-                background: $new-to-do-checkbox-background-checked;
-                border: 1px solid $new-to-do-checkbox-background-checked;
+                background: $new-to-do-checked-input-background;
+                border: 1px solid $new-to-do-checked-input-background;
                 color: #fff;
 
                 &:before
                 {
-                    border-right: 1px solid $new-to-do-checkbox-background-checked;
+                    border-right: 1px solid $new-to-do-checked-input-background;
                 }
             }
         }
@@ -272,13 +273,53 @@ form.to-do-editor
         {
             margin-top: 1em;
         }
+
+        & + .field
+        {
+            margin-left: 1em;
+        }
+    }
+
+    & .field-set
+    {
+        text-align: center;
+    }
+
+    & .divider
+    {
+        border: 1px solid #ddd;
+        border-right: none;
+        display: inline-block;
+        height: 2em;
+        line-height: 2em;
+        margin: 0 0.75em;
+        width: 0;
+    }
+
+    & .cancel
+    {
+        background: $delete-color;
+        border: 1px solid transparent;
+        border-radius: 4px;
+        line-height: 2em;
+        height: 2em;
+        margin: 0;
+        padding: 0;
+
+        & a
+        {
+            color: #fff;
+            float: left;
+            margin: 0;
+            outline: none;
+            padding: 0 1em;
+            text-decoration: none;
+        }
     }
 
     & .checkbox-field
     {
         @include checked-input;
-        
-        float: right;
 
         & > input[type="checkbox"]:checked
         {
@@ -311,63 +352,63 @@ form.to-do-editor
 
         & + .radio-field
         {
-            margin-left: 1em;
+            margin-left: 0.5em;
         }
     }
 
-    & .select-field
-    {
-        background: $blue-1;
-        border: 1px solid $blue-1;
-        border-radius: 4px;
+//  & .select-field
+//  {
+//      background: $blue-1;
+//      border: 1px solid $blue-1;
+//      border-radius: 4px;
 
-        & > label
-        {
-            color: #fff;
-            display: inline-block;
-            float: left;
-            height: 1.4em;
-            line-height: 1.5em;
-            margin-right: 0.6em;
-            padding: 0.2em 0.2em 0.2em 0.6em;
-        }
+//      & > label
+//      {
+//          color: #fff;
+//          display: inline-block;
+//          float: left;
+//          height: 1.4em;
+//          line-height: 1.5em;
+//          margin-right: 0.6em;
+//          padding: 0.2em 0.2em 0.2em 0.6em;
+//      }
 
-        & > .select-input
-        {
-            background: url("dropdown.png") no-repeat 90% center #fff;
-            border-bottom-right-radius: 3px;
-            border-top-right-radius: 3px;
-            display: inline-block;
-            float: left;
-            height: 1.5em;
-            line-height: 1.5em;
-            overflow: hidden;
-            padding: 0.2em 0.2em 0.2em 0.6em;
-            width: 5em;
+//      & > .select-input
+//      {
+//          background: url("dropdown.png") no-repeat 90% center #fff;
+//          border-bottom-right-radius: 3px;
+//          border-top-right-radius: 3px;
+//          display: inline-block;
+//          float: left;
+//          height: 1.5em;
+//          line-height: 1.5em;
+//          overflow: hidden;
+//          padding: 0.2em 0.2em 0.2em 0.6em;
+//          width: 5em;
 
-            & > select
-            {
-                -moz-appearance: none;
-                -webkit-appearance: none;
-                background: transparent;
-                border: none;
-                color: #555;
-                cursor: pointer;
-                display: inline-block;
-                height: 1.4em;
-                line-height: 1.4em;
-                margin: 0;
-                outline: none;
-                width: 8em;
+//          & > select
+//          {
+//              -moz-appearance: none;
+//              -webkit-appearance: none;
+//              background: transparent;
+//              border: none;
+//              color: #555;
+//              cursor: pointer;
+//              display: inline-block;
+//              height: 1.4em;
+//              line-height: 1.4em;
+//              margin: 0;
+//              outline: none;
+//              width: 8em;
 
-                &:-moz-focusring
-                {
-                    color: transparent;
-                    text-shadow: 0 0 0 #555;
-                }
-            }
-        }
-    }
+//              &:-moz-focusring
+//              {
+//                  color: transparent;
+//                  text-shadow: 0 0 0 #555;
+//              }
+//          }
+//      }
+//  }
 
     & .text-field
     {
@@ -440,25 +481,48 @@ div.to-do
 
     & div.details
     {
-        display: none;
         float: right;
 
-        & div.details-badge
+        & div.detail
         {
+            border-radius: 4px;
             cursor: pointer;
-            display: inline-block;
+            float: left;
+            font-size: 12px;
+            height: 20px;
+            line-height: 20px;
+            margin-top: -0.2em;
+            padding: 0.2em 0.25em;
+            width: 20px;
 
-            & img
+            & + div.detail
             {
-                background: #eee;
-                border-radius: 4px;
-                display: inline-block;
-                margin-top: -3px;
-                padding: 3px;
+                margin-left: 1em;
             }
 
-            & + div.details-badge
+            &.later
             {
+                background: url('later-selected.png') center center no-repeat $blue-1;
+            }
+
+            &.today
+            {
+                background: url('today-selected.png') center center no-repeat $blue-1;
+            }
+
+            &.no-repeats
+            {
+                background: url('routine.png') center center no-repeat #eee;
+            }
+
+            &.repeats
+            {
+                background: url('routine-selected.png') center center no-repeat $blue-1;
+            }
+
+            &.delete
+            {
+                background: url('delete.png') center center no-repeat $delete-color;
             }
         }
     }
