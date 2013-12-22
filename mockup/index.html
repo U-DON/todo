@@ -2,17 +2,19 @@
 <head>
     <link rel="stylesheet" href="normalize.css" />
     <link rel="stylesheet" href="style.css" />
+    <script src="http://code.jquery.com/jquery-2.0.3.min.js">
+    </script>
 </head>
 <body>
-    <header><h2>Actionist</h2></header>
+    <header><h1>Actionist</h1></header>
     <div id="main">
         <div id="sidebar" class="panel">
             <header>
-                <h3>Eugene Doan</h3>
+                <h2>Eugene Doan</h2>
             </header>
             <section>
                 <header>
-                    <h4>Lists</h4>
+                    <h3>Lists</h3>
                 </header>
                 <nav>
                     <a href="#"><span class="to-do-category">Today</span><span class="to-do-count">8</span></a>
@@ -23,7 +25,7 @@
             </section>
             <section>
                 <header>
-                    <h4>Messages</h4>
+                    <h3>Messages</h3>
                 </header>
                 <nav>
                     <a href="#">Inbox</a>
@@ -32,7 +34,7 @@
             </section>
             <section>
                 <header>
-                    <h4>Account</h4>
+                    <h3>Account</h3>
                 </header>
                 <nav>
                     <a href="#">Settings</a>
@@ -42,10 +44,10 @@
         </div>
         <div id="content" class="panel">
             <header>
-                <h3>Today</h3>
+                <h2>Today</h2>
             </header>
             <section>
-                <form id="new-to-do-form">
+                <form id="new-to-do-form" method="POST">
                     <div class="text-field field">
                         <input name="title" type="text" placeholder="What are you going to do?" />
                         <input type="submit" value="Add" />
@@ -74,40 +76,79 @@
             </section>
             <section id="to-do-list">
                 <div class="to-do">
-                    <input id="1" type="checkbox" /><label for="1">Task 1</label>
+                    <input id="1" type="checkbox" /><label for="1"><a href="#" title="Task 1">Task 1</a></label>
                     <div class="details">
-                        <div class="today detail"></div>
-                        <div class="repeats detail"></div>
-                        <div class="delete detail"></div>
+                        <a class="today detail" href="#"></a>
+                        <a class="repeats detail" href="#"></a>
+                        <a class="delete detail" href="#"></a>
                     </div>
                 </div>
                 <div class="to-do">
-                    <input id="2" type="checkbox" /><label for="2">Task 2</label>
+                    <input id="2" type="checkbox" /><label for="2"><a href="#">Task 2</a></label>
                     <div class="details">
-                        <div class="later detail"></div>
-                        <div class="no-repeats detail"></div>
-                        <div class="delete detail"></div>
+                        <a class="later detail" href="#"></a>
+                        <a class="no-repeats detail" href="#"></a>
+                        <a class="delete detail" href="#"></a>
                     </div>
                 </div>
                 <div class="to-do">
-                    <input id="3" type="checkbox" /><label for="3">Task 3</label>
+                    <input id="3" type="checkbox" /><label for="3"><a href="#" title="Task 3 With A Super Long Name Like This One Blah Blah Blah Some More Words">Task 3 With A Super Long Name Like This One Blah Blah Blah Some More Words</a></label>
                     <div class="details">
-                        <div class="today detail"></div>
-                        <div class="repeats detail"></div>
-                        <div class="delete detail"></div>
+                        <a class="today detail" href="#"></a>
+                        <a class="repeats detail" href="#"></a>
+                        <a class="delete detail" href="#"></a>
                     </div>
                 </div>
                 <div class="to-do">
-                    <input id="4" type="checkbox" /><label for="4">Task 4</label>
+                    <input id="4" type="checkbox" /><label for="4"><a href="#">Task 4</a></label>
                     <div class="details">
-                        <div class="today detail"></div>
-                        <div class="repeats detail"></div>
-                        <div class="delete detail"></div>
+                        <a class="today detail" href="#"></a>
+                        <a class="repeats detail" href="#"></a>
+                        <a class="delete detail" href="#"></a>
                     </div>
                 </div>
             </section>
         </div>
     </div>
     <footer>Footer</footer>
+    <script type="text/javascript">
+        $(document).mouseup(function (e) {
+            var newToDoForm = $("#new-to-do-form");
+            var workspace = newToDoForm.add("#to-do-list");
+            if (!workspace.is(e.target)
+                && workspace.has(e.target).length === 0)
+            {
+                newToDoForm.children(".field-set:visible").hide();
+            }
+        });
+
+        $("#new-to-do-form .text-field input").focus(function () {
+            $("#new-to-do-form .field-set:hidden").show();
+        });
+
+        $("#new-to-do-form .cancel").click(function () {
+            $("#new-to-do-form .field-set:visible").hide();
+        });
+
+        $("a.detail").click(function () {
+            var that = this;
+            var otherDetails = $(this).siblings();
+            $(this).toggleClass("focus").promise().done(function () {
+                if ($(this).hasClass("focus"))
+                {
+                    otherDetails.hide().promise().done(function () {
+                        var label = $(that).attr('class').split(" ")[0];
+                        $(that).text(label);
+                    });
+                }
+                else
+                {
+                    otherDetails.show().promise().done(function () {
+                        $(that).text("");
+                    });
+                }
+            });
+        });
+    </script>
 </body>
 </html>

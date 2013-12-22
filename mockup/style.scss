@@ -107,7 +107,7 @@ body
     color: $content-font-color;
     font-family: "Helvetica Neue", Arial, sans-serif;
     min-height: 100vh;
-    text-rendering: optimizelegibility;
+    text-rendering: optimizeLegibility;
 
     & > header,
     & > footer
@@ -130,6 +130,21 @@ h5
     font-weight: normal;
     margin: 0;
     padding: 0;
+}
+
+h1
+{
+    font-size: 20px;
+}
+
+h2
+{
+    font-size: 18px;
+}
+
+h3
+{
+    font-size: 16px;
 }
 
 .clear
@@ -155,7 +170,6 @@ h5
         background: $header-background;
         border-radius: $panel-border-radius $panel-border-radius 0 0;
         color: #fff;
-        font-size: 16px;
         height: 2.5em;
         line-height: 2.5em;
         margin: 0;
@@ -282,6 +296,7 @@ form.to-do-editor
 
     & .field-set
     {
+        display: none;
         text-align: center;
     }
 
@@ -416,29 +431,34 @@ form.to-do-editor
         border: 1px solid #ddd;
         border-radius: 4px;
         display: block;
-        padding: 0.8em;
+        padding-left: 1em;
         position: relative;
 
         & input[type="text"]
         {
             border: 0;
+            color: #555;
             display: inline-block;
             margin: 0;
             outline: none;
-            padding: 0;
-            width: 87%;
+            padding: 0.8em;
+            padding-left: 0;
+            width: 83%;
         }
 
         & input[type="submit"]
         {
             background: $blue-1;
-            border: none;
+            border: 1px solid $blue-1;
             border-radius: 4px;
             color: #fff;
-            margin-top: -0.5em;
-            padding: 0.5em 1em;
+            height: 2em;
+            line-height: 2em;
+            margin-top: -1em;
+            padding: 0 1em;
             position: absolute;
-            right: 0.3em;
+            right: 0.5em;
+            top: 50%;
         }
     }
 }
@@ -447,13 +467,19 @@ div.to-do
 {
     @include unselectable;
 
-    color: #333;
     cursor: default;
     display: block;
     font-size: $content-font-size;
-    height: 20px;
-    line-height: 20px;
+    height: 1.5em;
+    line-height: 1.5em;
     padding-bottom: 1em;
+    position: relative;
+
+    & + &
+    {
+        border-top: 1px dotted #aaa;
+        padding-top: 1em;
+    }
 
     &:hover div.details
     {
@@ -475,29 +501,48 @@ div.to-do
         background: url("checkbox-unchecked.png") transparent left center no-repeat;
         cursor: pointer;
         display: inline-block;
+        height: 20px;
+        line-height: 20px;
+        max-width: 400px;
+        overflow: hidden;
         padding-left: 36px;
-        position: relative;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+
+        & a
+        {
+            color: #333;
+            height: 20px;
+            line-height: 20px;
+            outline: none;
+            text-decoration: none;
+        }
     }
 
     & div.details
     {
-        float: right;
+        background: #fff;
+        box-shadow: -1em 0 5px 5px #fff;
+        display: none;
+        margin-top: -0.2em;
+        position: absolute;
+        right: 0;
 
-        & div.detail
+        & a.detail
         {
             border-radius: 4px;
-            cursor: pointer;
-            float: left;
-            font-size: 12px;
+            color: #fff;
+            display: inline-block;
             height: 20px;
             line-height: 20px;
-            margin-top: -0.2em;
-            padding: 0.2em 0.25em;
+            padding: 0.2em;
+            text-decoration: none;
+            text-transform: capitalize;
             width: 20px;
 
-            & + div.detail
+            & + a.detail
             {
-                margin-left: 1em;
+                margin-left: 0.5em;
             }
 
             &.later
@@ -512,7 +557,7 @@ div.to-do
 
             &.no-repeats
             {
-                background: url('routine.png') center center no-repeat #eee;
+                background: url('routine-selected.png') center center no-repeat #aaa;
             }
 
             &.repeats
@@ -524,12 +569,14 @@ div.to-do
             {
                 background: url('delete.png') center center no-repeat $delete-color;
             }
-        }
-    }
 
-    & + &
-    {
-        border-top: 1px dotted #aaa;
-        padding-top: 1em;
+            &.focus
+            {
+                background-position: 4px center;
+                padding-left: 24px;
+                padding-right: 6px;
+                width: auto;
+            }
+        }
     }
 }
