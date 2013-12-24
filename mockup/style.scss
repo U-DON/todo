@@ -18,6 +18,9 @@ $content-font-color: #222;
 $content-font-size: 14px;
 $content-padding: 1em;
 
+$link-color: $blue-1;
+$link-hover-color: $blue-2;
+
 $delete-color: $red;
 
 $panel-border-radius: 6px;
@@ -99,6 +102,15 @@ $new-to-do-checked-input-background: $blue-1;
     }
 }
 
+html,
+body
+{
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+}
+
 body
 {
     background: #e6e6e6;
@@ -147,6 +159,17 @@ h3
     font-size: 16px;
 }
 
+a
+{
+    color: $link-color;
+
+    &:hover
+    {
+        color: $link-hover-color;
+        text-decoration: none;
+    }
+}
+
 .clear
 {
     clear: both;
@@ -154,16 +177,16 @@ h3
 
 #main
 {
-    display: flex;
     flex: 1;
     margin: 1em auto;
 }
 
-.panel
+div.panel
 {
     background: #fff;
     border-radius: $panel-border-radius;
     display: inline-block;
+    float: left;
 
     & > header
     {
@@ -180,7 +203,7 @@ h3
 #sidebar
 {
     margin-right: 1em;
-    padding: $content-padding 0;
+    padding-bottom: 0.5em;
     padding-top: 0;
     width: 240px;
 
@@ -199,6 +222,7 @@ h3
             font-size: $content-font-size;
             height: 1.5em;
             line-height: 1.5em;
+            outline: none;
             padding: 0.5em 0.6em;
             text-decoration: none;
 
@@ -249,6 +273,7 @@ h3
     {
         & > header
         {
+            color: #333;
             padding: 0.5em;
             text-align: left;
         }
@@ -257,12 +282,21 @@ h3
 
 #content
 {
-    width: 480px;
+    width: 560px;
 }
 
 #to-do-list
 {
-    padding: $content-padding;
+    font-size: $content-font-size;
+
+    & p.empty
+    {
+        color: #555;
+        display: none;
+        margin: 0;
+        padding: 1em;
+        text-align: center;
+    }
 }
 
 form.to-do-editor
@@ -330,6 +364,11 @@ form.to-do-editor
             padding: 0 1em;
             text-decoration: none;
         }
+
+        &:hover
+        {
+            background: lighten($delete-color, 5%);
+        }
     }
 
     & .checkbox-field
@@ -340,7 +379,7 @@ form.to-do-editor
         {
             & + label:before
             {
-                background: url('routine.png') center center no-repeat #fff;
+                background: url('repeat.png') center center no-repeat #fff;
             }
         }
     }
@@ -443,7 +482,7 @@ form.to-do-editor
             outline: none;
             padding: 0.8em;
             padding-left: 0;
-            width: 83%;
+            width: 85%;
         }
 
         & input[type="submit"]
@@ -459,6 +498,12 @@ form.to-do-editor
             position: absolute;
             right: 0.5em;
             top: 50%;
+
+            &:hover
+            {
+                background: lighten($blue-1, 5%);
+                border-color: lighten($blue-1, 5%);
+            }
         }
     }
 }
@@ -469,16 +514,15 @@ div.to-do
 
     cursor: default;
     display: block;
-    font-size: $content-font-size;
     height: 1.5em;
     line-height: 1.5em;
-    padding-bottom: 1em;
+    margin: 0 1.25em;
+    padding: 1.25em 0;
     position: relative;
 
     & + &
     {
         border-top: 1px dotted #aaa;
-        padding-top: 1em;
     }
 
     &:hover div.details
@@ -503,7 +547,7 @@ div.to-do
         display: inline-block;
         height: 20px;
         line-height: 20px;
-        max-width: 400px;
+        max-width: 480px;
         overflow: hidden;
         padding-left: 36px;
         text-overflow: ellipsis;
@@ -522,7 +566,7 @@ div.to-do
     & div.details
     {
         background: #fff;
-        box-shadow: -1em 0 5px 5px #fff;
+        box-shadow: -1em 0 0.5em 0.5em #fff;
         display: none;
         margin-top: -0.2em;
         position: absolute;
@@ -530,7 +574,10 @@ div.to-do
 
         & a.detail
         {
-            border-radius: 4px;
+            background-color: $blue-1;
+            background-position: center center;
+            background-repeat: no-repeat;
+            border-radius: 3px;
             color: #fff;
             display: inline-block;
             height: 20px;
@@ -540,6 +587,11 @@ div.to-do
             text-transform: capitalize;
             width: 20px;
 
+            &:hover
+            {
+                background-color: lighten($blue-1, 5%);
+            }
+
             & + a.detail
             {
                 margin-left: 0.5em;
@@ -547,36 +599,81 @@ div.to-do
 
             &.later
             {
-                background: url('later-selected.png') center center no-repeat $blue-1;
+                background-image: url('later-selected.png');
             }
 
             &.today
             {
-                background: url('today-selected.png') center center no-repeat $blue-1;
+                background-image: url('today-selected.png');
             }
 
-            &.no-repeats
+            &.no-repeat
             {
-                background: url('routine-selected.png') center center no-repeat #aaa;
+                background-color: #aaa;
+                background-image: url('repeat-selected.png');
+
+                &:hover
+                {
+                    background-color: lighten(#aaa, 5%);
+                }
             }
 
-            &.repeats
+            &.repeat
             {
-                background: url('routine-selected.png') center center no-repeat $blue-1;
+                background-image: url('repeat-selected.png');
             }
 
             &.delete
             {
-                background: url('delete.png') center center no-repeat $delete-color;
-            }
+                background-color: $delete-color;
+                background-image: url('delete.png');
 
-            &.focus
-            {
-                background-position: 4px center;
-                padding-left: 24px;
-                padding-right: 6px;
-                width: auto;
+                &:hover
+                {
+                    background-color: lighten($delete-color, 5%);
+                }
             }
+        }
+
+        &.selected
+        {
+            display: inline-block;
+
+            & a.detail
+            {
+                background-position: 6px center;
+                padding-left: 28px;
+                padding-right: 7px;
+                width: auto;
+
+                &.later
+                {
+                    background-position: 7px center;
+                    padding-left: 30px;
+                    padding-right: 8px;
+                }
+            }
+        }
+
+        & div.edit
+        {
+            color: #777;
+            display: inline-block;
+            margin: 0;
+            margin-left: 0.5em;
+            padding: 0;
+
+            & a
+            {
+                margin-left: 0.5em;
+            }
+        }
+
+        & p
+        {
+            display: inline-block;
+            margin: 0;
+            padding: 0
         }
     }
 }

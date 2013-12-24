@@ -17,19 +17,10 @@
                     <h3>Lists</h3>
                 </header>
                 <nav>
+                    <a href="#"><span class="to-do-category">All</span></a>
                     <a href="#"><span class="to-do-category">Today</span><span class="to-do-count">8</span></a>
                     <a class="selected" href="#"><span class="to-do-category">Later</span><span class="to-do-count">20</span></a>
                     <a href="#"><span class="to-do-category">Done</span><span class="to-do-count">500</span></a>
-                    <a href="#"><span class="to-do-category">Custom</span><span class="to-do-count">2</span></a>
-                </nav>
-            </section>
-            <section>
-                <header>
-                    <h3>Messages</h3>
-                </header>
-                <nav>
-                    <a href="#">Inbox</a>
-                    <a href="#">Deleted</a>
                 </nav>
             </section>
             <section>
@@ -49,7 +40,7 @@
             <section>
                 <form id="new-to-do-form" method="POST">
                     <div class="text-field field">
-                        <input name="title" type="text" placeholder="What are you going to do?" />
+                        <input name="title" type="text" placeholder="What will you do?" />
                         <input type="submit" value="Add" />
                     </div>
                     <div class="field-set">
@@ -63,8 +54,8 @@
                         </div>
                         <div class="divider"></div>
                         <div class="checkbox-field field">
-                            <input id="new-to-do-repeats" name="repeat" type="checkbox" />
-                            <label for="new-to-do-repeats">Repeats</label>
+                            <input id="new-to-do-repeat" name="repeat" type="checkbox" />
+                            <label for="new-to-do-repeat">Repeat</label>
                         </div>
                         <div class="divider"></div>
                         <div class="cancel field">
@@ -75,11 +66,12 @@
                 </form>
             </section>
             <section id="to-do-list">
+                <p class="empty">Nothing to do. Yet. :)</p>
                 <div class="to-do">
                     <input id="1" type="checkbox" /><label for="1"><a href="#" title="Task 1">Task 1</a></label>
                     <div class="details">
                         <a class="today detail" href="#"></a>
-                        <a class="repeats detail" href="#"></a>
+                        <a class="repeat detail" href="#"></a>
                         <a class="delete detail" href="#"></a>
                     </div>
                 </div>
@@ -87,15 +79,15 @@
                     <input id="2" type="checkbox" /><label for="2"><a href="#">Task 2</a></label>
                     <div class="details">
                         <a class="later detail" href="#"></a>
-                        <a class="no-repeats detail" href="#"></a>
+                        <a class="no-repeat detail" href="#"></a>
                         <a class="delete detail" href="#"></a>
                     </div>
                 </div>
                 <div class="to-do">
-                    <input id="3" type="checkbox" /><label for="3"><a href="#" title="Task 3 With A Super Long Name Like This One Blah Blah Blah Some More Words">Task 3 With A Super Long Name Like This One Blah Blah Blah Some More Words</a></label>
+                    <input id="3" type="checkbox" /><label for="3"><a href="#" title="Task 3 With A Super Long Name Like This One Blah Blah Blah Some More Words">Task 3 With A Super Long Name Like This One Blah Blah Blah Some More Words And Then Some This Title Is Long</a></label>
                     <div class="details">
                         <a class="today detail" href="#"></a>
-                        <a class="repeats detail" href="#"></a>
+                        <a class="repeat detail" href="#"></a>
                         <a class="delete detail" href="#"></a>
                     </div>
                 </div>
@@ -103,7 +95,7 @@
                     <input id="4" type="checkbox" /><label for="4"><a href="#">Task 4</a></label>
                     <div class="details">
                         <a class="today detail" href="#"></a>
-                        <a class="repeats detail" href="#"></a>
+                        <a class="repeat detail" href="#"></a>
                         <a class="delete detail" href="#"></a>
                     </div>
                 </div>
@@ -112,6 +104,8 @@
     </div>
     <footer>Footer</footer>
     <script type="text/javascript">
+        // Hide new to-do form if user clicks anywhere other than the form
+        // or individual to-do items.
         $(document).mouseup(function (e) {
             var newToDoForm = $("#new-to-do-form");
             var workspace = newToDoForm.add("#to-do-list");
@@ -130,24 +124,74 @@
             $("#new-to-do-form .field-set:visible").hide();
         });
 
+        var closeEdit = function (details) {
+            var detail = $(details.children("a.detail:visible")[0]);
+            if (details.hasClass("selected"))
+            {
+                details.children("div.edit").remove();
+                detail.text("");
+                details.removeClass("selected")
+                detail.siblings().show();
+            }
+        }
+
+        $("div.details").on("click", "div.edit a.no", function () {
+            closeEdit($(this).parent().parent());
+        });
+
         $("a.detail").click(function () {
             var that = this;
+            var details = $(this).parent();
             var otherDetails = $(this).siblings();
-            $(this).toggleClass("focus").promise().done(function () {
-                if ($(this).hasClass("focus"))
-                {
-                    otherDetails.hide().promise().done(function () {
-                        var label = $(that).attr('class').split(" ")[0];
-                        $(that).text(label);
-                    });
+            if (details.hasClass("selected"))
+            {
+                closeEdit(details);
+            }
+            else
+            {
+                var label = $(that).attr('class').split(" ")[0];
+                var question;
+                switch (label) {
+                    case "today":
+                        question = "Do this later?";
+                        break;
+                    case "later":
+                        question = "Do this today?";
+                        break;
+                    case "repeat":
+                        question = "Stop repeating?";
+                        break;
+                    case "no-repeat":
+                        label = "No Repeat";
+                        question = "Start repeating?";
+                        break;
+                    case "delete":
+                        question = "Discard forever?";
+                        break;
                 }
-                else
-                {
-                    otherDetails.show().promise().done(function () {
-                        $(that).text("");
-                    });
-                }
-            });
+                var actions = $("<div />", {
+                    class: "edit",
+                }).append($("<p />", {
+                    // Do later/today?
+                    // Start/stop repeating?
+                    // Delete?
+                    text: question
+                })).append($("<a />", {
+                    // Yes
+                    class: "yes",
+                    href: "#",
+                    text: "Yes"
+                })).append($("<a />", {
+                    // No
+                    class: "no",
+                    href: "#",
+                    text: "No"
+                }));;
+                otherDetails.hide();
+                details.addClass("selected")
+                       .append(actions);
+                $(this).text(label);
+            }
         });
     </script>
 </body>
