@@ -61,6 +61,9 @@ $new-to-do-checked-input-background: $blue-1;
 
                 &:before
                 {
+                    background-color: #fff;
+                    background-position: center center;
+                    background-repeat: no-repeat;
                     border-right: 1px solid $new-to-do-checked-input-background;
                 }
             }
@@ -75,7 +78,6 @@ $new-to-do-checked-input-background: $blue-1;
         color: #555;
         cursor: pointer;
         display: inline-block;
-        float: left;
         height: 1.5em;
         line-height: 1.5em;
         margin: 0;
@@ -91,7 +93,6 @@ $new-to-do-checked-input-background: $blue-1;
             border-right: 1px solid #ddd;
             border-top-left-radius: 3px;
             content: "";
-            display: inline-block;
             float: left;
             margin: 0;
             margin-top: -0.25em;
@@ -114,15 +115,11 @@ body
 body
 {
     background: #e6e6e6;
-    display: flex;
-    flex-direction: column;
     color: $content-font-color;
     font-family: "Helvetica Neue", Arial, sans-serif;
-    min-height: 100vh;
     text-rendering: optimizeLegibility;
 
-    & > header,
-    & > footer
+    & > header
     {
         background: $header-background;
         color: #fff;
@@ -170,47 +167,66 @@ a
     }
 }
 
-.clear
-{
-    clear: both;
-}
-
-#main
-{
-    flex: 1;
-    margin: 1em auto;
-}
-
 div.panel
 {
     background: #fff;
     border-radius: $panel-border-radius;
     display: inline-block;
-    float: left;
+    padding: 0;
+    text-align: left;
+    vertical-align: top;
 
     & > header
     {
-        background: $header-background;
+        background: $blue-1;
         border-radius: $panel-border-radius $panel-border-radius 0 0;
         color: #fff;
+        font-variant: small-caps;
         height: 2.5em;
         line-height: 2.5em;
         margin: 0;
         padding: 0 1em;
+        text-align: center;
+    }
+
+    & + &
+    {
+        margin-left: 1em;
+    }
+}
+
+#side
+{
+    background: transparent;
+    padding-bottom: 3em;
+}
+
+#main
+{
+    margin: 0 auto;
+    padding: 1em 0;
+    text-align: center;
+}
+
+#copyright
+{
+    color: #555;
+    font-size: 14px;
+    margin: 0;
+    padding: 1em 0;
+    text-align: center;
+
+    & p
+    {
+        margin: 0;
+        padding: 0;
     }
 }
 
 #sidebar
 {
-    margin-right: 1em;
-    padding-bottom: 0.5em;
-    padding-top: 0;
+    padding-bottom: 1em;
     width: 240px;
-
-    & header
-    {
-        text-align: center;
-    }
 
     & nav
     {
@@ -312,7 +328,44 @@ form.to-do-editor
     font-size: $content-font-size;
     padding: $content-padding;
 
-    & .field
+    #new-to-do-title
+    {
+        border: 1px solid #ddd;
+        display: block;
+        height: auto;
+        line-height: normal;
+
+        & input[type="text"]
+        {
+            height: auto;
+            line-height: normal;
+            padding: 0.8em;
+            width: 84%;
+        }
+
+        & input[type="submit"]
+        {
+            background: $blue-1;
+            border: 1px solid $blue-1;
+            border-radius: 4px;
+            color: #fff;
+            height: 2em;
+            line-height: 2em;
+            margin-top: -1em;
+            padding: 0 1em;
+            position: absolute;
+            right: 0.5em;
+            top: 50%;
+
+            &:hover
+            {
+                background: lighten($blue-1, 5%);
+                border-color: lighten($blue-1, 5%);
+            }
+        }
+    }
+
+    & div.field
     {
         display: inline-block;
         font-size: $content-font-size;
@@ -328,13 +381,27 @@ form.to-do-editor
         }
     }
 
-    & .field-set
+    & div.field-set
     {
         display: none;
         text-align: center;
+
+        & > div.field,
+        & > div.divider,
+        & > div.cancel
+        {
+            vertical-align: top;
+        }
+
+        & + div.field-set
+        {
+            border-top: 1px solid #ddd;
+            margin-top: 1em;
+            padding-top: 1em;
+        }
     }
 
-    & .divider
+    & div.divider
     {
         border: 1px solid #ddd;
         border-right: none;
@@ -345,11 +412,13 @@ form.to-do-editor
         width: 0;
     }
 
-    & .cancel
+    & div.schedule
     {
-        background: $delete-color;
+        background: $blue-1;
         border: 1px solid transparent;
         border-radius: 4px;
+        cursor: pointer;
+        display: inline-block;
         line-height: 2em;
         height: 2em;
         margin: 0;
@@ -358,7 +427,33 @@ form.to-do-editor
         & a
         {
             color: #fff;
-            float: left;
+            margin: 0;
+            outline: none;
+            padding: 0 1em;
+            text-decoration: none;
+        }
+
+        &:hover
+        {
+            background: lighten($blue-1, 5%);
+        }
+    }
+
+    & div.cancel
+    {
+        background: $delete-color;
+        border: 1px solid transparent;
+        border-radius: 4px;
+        cursor: pointer;
+        display: inline-block;
+        line-height: 2em;
+        height: 2em;
+        margin: 0;
+        padding: 0;
+
+        & a
+        {
+            color: #fff;
             margin: 0;
             outline: none;
             padding: 0 1em;
@@ -371,7 +466,7 @@ form.to-do-editor
         }
     }
 
-    & .checkbox-field
+    & div.checkbox-field
     {
         @include checked-input;
 
@@ -379,12 +474,12 @@ form.to-do-editor
         {
             & + label:before
             {
-                background: url('repeat.png') center center no-repeat #fff;
+                background-image: url('repeat.png');
             }
         }
     }
 
-    & .radio-field
+    & div.radio-field
     {
         @include checked-input;
 
@@ -394,17 +489,17 @@ form.to-do-editor
             {
                 &[for="new-to-do-later"]:before
                 {
-                    background: url('later.png') center center no-repeat #fff;
+                    background-image: url('later.png');
                 }
 
                 &[for="new-to-do-today"]:before
                 {
-                    background: url('today.png') center no-repeat #fff;
+                    background-image: url('today.png');
                 }
             }
         }
 
-        & + .radio-field
+        & + div.radio-field
         {
             margin-left: 0.5em;
         }
@@ -464,46 +559,38 @@ form.to-do-editor
 //      }
 //  }
 
-    & .text-field
+    & div.text-field
     {
         background: #fff;
-        border: 1px solid #ddd;
+        border: 1px solid $blue-1;
         border-radius: 4px;
-        display: block;
-        padding-left: 1em;
+        display: inline-block;
+        height: 2.5em;
+        line-height: 2.5em;
         position: relative;
+
+        & label
+        {
+            background: $blue-1;
+            border-radius: 0;
+            display: inline-block;
+            color: #fff;
+            height: 2.5em;
+            line-height: 2.5em;
+            padding: 0 0.8em;
+        }
 
         & input[type="text"]
         {
             border: 0;
+            border-radius: 4px;
             color: #555;
             display: inline-block;
+            height: 2.5em;
+            line-height: 2.5em;
             margin: 0;
             outline: none;
-            padding: 0.8em;
-            padding-left: 0;
-            width: 85%;
-        }
-
-        & input[type="submit"]
-        {
-            background: $blue-1;
-            border: 1px solid $blue-1;
-            border-radius: 4px;
-            color: #fff;
-            height: 2em;
-            line-height: 2em;
-            margin-top: -1em;
-            padding: 0 1em;
-            position: absolute;
-            right: 0.5em;
-            top: 50%;
-
-            &:hover
-            {
-                background: lighten($blue-1, 5%);
-                border-color: lighten($blue-1, 5%);
-            }
+            padding: 0 0.8em;
         }
     }
 }
@@ -568,7 +655,6 @@ div.to-do
         background: #fff;
         box-shadow: -1em 0 0.5em 0.5em #fff;
         display: none;
-        margin-top: -0.2em;
         position: absolute;
         right: 0;
 
@@ -577,14 +663,16 @@ div.to-do
             background-color: $blue-1;
             background-position: center center;
             background-repeat: no-repeat;
-            border-radius: 3px;
+            border-radius: 4px;
             color: #fff;
             display: inline-block;
             height: 20px;
             line-height: 20px;
-            padding: 0.2em;
+            margin-top: -3px;
+            padding: 3px;
             text-decoration: none;
             text-transform: capitalize;
+            vertical-align: middle;
             width: 20px;
 
             &:hover
@@ -623,6 +711,11 @@ div.to-do
                 background-image: url('repeat-selected.png');
             }
 
+            &.edit
+            {
+                background-image: url('edit-selected.png');
+            }
+
             &.delete
             {
                 background-color: $delete-color;
@@ -644,9 +737,11 @@ div.to-do
                 background-position: 6px center;
                 padding-left: 28px;
                 padding-right: 7px;
+                vertical-align: baseline;
                 width: auto;
 
-                &.later
+                &.later,
+                &.edit
                 {
                     background-position: 7px center;
                     padding-left: 30px;
@@ -665,7 +760,10 @@ div.to-do
 
             & a
             {
-                margin-left: 0.5em;
+                & + a
+                {
+                    margin-left: 0.5em;
+                }
             }
         }
 
@@ -673,7 +771,8 @@ div.to-do
         {
             display: inline-block;
             margin: 0;
-            padding: 0
+            margin-right: 0.5em;
+            padding: 0;
         }
     }
 }

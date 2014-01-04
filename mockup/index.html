@@ -6,40 +6,44 @@
     </script>
 </head>
 <body>
-    <header><h1>Actionist</h1></header>
     <div id="main">
-        <div id="sidebar" class="panel">
-            <header>
-                <h2>Eugene Doan</h2>
-            </header>
-            <section>
+        <div id="side" class="panel">
+            <div id="sidebar" class="panel">
                 <header>
-                    <h3>Lists</h3>
+                    <h2>Eugene Doan</h2>
                 </header>
-                <nav>
-                    <a href="#"><span class="to-do-category">All</span></a>
-                    <a href="#"><span class="to-do-category">Today</span><span class="to-do-count">8</span></a>
-                    <a class="selected" href="#"><span class="to-do-category">Later</span><span class="to-do-count">20</span></a>
-                    <a href="#"><span class="to-do-category">Done</span><span class="to-do-count">500</span></a>
-                </nav>
-            </section>
-            <section>
-                <header>
-                    <h3>Account</h3>
-                </header>
-                <nav>
-                    <a href="#">Settings</a>
-                    <a href="#">Log Out</a>
-                </nav>
-            </section>
+                <section>
+                    <header>
+                        <h3>Lists</h3>
+                    </header>
+                    <nav>
+                        <a class="selected" href="#"><span class="to-do-category">All</span></a>
+                        <a href="#"><span class="to-do-category">Today</span><span class="to-do-count">8</span></a>
+                        <a href="#"><span class="to-do-category">Later</span><span class="to-do-count">20</span></a>
+                        <a href="#"><span class="to-do-category">Done</span><span class="to-do-count">500</span></a>
+                    </nav>
+                </section>
+                <section>
+                    <header>
+                        <h3>Account</h3>
+                    </header>
+                    <nav>
+                        <a href="#">Settings</a>
+                        <a href="#">Log Out</a>
+                    </nav>
+                </section>
+            </div>
+            <div id="copyright">
+                <p>Actionist &#169; 2013</p>
+            </div>
         </div>
         <div id="content" class="panel">
             <header>
-                <h2>Today</h2>
+                <h2>Actionist</h2>
             </header>
             <section>
                 <form id="new-to-do-form" method="POST">
-                    <div class="text-field field">
+                    <div id="new-to-do-title" class="text-field field">
                         <input name="title" type="text" placeholder="What will you do?" />
                         <input type="submit" value="Add" />
                     </div>
@@ -58,10 +62,19 @@
                             <label for="new-to-do-repeat">Repeat</label>
                         </div>
                         <div class="divider"></div>
-                        <div class="cancel field">
-                            <a href="#">Cancel</a>
+                        <div class="schedule">
+                            <a href="#">Schedule...</a>
                         </div>
-                        <div class="clear"></div>
+                    </div>
+                    <div class="field-set">
+                        <div class="text-field field">
+                            <label for="new-to-do-date">Date</label>
+                            <input id="new-to-do-date" name="date" type="text" placeholder="e.g., 01/04/2014" />
+                        </div>
+                        <div class="text-field field">
+                            <label for="new-to-do-time">Time</label>
+                            <input id="new-to-do-time" name="time" type="text" placeholder="e.g., 12:00am" />
+                        </div>
                     </div>
                 </form>
             </section>
@@ -71,7 +84,7 @@
                     <input id="1" type="checkbox" /><label for="1"><a href="#" title="Task 1">Task 1</a></label>
                     <div class="details">
                         <a class="today detail" href="#"></a>
-                        <a class="repeat detail" href="#"></a>
+                        <a class="edit detail" href="#"></a>
                         <a class="delete detail" href="#"></a>
                     </div>
                 </div>
@@ -79,7 +92,7 @@
                     <input id="2" type="checkbox" /><label for="2"><a href="#">Task 2</a></label>
                     <div class="details">
                         <a class="later detail" href="#"></a>
-                        <a class="no-repeat detail" href="#"></a>
+                        <a class="edit detail" href="#"></a>
                         <a class="delete detail" href="#"></a>
                     </div>
                 </div>
@@ -87,7 +100,7 @@
                     <input id="3" type="checkbox" /><label for="3"><a href="#" title="Task 3 With A Super Long Name Like This One Blah Blah Blah Some More Words">Task 3 With A Super Long Name Like This One Blah Blah Blah Some More Words And Then Some This Title Is Long</a></label>
                     <div class="details">
                         <a class="today detail" href="#"></a>
-                        <a class="repeat detail" href="#"></a>
+                        <a class="edit detail" href="#"></a>
                         <a class="delete detail" href="#"></a>
                     </div>
                 </div>
@@ -95,14 +108,13 @@
                     <input id="4" type="checkbox" /><label for="4"><a href="#">Task 4</a></label>
                     <div class="details">
                         <a class="today detail" href="#"></a>
-                        <a class="repeat detail" href="#"></a>
+                        <a class="edit detail" href="#"></a>
                         <a class="delete detail" href="#"></a>
                     </div>
                 </div>
             </section>
         </div>
     </div>
-    <footer>Footer</footer>
     <script type="text/javascript">
         // Hide new to-do form if user clicks anywhere other than the form
         // or individual to-do items.
@@ -151,6 +163,7 @@
             {
                 var label = $(that).attr('class').split(" ")[0];
                 var question;
+
                 switch (label) {
                     case "today":
                         question = "Do this later?";
@@ -169,24 +182,39 @@
                         question = "Discard forever?";
                         break;
                 }
+
                 var actions = $("<div />", {
                     class: "edit",
-                }).append($("<p />", {
-                    // Do later/today?
-                    // Start/stop repeating?
-                    // Delete?
-                    text: question
-                })).append($("<a />", {
-                    // Yes
-                    class: "yes",
-                    href: "#",
-                    text: "Yes"
-                })).append($("<a />", {
-                    // No
-                    class: "no",
-                    href: "#",
-                    text: "No"
-                }));;
+                });
+
+                if (label === "edit")
+                {
+                    actions.append($("<a />", {
+                        class: "no",
+                        href: "#",
+                        text: "Done"
+                    }));
+                }
+                else
+                {
+                    actions.append($("<p />", {
+                        // Do later/today?
+                        // Start/stop repeating?
+                        // Delete?
+                        text: question
+                    })).append($("<a />", {
+                        // Yes
+                        class: "yes",
+                        href: "#",
+                        text: "Yes"
+                    })).append($("<a />", {
+                        // No
+                        class: "no",
+                        href: "#",
+                        text: "No"
+                    }));
+                }
+
                 otherDetails.hide();
                 details.addClass("selected")
                        .append(actions);
