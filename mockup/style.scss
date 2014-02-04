@@ -8,9 +8,14 @@ $purple: rgb(158, 159, 219);
 // Theme Palette 2
 $blue-1: rgb(57, 166, 204);     // Medium Blue
 $blue-2: rgb(47, 126, 153);     // Dark Blue
-$blue-3: rgb(147, 255, 224);    // Light Blue
-$pink-1: rgb(255, 161, 153);    // Light Pink
-$pink-2: rgb(204, 93, 120);     // Dark Pink
+$blue-3: rgb(147, 255, 224);    // Green Blue
+$blue-4: rgb(61, 176, 217);     // Light Blue
+$pink-1: rgb(212, 81, 113);     // Medium Pink
+$pink-2: rgb(255, 161, 153);    // Light Pink
+$pink-3: rgb(204, 93, 120);     // Dark Pink
+
+$alt-blue-1: rgb(130, 199, 211);
+$alt-blue-2: rgb(92, 169, 182);
 
 $header-background: $blue-1;
 
@@ -21,14 +26,20 @@ $content-padding: 1em;
 $link-color: $blue-1;
 $link-hover-color: $blue-2;
 
-$delete-color: $red;
+$delete-color: rgb(208, 117, 125);
 
 $panel-border-radius: 6px;
 
 $sidebar-link-background-hover: #f6f6f6;
 $sidebar-link-background-selected: $blue-3;
 
-$new-to-do-checked-input-background: $blue-1;
+$input-default-background-color: #e6e6e6;
+$input-default-border-color: #ddd;
+
+$input-selected-background-color: $blue-1;
+$input-selected-border-color: $input-selected-background-color;
+
+$icon-background-color: $input-selected-background-color;
 
 @mixin unselectable
 {
@@ -55,8 +66,8 @@ $new-to-do-checked-input-background: $blue-1;
         {
             & + label
             {
-                background: $new-to-do-checked-input-background;
-                border: 1px solid $new-to-do-checked-input-background;
+                background: $input-selected-background-color;
+                border: 1px solid $input-selected-border-color;
                 color: #fff;
 
                 &:before
@@ -64,7 +75,7 @@ $new-to-do-checked-input-background: $blue-1;
                     background-color: #fff;
                     background-position: center center;
                     background-repeat: no-repeat;
-                    border-right: 1px solid $new-to-do-checked-input-background;
+                    border-right: 1px solid $input-selected-background-color;
                 }
             }
         }
@@ -72,8 +83,8 @@ $new-to-do-checked-input-background: $blue-1;
 
     & > label
     {
-        background: #e6e6e6;
-        border: 1px solid #ddd;
+        background: $input-default-background-color;
+        border: 1px solid $input-default-border-color;
         border-radius: 4px;
         color: #555;
         cursor: pointer;
@@ -90,7 +101,7 @@ $new-to-do-checked-input-background: $blue-1;
         {
             background: #fff;
             border-bottom-left-radius: 3px;
-            border-right: 1px solid #ddd;
+            border-right: 1px solid $input-default-border-color;
             border-top-left-radius: 3px;
             content: "";
             float: left;
@@ -100,6 +111,38 @@ $new-to-do-checked-input-background: $blue-1;
             height: 2em;
             width: 2em;
         }
+    }
+}
+
+@mixin text-input($height: 2em)
+{
+    display: inline-block;
+    height: $height;
+    line-height: $height;
+
+    & > label
+    {
+        background: $input-default-border-color;
+        border: 1px solid $input-default-border-color;
+        border-radius: 4px;
+        display: inline-block;
+        color: #555;
+        height: $height;
+        line-height: $height;
+        margin-right: 1em;
+        padding: 0 1em;
+    }
+
+    & input
+    {
+        border: 1px solid $input-default-border-color;
+        border-radius: 4px;
+        color: #555;
+        display: inline-block;
+        height: $height;
+        margin: 0;
+        outline: none;
+        padding: 0 0.5em;
     }
 }
 
@@ -167,7 +210,7 @@ a
     }
 }
 
-div.panel
+.panel
 {
     background: #fff;
     border-radius: $panel-border-radius;
@@ -178,14 +221,13 @@ div.panel
 
     & > header
     {
-        background: $blue-1;
+        background: $header-background;
         border-radius: $panel-border-radius $panel-border-radius 0 0;
         color: #fff;
         font-variant: small-caps;
         height: 2.5em;
         line-height: 2.5em;
         margin: 0;
-        padding: 0 1em;
         text-align: center;
     }
 
@@ -326,27 +368,33 @@ form.to-do-editor
     border-bottom: 1px solid #ddd;
     display: block;
     font-size: $content-font-size;
-    padding: $content-padding;
+    overflow: hidden;
 
     #new-to-do-title
     {
-        border: 1px solid #ddd;
+        border: 1px solid $input-default-border-color;
+        border-radius: 4px;
+        background: #fff;
         display: block;
         height: auto;
         line-height: normal;
+        margin: $content-padding; 
+        position: relative;
 
-        & input[type="text"]
+        & > input[type="text"]
         {
+            border: none;
+            display: block;
             height: auto;
             line-height: normal;
             padding: 0.8em;
             width: 84%;
         }
 
-        & input[type="submit"]
+        & > input[type="submit"]
         {
-            background: $blue-1;
-            border: 1px solid $blue-1;
+            background: $input-selected-background-color;
+            border: 1px solid $input-selected-background-color;
             border-radius: 4px;
             color: #fff;
             height: 2em;
@@ -359,21 +407,55 @@ form.to-do-editor
 
             &:hover
             {
-                background: lighten($blue-1, 5%);
-                border-color: lighten($blue-1, 5%);
+                background: lighten($input-selected-background-color, 5%);
+                border-color: lighten($input-selected-background-color, 5%);
             }
         }
     }
 
-    & div.field
+    #new-to-do-options
+    {
+        padding-top: 0;
+    }
+
+    #new-to-do-datetime
+    {
+        background: darken(#f6f6f6, 2%);
+        border-top: 1px solid #ddd;
+        display: none;
+
+        & .field
+        {
+            text-align: left;
+            width: 28em;
+
+            & + .field
+            {
+                margin-left: 0;
+                margin-top: 1em;
+            }
+        }
+
+        & label
+        {
+            margin-right: 0.5em;
+            text-align: center;
+            width: 4em;
+        }
+
+        & input + input
+        {
+            margin-left: 0.5em;
+        }
+    }
+
+    & .field
     {
         display: inline-block;
         font-size: $content-font-size;
-
-        & + .field-set
-        {
-            margin-top: 1em;
-        }
+        margin: 0;
+        padding: 0;
+        vertical-align: top;
 
         & + .field
         {
@@ -381,27 +463,14 @@ form.to-do-editor
         }
     }
 
-    & div.field-set
+    & .field-set
     {
         display: none;
+        padding: $content-padding;
         text-align: center;
-
-        & > div.field,
-        & > div.divider,
-        & > div.cancel
-        {
-            vertical-align: top;
-        }
-
-        & + div.field-set
-        {
-            border-top: 1px solid #ddd;
-            margin-top: 1em;
-            padding-top: 1em;
-        }
     }
 
-    & div.divider
+    & .divider
     {
         border: 1px solid #ddd;
         border-right: none;
@@ -410,12 +479,13 @@ form.to-do-editor
         line-height: 2em;
         margin: 0 0.75em;
         width: 0;
+        vertical-align: top;
     }
 
-    & div.schedule
+    & .schedule
     {
-        background: $blue-1;
-        border: 1px solid transparent;
+        background: $input-default-background-color;
+        border: 1px solid $input-default-border-color;
         border-radius: 4px;
         cursor: pointer;
         display: inline-block;
@@ -424,22 +494,28 @@ form.to-do-editor
         margin: 0;
         padding: 0;
 
-        & a
+        &.selected
         {
-            color: #fff;
+            background: $input-selected-background-color;
+            border: 1px solid transparent;
+
+            & > a
+            {
+                color: #fff;
+            }
+        }
+
+        & > a
+        {
+            color: #555;
             margin: 0;
             outline: none;
             padding: 0 1em;
             text-decoration: none;
         }
-
-        &:hover
-        {
-            background: lighten($blue-1, 5%);
-        }
     }
 
-    & div.cancel
+    & .cancel
     {
         background: $delete-color;
         border: 1px solid transparent;
@@ -451,7 +527,7 @@ form.to-do-editor
         margin: 0;
         padding: 0;
 
-        & a
+        & > a
         {
             color: #fff;
             margin: 0;
@@ -466,7 +542,7 @@ form.to-do-editor
         }
     }
 
-    & div.checkbox-field
+    & .checkbox-field
     {
         @include checked-input;
 
@@ -479,7 +555,37 @@ form.to-do-editor
         }
     }
 
-    & div.radio-field
+    & .datetime-field
+    {
+        @include text-input;
+
+        & > input
+        {
+            &::-webkit-inner-spin-button
+            {
+                -webkit-appearance: none;
+            }
+        }
+
+        & > input[type="date"]
+        {
+            width: 10em;
+
+            &::-webkit-calendar-picker-indicator
+            {
+                -webkit-appearance: none;
+                background: url('dropdown.png') no-repeat center;
+                color: transparent;
+            }
+        }
+
+        & > input[type="time"]
+        {
+            width: 8em;
+        }
+    }
+
+    & .radio-field
     {
         @include checked-input;
 
@@ -499,112 +605,92 @@ form.to-do-editor
             }
         }
 
-        & + div.radio-field
+        & + .radio-field
         {
             margin-left: 0.5em;
         }
     }
 
-//  & .select-field
-//  {
-//      background: $blue-1;
-//      border: 1px solid $blue-1;
-//      border-radius: 4px;
-
-//      & > label
-//      {
-//          color: #fff;
-//          display: inline-block;
-//          float: left;
-//          height: 1.4em;
-//          line-height: 1.5em;
-//          margin-right: 0.6em;
-//          padding: 0.2em 0.2em 0.2em 0.6em;
-//      }
-
-//      & > .select-input
-//      {
-//          background: url("dropdown.png") no-repeat 90% center #fff;
-//          border-bottom-right-radius: 3px;
-//          border-top-right-radius: 3px;
-//          display: inline-block;
-//          float: left;
-//          height: 1.5em;
-//          line-height: 1.5em;
-//          overflow: hidden;
-//          padding: 0.2em 0.2em 0.2em 0.6em;
-//          width: 5em;
-
-//          & > select
-//          {
-//              -moz-appearance: none;
-//              -webkit-appearance: none;
-//              background: transparent;
-//              border: none;
-//              color: #555;
-//              cursor: pointer;
-//              display: inline-block;
-//              height: 1.4em;
-//              line-height: 1.4em;
-//              margin: 0;
-//              outline: none;
-//              width: 8em;
-
-//              &:-moz-focusring
-//              {
-//                  color: transparent;
-//                  text-shadow: 0 0 0 #555;
-//              }
-//          }
-//      }
-//  }
-
-    & div.text-field
+    & .select-field
     {
-        background: #fff;
-        border: 1px solid $blue-1;
-        border-radius: 4px;
-        display: inline-block;
-        height: 2.5em;
-        line-height: 2.5em;
+        @include text-input;
         position: relative;
 
-        & label
+        & > .select-input
         {
-            background: $blue-1;
-            border-radius: 0;
+            background: url("dropdown.png") no-repeat 7.5em center #fff;
+            border: 1px solid $input-default-border-color;
+            border-radius: 4px;
             display: inline-block;
-            color: #fff;
-            height: 2.5em;
-            line-height: 2.5em;
-            padding: 0 0.8em;
+            height: 2em;
+            line-height: 2em;
+            overflow: hidden;
+            padding: 0 0.5em;
+            width: 8em;
+
+            & > select
+            {
+                -moz-appearance: none;
+                -webkit-appearance: none;
+                background: transparent;
+                border: none;
+                color: #555;
+                cursor: pointer;
+                display: inline-block;
+                height: 2em;
+                line-height: 2em;
+                margin: 0;
+                outline: none;
+                width: 10em;
+
+                &:-moz-focusring
+                {
+                    color: transparent;
+                    text-shadow: 0 0 0 #555;
+                }
+            }
         }
 
-        & input[type="text"]
+        & > label
         {
-            border: 0;
-            border-radius: 4px;
-            color: #555;
-            display: inline-block;
-            height: 2.5em;
-            line-height: 2.5em;
-            margin: 0;
-            outline: none;
-            padding: 0 0.8em;
+            vertical-align: top;
         }
+
+        & > p
+        {
+            color: #555;
+            cursor: default;
+            display: inline-block;
+            margin: 0;
+            padding: 0;
+            position: absolute;
+            right: 0.5em;
+            vertical-align: top;
+
+            & > input
+            {
+                margin: 0 0.25em;
+                width: 1.5em;
+            }
+        }
+    }
+
+    & .text-field
+    {
+        @include text-input(2.5em);
     }
 }
 
-div.to-do
+.to-do
 {
     @include unselectable;
 
     cursor: default;
     display: block;
-    height: 1.5em;
-    line-height: 1.5em;
-    margin: 0 1.25em;
-    padding: 1.25em 0;
+    height: 20px;
+    line-height: 20px;
+    margin: 0 18px;
+    padding: 18px 0;
     position: relative;
 
     & + &
@@ -612,12 +698,12 @@ div.to-do
         border-top: 1px dotted #aaa;
     }
 
-    &:hover div.details
+    &:hover > .details
     {
         display: inline-block;
     }
 
-    & input[type="checkbox"]
+    & > input[type="checkbox"]
     {
         display: none;
 
@@ -627,7 +713,7 @@ div.to-do
         }
     }
 
-    & label
+    & > label
     {
         background: url("checkbox-unchecked.png") transparent left center no-repeat;
         cursor: pointer;
@@ -650,80 +736,69 @@ div.to-do
         }
     }
 
-    & div.details
+    & > .details
     {
         background: #fff;
-        box-shadow: -1em 0 0.5em 0.5em #fff;
+        box-shadow: -14px 0 8px 8px #fff;
         display: none;
         position: absolute;
         right: 0;
 
-        & a.detail
+        & > .detail
         {
-            background-color: $blue-1;
-            background-position: center center;
+            background-position: left center;
             background-repeat: no-repeat;
-            border-radius: 4px;
-            color: #fff;
+            color: #555;
             display: inline-block;
             height: 20px;
             line-height: 20px;
-            margin-top: -3px;
-            padding: 3px;
+            outline: none;
             text-decoration: none;
             text-transform: capitalize;
-            vertical-align: middle;
             width: 20px;
 
-            &:hover
+            & + .detail
             {
-                background-color: lighten($blue-1, 5%);
-            }
-
-            & + a.detail
-            {
-                margin-left: 0.5em;
+                margin-left: 8px;
             }
 
             &.later
             {
-                background-image: url('later-selected.png');
+                background-image: url('later.png');
+
+                &:hover
+                {
+                    background-image: url('later-selected.png');
+                }
             }
 
             &.today
             {
-                background-image: url('today-selected.png');
-            }
-
-            &.no-repeat
-            {
-                background-color: #aaa;
-                background-image: url('repeat-selected.png');
+                background-image: url('today.png');
 
                 &:hover
                 {
-                    background-color: lighten(#aaa, 5%);
+                    background-image: url('today-selected.png');
                 }
-            }
-
-            &.repeat
-            {
-                background-image: url('repeat-selected.png');
             }
 
             &.edit
             {
-                background-image: url('edit-selected.png');
+                background-image: url('edit.png');
+
+                &:hover
+                {
+                    background-image: url('edit-selected.png');
+                }
             }
 
             &.delete
             {
-                background-color: $delete-color;
                 background-image: url('delete.png');
 
                 &:hover
                 {
-                    background-color: lighten($delete-color, 5%);
+                    background-image: url('delete-selected.png');
                 }
             }
         }
@@ -731,48 +806,60 @@ div.to-do
         &.selected
         {
             display: inline-block;
+            vertical-align: baseline;
 
-            & a.detail
+            & > .detail
             {
-                background-position: 6px center;
-                padding-left: 28px;
-                padding-right: 7px;
-                vertical-align: baseline;
+                color: $blue-1;
+                margin-left: 0;
+                padding-left: 22px;
                 width: auto;
 
-                &.later,
+                &.later
+                {
+                    background-image: url('later-selected.png');
+                    padding-left: 23px;
+                }
+
+                &.today
+                {
+                    background-image: url('today-selected.png');
+                }
+
                 &.edit
                 {
-                    background-position: 7px center;
-                    padding-left: 30px;
-                    padding-right: 8px;
+                    background-image: url('edit-selected.png');
+                }
+
+                &.delete
+                {
+                    background-image: url('delete-selected.png');
+                    color: $delete-color;
                 }
             }
         }
 
-        & div.edit
+        & > .change
         {
             color: #777;
             display: inline-block;
             margin: 0;
-            margin-left: 0.5em;
             padding: 0;
 
-            & a
+            & > a
             {
                 & + a
                 {
                     margin-left: 0.5em;
                 }
             }
-        }
 
-        & p
-        {
-            display: inline-block;
-            margin: 0;
-            margin-right: 0.5em;
-            padding: 0;
+            & > p
+            {
+                display: inline-block;
+                margin: 0 0.5em 0 14px;
+                padding: 0;
+            }
         }
     }
 }

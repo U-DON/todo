@@ -14,7 +14,7 @@
 <ul id="to-do-list">
 {% for task in task_list %}
 <li class="to-do-item" data-id="{{ task.id }}"{% if task.is_done %} data-done-time="{{ task.epoch_done_time }}"{% endif %}>
-        <input type="checkbox" {% if task.is_done %}checked {% endif %}/><span class="title">{{ task.title }}</span><a class="delete" href="#">Delete</a>
+    <label><input type="checkbox" {% if task.is_done %}checked {% endif %}/><span class="title">{{ task.title }}</span></label><a class="delete" href="#">Delete</a>
     </li>
 {% endfor %}
 </ul>

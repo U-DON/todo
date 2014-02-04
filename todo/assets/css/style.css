@@ -2,3 +2,31 @@ form.toDoEditor
 {
     display: inline-block;
 }
+
+label
+{
+    cursor: pointer;
+    padding-left: 25px;
+}
+
+label:before
+{
+    background: #000;
+    color: #fff;
+    content: "";
+    font-size: 15px;
+    height: 15px;
+    line-height: 15px;
+    text-align: center;
+    width: 15px;
+}
+
+input[type="checkbox"]
+{
+    display: none;
+}
+
+input[type="checkbox"]:checked + label:before
+{
+    content: "\2713";
+}

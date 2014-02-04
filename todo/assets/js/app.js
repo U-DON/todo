@@ -167,10 +167,12 @@ App.Views.ToDoItem = Backbone.View.extend({
     },
 
     // Normal state template for todo item
-    itemTemplate: Handlebars.compile('<input type="checkbox" ' +
+    itemTemplate: Handlebars.compile('<label>' +
+        '<input type="checkbox" ' +
         '{{#if done}}checked {{/if}}/>' +
         '<span class="title">{{title}}</span>' +
-        '<a class="delete" href="#">Delete</a>'
+        '<a class="delete" href="#">Delete</a>' +
+        '</label>'
     ),
 
     // Editing state template for todo item

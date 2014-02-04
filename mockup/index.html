@@ -2,8 +2,7 @@
 <head>
     <link rel="stylesheet" href="normalize.css" />
     <link rel="stylesheet" href="style.css" />
-    <script src="http://code.jquery.com/jquery-2.0.3.min.js">
-    </script>
+    <script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
 </head>
 <body>
     <div id="main">
@@ -47,7 +46,7 @@
                         <input name="title" type="text" placeholder="What will you do?" />
                         <input type="submit" value="Add" />
                     </div>
-                    <div class="field-set">
+                    <div id="new-to-do-options" class="field-set">
                         <div class="radio-field field">
                             <input id="new-to-do-later" name="current" type="radio" value="0" checked />
                             <label for="new-to-do-later">Later</label>
@@ -66,14 +65,24 @@
                             <a href="#">Schedule...</a>
                         </div>
                     </div>
-                    <div class="field-set">
-                        <div class="text-field field">
-                            <label for="new-to-do-date">Date</label>
-                            <input id="new-to-do-date" name="date" type="text" placeholder="e.g., 01/04/2014" />
+                    <div id="new-to-do-datetime" class="field-set">
+                        <div class="datetime-field field">
+                            <label for="new-to-do-date">When</label>
+                            <input id="new-to-do-date" name="date" type="date" placeholder="Date" />
+                            <input id="new-to-do-time" name="time" type="time" placeholder="Time?" />
                         </div>
-                        <div class="text-field field">
-                            <label for="new-to-do-time">Time</label>
-                            <input id="new-to-do-time" name="time" type="text" placeholder="e.g., 12:00am" />
+                        <div class="select-field field">
+                            <label>Repeat</label>
+                            <div class="select-input">
+                                <select>
+                                    <option>Whenever</option>
+                                    <option>Daily</option>
+                                    <option>Weekly</option>
+                                    <option>Monthly</option>
+                                    <option>Yearly</option>
+                                </select>
+                            </div>
+                            <p>Every <input type="text" value="1" /> Days</p>
                         </div>
                     </div>
                 </form>
@@ -124,34 +133,55 @@
             if (!workspace.is(e.target)
                 && workspace.has(e.target).length === 0)
             {
-                newToDoForm.children(".field-set:visible").hide();
+                newToDoForm.children("div.field-set:visible").hide();
             }
         });
 
-        $("#new-to-do-form .text-field input").focus(function () {
-            $("#new-to-do-form .field-set:hidden").show();
+        // Expand the new to-do form when focusing on the title input.
+        $("#new-to-do-form div.text-field input").focus(function () {
+            $("#new-to-do-form .field-set:hidden:not(#new-to-do-datetime)").show();
+            var datetimeFieldSet = $("#new-to-do-datetime");
+            var scheduleButton = $("#new-to-do-form div.schedule");
+            if (scheduleButton.hasClass("selected"))
+            {
+                datetimeFieldSet.show();
+            }
+        });
+
+        $("#new-to-do-form .schedule").click(function () {
+            var datetimeFieldSet = $("#new-to-do-datetime");
+            if (datetimeFieldSet.is(":visible"))
+            {
+                $(this).removeClass("selected");
+                datetimeFieldSet.hide();
+            }
+            else
+            {
+                $(this).addClass("selected");
+                datetimeFieldSet.show();
+            }
         });
 
         $("#new-to-do-form .cancel").click(function () {
-            $("#new-to-do-form .field-set:visible").hide();
+            $("#new-to-do-form div.field-set:visible").hide();
         });
 
         var closeEdit = function (details) {
-            var detail = $(details.children("a.detail:visible")[0]);
+            var detail = $(details.children(".detail:visible")[0]);
             if (details.hasClass("selected"))
             {
-                details.children("div.edit").remove();
+                details.children(".change").remove();
                 detail.text("");
                 details.removeClass("selected")
                 detail.siblings().show();
             }
         }
 
-        $("div.details").on("click", "div.edit a.no", function () {
+        $(".details").on("click", ".no", function () {
             closeEdit($(this).parent().parent());
         });
 
-        $("a.detail").click(function () {
+        $(".detail").click(function () {
             var that = this;
             var details = $(this).parent();
             var otherDetails = $(this).siblings();
@@ -184,12 +214,14 @@
                 }
 
                 var actions = $("<div />", {
-                    class: "edit",
+                    class: "change",
                 });
 
                 if (label === "edit")
                 {
-                    actions.append($("<a />", {
+                    actions.append($("<p />", {
+                        text: "Making changes."
+                    })).append($("<a />", {
                         class: "no",
                         href: "#",
                         text: "Done"
