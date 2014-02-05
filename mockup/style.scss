@@ -31,7 +31,7 @@ $delete-color: rgb(208, 117, 125);
 $panel-border-radius: 6px;
 
 $sidebar-link-background-hover: #f6f6f6;
-$sidebar-link-background-selected: $blue-3;
+$sidebar-link-background-selected: lighten($blue-3, 10%);
 
 $input-default-background-color: #e6e6e6;
 $input-default-border-color: #ddd;
@@ -275,7 +275,7 @@ a
         & a
         {
             border-top: 1px solid $sidebar-link-background-hover;
-            color: #666;
+            color: #777;
             display: block;
             font-size: $content-font-size;
             height: 1.5em;
@@ -336,6 +336,34 @@ a
             text-align: left;
         }
     }
+}
+
+#all-category
+{
+    background-image: url('all.png');
+}
+
+#today-category
+{
+    background-image: url('today.png');
+}
+
+#later-category
+{
+    background-image: url('later.png');
+}
+
+#done-category
+{
+    background-image: url('done.png');
+}
+
+.to-do-category
+{
+    background-color: transparent;
+    background-position: left center;
+    background-repeat: no-repeat;
+    padding-left: 2em;
 }
 
 #content
@@ -484,7 +512,7 @@ form.to-do-editor
 
     & .schedule
     {
-        background: $input-default-background-color;
+        background: url('schedule.png') no-repeat 1em center $input-default-background-color;
         border: 1px solid $input-default-border-color;
         border-radius: 4px;
         cursor: pointer;
@@ -496,7 +524,7 @@ form.to-do-editor
 
         &.selected
         {
-            background: $input-selected-background-color;
+            background: url('schedule-selected.png') no-repeat 1em center $input-selected-background-color;
             border: 1px solid transparent;
 
             & > a
@@ -510,7 +538,7 @@ form.to-do-editor
             color: #555;
             margin: 0;
             outline: none;
-            padding: 0 1em;
+            padding: 0 1em 0 3em;
             text-decoration: none;
         }
     }
@@ -576,6 +604,7 @@ form.to-do-editor
                 -webkit-appearance: none;
                 background: url('dropdown.png') no-repeat center;
                 color: transparent;
+                cursor: pointer;
             }
         }
 
@@ -726,6 +755,16 @@ form.to-do-editor
         text-overflow: ellipsis;
         white-space: nowrap;
 
+        & > .date
+        {
+            background: #e6e6e6;
+            color: #555;
+            height: 20px;
+            line-height: 20px;
+            margin-right: 8px;
+            padding: 4px;
+        }
+
         & a
         {
             color: #333;
@@ -818,7 +857,6 @@ form.to-do-editor
                 &.later
                 {
                     background-image: url('later-selected.png');
-                    padding-left: 23px;
                 }
 
                 &.today
@@ -841,10 +879,14 @@ form.to-do-editor
 
         & > .change
         {
+            border: none;
+            border-left: 1px solid #ccc;
             color: #777;
             display: inline-block;
             margin: 0;
+            margin-left: 8px;
             padding: 0;
+            padding-left: 12px;
 
             & > a
             {
@@ -857,7 +899,8 @@ form.to-do-editor
             & > p
             {
                 display: inline-block;
-                margin: 0 0.5em 0 14px;
+                margin: 0;
+                margin-right: 12px;
                 padding: 0;
             }
         }

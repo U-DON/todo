@@ -16,10 +16,10 @@
                         <h3>Lists</h3>
                     </header>
                     <nav>
-                        <a class="selected" href="#"><span class="to-do-category">All</span></a>
-                        <a href="#"><span class="to-do-category">Today</span><span class="to-do-count">8</span></a>
-                        <a href="#"><span class="to-do-category">Later</span><span class="to-do-count">20</span></a>
-                        <a href="#"><span class="to-do-category">Done</span><span class="to-do-count">500</span></a>
+                        <a class="selected" href="#"><span id="all-category" class="to-do-category">All</span></a>
+                        <a href="#"><span id="today-category" class="to-do-category">Today</span><span class="to-do-count">8</span></a>
+                        <a href="#"><span id="later-category" class="to-do-category">Later</span><span class="to-do-count">20</span></a>
+                        <a href="#"><span id="done-category" class="to-do-category">Done</span><span class="to-do-count">500</span></a>
                     </nav>
                 </section>
                 <section>
@@ -98,7 +98,7 @@
                     </div>
                 </div>
                 <div class="to-do">
-                    <input id="2" type="checkbox" /><label for="2"><a href="#">Task 2</a></label>
+                    <input id="2" type="checkbox" /><label for="2"><span class="date">02/14/2014</span><a href="#">Task 2</a></label>
                     <div class="details">
                         <a class="later detail" href="#"></a>
                         <a class="edit detail" href="#"></a>
@@ -106,7 +106,7 @@
                     </div>
                 </div>
                 <div class="to-do">
-                    <input id="3" type="checkbox" /><label for="3"><a href="#" title="Task 3 With A Super Long Name Like This One Blah Blah Blah Some More Words">Task 3 With A Super Long Name Like This One Blah Blah Blah Some More Words And Then Some This Title Is Long</a></label>
+                    <input id="3" type="checkbox" /><label for="3"><span class="date">Today @ 3:42pm</span><a href="#" title="Task 3 With A Super Long Name Like This One Blah Blah Blah Some More Words">Task 3 With A Super Long Name Like This One Blah Blah Blah Some More Words And Then Some This Title Is Long</a></label>
                     <div class="details">
                         <a class="today detail" href="#"></a>
                         <a class="edit detail" href="#"></a>
@@ -114,7 +114,7 @@
                     </div>
                 </div>
                 <div class="to-do">
-                    <input id="4" type="checkbox" /><label for="4"><a href="#">Task 4</a></label>
+                    <input id="4" type="checkbox" /><label for="4"><span class="date">Tomorrow</span><a href="#">Task 4</a></label>
                     <div class="details">
                         <a class="today detail" href="#"></a>
                         <a class="edit detail" href="#"></a>
