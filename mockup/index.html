@@ -16,7 +16,7 @@
                         <h3>Lists</h3>
                     </header>
                     <nav>
-                        <a class="selected" href="#"><span id="all-category" class="to-do-category">All</span></a>
+                        <a class="selected" href="#"><span id="all-category" class="to-do-category">All</span><span class="to-do-count">528</span></a>
                         <a href="#"><span id="today-category" class="to-do-category">Today</span><span class="to-do-count">8</span></a>
                         <a href="#"><span id="later-category" class="to-do-category">Later</span><span class="to-do-count">20</span></a>
                         <a href="#"><span id="done-category" class="to-do-category">Done</span><span class="to-do-count">500</span></a>
@@ -27,8 +27,8 @@
                         <h3>Account</h3>
                     </header>
                     <nav>
-                        <a href="#">Settings</a>
-                        <a href="#">Log Out</a>
+                        <a href="#"><span id="settings-link">Settings</span></a>
+                        <a href="#"><span id="logout-link">Log Out</span></a>
                     </nav>
                 </section>
             </div>
@@ -249,8 +249,7 @@
 
                 otherDetails.hide();
                 details.addClass("selected")
-                       .append(actions);
-                $(this).text(label);
+                $(this).after(actions);
             }
         });
     </script>

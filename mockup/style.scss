@@ -17,6 +17,9 @@ $pink-3: rgb(204, 93, 120);     // Dark Pink
 $alt-blue-1: rgb(130, 199, 211);
 $alt-blue-2: rgb(92, 169, 182);
 
+$blue-1: lighten($blue-1, 5%);
+$blue-2: lighten($blue-2, 5%);
+
 $header-background: $blue-1;
 
 $content-font-color: #222;
@@ -267,7 +270,7 @@ a
 
 #sidebar
 {
-    padding-bottom: 1em;
+    padding-bottom: 0.75em;
     width: 240px;
 
     & nav
@@ -358,12 +361,23 @@ a
     background-image: url('done.png');
 }
 
-.to-do-category
+.to-do-category,
+#sidebar a span
 {
     background-color: transparent;
     background-position: left center;
     background-repeat: no-repeat;
-    padding-left: 2em;
+    padding-left: 30px;
+}
+
+#settings-link
+{
+    background-image: url('settings.png');
+}
+
+#logout-link
+{
+    background-image: url('logout.png');
 }
 
 #content
@@ -392,6 +406,8 @@ form.to-do-editor
 
 #new-to-do-form
 {
+    @include unselectable;
+
     background: #f6f6f6;
     border-bottom: 1px solid #ddd;
     display: block;
@@ -422,7 +438,7 @@ form.to-do-editor
         & > input[type="submit"]
         {
             background: $input-selected-background-color;
-            border: 1px solid $input-selected-background-color;
+            border: 1px solid transparent;
             border-radius: 4px;
             color: #fff;
             height: 2em;
@@ -435,8 +451,7 @@ form.to-do-editor
 
             &:hover
             {
-                background: lighten($input-selected-background-color, 5%);
-                border-color: lighten($input-selected-background-color, 5%);
+                background: $blue-2;
             }
         }
     }
@@ -712,8 +727,6 @@ form.to-do-editor
 
 .to-do
 {
-    @include unselectable;
-
     cursor: default;
     display: block;
     height: 20px;
@@ -791,19 +804,20 @@ form.to-do-editor
             display: inline-block;
             height: 20px;
             line-height: 20px;
+            min-width: 20px;
             outline: none;
             text-decoration: none;
             text-transform: capitalize;
-            width: 20px;
-
-            & + .detail
-            {
-                margin-left: 8px;
-            }
+            vertical-align: middle;
 
             &.later
             {
                 background-image: url('later.png');
+
+                &:after
+                {
+                    content: "Later";
+                }
 
                 &:hover
                 {
@@ -815,6 +829,11 @@ form.to-do-editor
             {
                 background-image: url('today.png');
 
+                &:after
+                {
+                    content: "Today";
+                }
+
                 &:hover
                 {
                     background-image: url('today-selected.png');
@@ -824,6 +843,11 @@ form.to-do-editor
             &.edit
             {
                 background-image: url('edit.png');
+
+                &:after
+                {
+                    content: "Edit";
+                }
 
                 &:hover
                 {
@@ -835,24 +859,41 @@ form.to-do-editor
             {
                 background-image: url('delete.png');
 
+                &:after
+                {
+                    color: $delete-color;
+                    content: "Delete";
+                }
+
                 &:hover
                 {
                     background-image: url('delete-selected.png');
                 }
+            }
+
+            &:after
+            {
+                color: $blue-1;
+                display: none;
+                height: 20px;
+                line-height: 20px;
+                padding-left: 24px;
+            }
+
+            & + .detail
+            {
+                margin-left: 8px;
             }
         }
 
         &.selected
         {
             display: inline-block;
-            vertical-align: baseline;
 
             & > .detail
             {
-                color: $blue-1;
                 margin-left: 0;
-                padding-left: 22px;
-                width: auto;
+                vertical-align: baseline;
 
                 &.later
                 {
@@ -872,7 +913,11 @@ form.to-do-editor
                 &.delete
                 {
                     background-image: url('delete-selected.png');
-                    color: $delete-color;
+                }
+
+                &:after
+                {
+                    display: inline-block;
                 }
             }
         }
@@ -884,7 +929,7 @@ form.to-do-editor
             color: #777;
             display: inline-block;
             margin: 0;
-            margin-left: 8px;
+            margin-left: 12px;
             padding: 0;
             padding-left: 12px;
 
