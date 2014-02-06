@@ -735,14 +735,14 @@ form.to-do-editor
     padding: 18px 0;
     position: relative;
 
-    & + &
-    {
-        border-top: 1px dotted #aaa;
-    }
-
     &:hover > .details
     {
         display: inline-block;
+    }
+
+    & + &
+    {
+        border-top: 1px dotted #aaa;
     }
 
     & > input[type="checkbox"]
@@ -808,7 +808,7 @@ form.to-do-editor
             outline: none;
             text-decoration: none;
             text-transform: capitalize;
-            vertical-align: middle;
+            vertical-align: baseline;
 
             &.later
             {
@@ -893,7 +893,6 @@ form.to-do-editor
             & > .detail
             {
                 margin-left: 0;
-                vertical-align: baseline;
 
                 &.later
                 {
