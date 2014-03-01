@@ -1,11 +1,4 @@
-// Theme Palette 1
-$red: rgb(221, 155, 161);
-$yellow: rgb(221, 220, 160);
-$light-blue: rgb(211, 244, 242);
-$blue: rgb(158, 222, 219);
-$purple: rgb(158, 159, 219);
-
-// Theme Palette 2
+// Main Palette
 $blue-1: rgb(57, 166, 204);     // Medium Blue
 $blue-2: rgb(47, 126, 153);     // Dark Blue
 $blue-3: rgb(147, 255, 224);    // Green Blue
@@ -19,6 +12,9 @@ $alt-blue-2: rgb(92, 169, 182);
 
 $blue-1: lighten($blue-1, 5%);
 $blue-2: lighten($blue-2, 5%);
+$red: rgb(208, 117, 125);
+$yellow: rgb(255, 250, 210);
+// $yellow: rgba(255, 242, 127, 0.35);
 
 $header-background: $blue-1;
 
@@ -42,7 +38,7 @@ $input-default-border-color: #ddd;
 $input-selected-background-color: $blue-1;
 $input-selected-border-color: $input-selected-background-color;
 
-$icon-background-color: $input-selected-background-color;
+$to-do-padding: 18px;
 
 @mixin unselectable
 {
@@ -729,72 +725,132 @@ form.to-do-editor
 {
     cursor: default;
     display: block;
-    height: 20px;
-    line-height: 20px;
-    margin: 0 18px;
-    padding: 18px 0;
+    margin: 0;
+    overflow: hidden;
+    padding: 0;
     position: relative;
 
-    &:hover > .details
+    &:hover
     {
-        display: inline-block;
+        & > .date
+        {
+            display: none;
+        }
+
+        & > .details
+        {
+            display: inline-block;
+        }
+    }
+
+    &.expanded
+    {
+        height: auto;
+
+        & .to-do-title
+        {
+            height: auto;
+            
+            & > a
+            {
+                height: auto;
+                overflow: visible;
+                white-space: normal;
+            }
+        }
     }
 
     & + &
     {
-        border-top: 1px dotted #aaa;
+        border-top: 1px dashed #ddd;
     }
 
     & > input[type="checkbox"]
     {
         display: none;
 
-        &:checked + label
+        & + label
         {
-            background: url("checkbox-checked.png") transparent left center no-repeat;
+            background: #fff;
+            border: 1px solid #aaa;
+            border-radius: 2px;
+            cursor: pointer;
+            height: 20px;
+            left: $to-do-padding;
+            line-height: 20px;
+            margin-right: 0;
+            padding: 0;
+            position: absolute;
+            top: $to-do-padding - 1px;
+            width: 20px;
+        }
+
+        &:checked
+        {
+            & + label
+            {
+                background: url("check.png") #fff center no-repeat;
+            }
+
+            & ~ .to-do-title
+            {
+                background: $yellow;
+                width: 100%;
+            }
+
+            & ~ .date,
+            & ~ .details
+            {
+                background: $yellow;
+                box-shadow: -$to-do-padding 0 8px 8px $yellow;
+            }
         }
     }
 
     & > label
     {
-        background: url("checkbox-unchecked.png") transparent left center no-repeat;
-        cursor: pointer;
         display: inline-block;
         height: 20px;
         line-height: 20px;
-        max-width: 480px;
-        overflow: hidden;
-        padding-left: 36px;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-
-        & > .date
-        {
-            background: #e6e6e6;
-            color: #555;
-            height: 20px;
-            line-height: 20px;
-            margin-right: 8px;
-            padding: 4px;
-        }
+        padding: $to-do-padding;
+        padding-left: 20px + (2 * $to-do-padding);
 
         & a
         {
             color: #333;
+            display: inline-block;
             height: 20px;
             line-height: 20px;
+            max-width: 480px;
             outline: none;
+            overflow: hidden;
+            text-overflow: ellipsis;
             text-decoration: none;
+            white-space: nowrap;
         }
+    }
+
+    & .date
+    {
+        background: #fff;
+        box-shadow: -$to-do-padding 0 8px 8px #fff;
+        color: #999;
+        display: inline-block;
+        height: 20px;
+        line-height: 20px;
+        position: absolute;
+        right: $to-do-padding;
+        top: $to-do-padding;
     }
 
     & > .details
     {
         background: #fff;
-        box-shadow: -14px 0 8px 8px #fff;
+        box-shadow: -$to-do-padding 0 8px 8px #fff;
         display: none;
         position: absolute;
-        right: 0;
+        right: $to-do-padding;
+        top: $to-do-padding;
 
         & > .detail
         {
@@ -804,7 +860,7 @@ form.to-do-editor
             display: inline-block;
             height: 20px;
             line-height: 20px;
-            min-width: 20px;
+            min-width: 16px;
             outline: none;
             text-decoration: none;
             text-transform: capitalize;
@@ -882,7 +938,7 @@ form.to-do-editor
 
             & + .detail
             {
-                margin-left: 8px;
+                margin-left: 12px;
             }
         }
 

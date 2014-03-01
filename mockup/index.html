@@ -90,7 +90,7 @@
             <section id="to-do-list">
                 <p class="empty">Nothing to do. Yet. :)</p>
                 <div class="to-do">
-                    <input id="1" type="checkbox" /><label for="1"><a href="#" title="Task 1">Task 1</a></label>
+                    <input id="1" type="checkbox" /><label class="to-do-checkbox" for="1"></label><label class="to-do-title"><a href="#" title="Task 1">Task 1</a></label>
                     <div class="details">
                         <a class="today detail" href="#"></a>
                         <a class="edit detail" href="#"></a>
@@ -98,7 +98,8 @@
                     </div>
                 </div>
                 <div class="to-do">
-                    <input id="2" type="checkbox" /><label for="2"><span class="date">02/14/2014</span><a href="#">Task 2</a></label>
+                    <input id="2" type="checkbox" /><label class="to-do-checkbox" for="2"></label><label class="to-do-title"><a href="#">Task 2</a></label>
+                    <div class="date">02/14/2014</div>
                     <div class="details">
                         <a class="later detail" href="#"></a>
                         <a class="edit detail" href="#"></a>
@@ -106,7 +107,8 @@
                     </div>
                 </div>
                 <div class="to-do">
-                    <input id="3" type="checkbox" /><label for="3"><span class="date">Today @ 3:42pm</span><a href="#" title="Task 3 With A Super Long Name Like This One Blah Blah Blah Some More Words">Task 3 With A Super Long Name Like This One Blah Blah Blah Some More Words And Then Some This Title Is Long</a></label>
+                    <input id="3" type="checkbox" /><label class="to-do-checkbox" for="3"></label><label class="to-do-title"><a href="#" title="Task 3 With A Super Long Name Like This One Blahblahblah Some Superduperlong Words">Task 3 With A Super Long Name Like This One Blahblahblah Some Superduperlong Words And Then Some This Title Is Long</a></label>
+                    <div class="date">Today @ 3:42pm</div>
                     <div class="details">
                         <a class="today detail" href="#"></a>
                         <a class="edit detail" href="#"></a>
@@ -114,7 +116,8 @@
                     </div>
                 </div>
                 <div class="to-do">
-                    <input id="4" type="checkbox" /><label for="4"><span class="date">Tomorrow</span><a href="#">Task 4</a></label>
+                    <input id="4" type="checkbox" /><label class="to-do-checkbox" for="4"></label><label class="to-do-title"><a href="#">Task 4</a></label>
+                    <div class="date">Tomorrow</div>
                     <div class="details">
                         <a class="today detail" href="#"></a>
                         <a class="edit detail" href="#"></a>
@@ -148,6 +151,7 @@
             }
         });
 
+        // Expand the date and time fields when scheduling a new to-do.
         $("#new-to-do-form .schedule").click(function () {
             var datetimeFieldSet = $("#new-to-do-datetime");
             if (datetimeFieldSet.is(":visible"))
@@ -165,6 +169,16 @@
         $("#new-to-do-form .cancel").click(function () {
             $("#new-to-do-form div.field-set:visible").hide();
         });
+
+        $(".to-do-title a").click(function () {
+            var toDoItem = $(this).parent().parent();
+            if (toDoItem.hasClass("expanded"))
+                toDoItem.removeClass("expanded")
+            else
+                toDoItem.addClass("expanded")
+        });
+
+        // Details display logic. Expanding and closing the controls.
 
         var closeEdit = function (details) {
             var detail = $(details.children(".detail:visible")[0]);
