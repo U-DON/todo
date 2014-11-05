@@ -6,15 +6,12 @@ $blue-4: rgb(61, 176, 217);     // Light Blue
 $pink-1: rgb(212, 81, 113);     // Medium Pink
 $pink-2: rgb(255, 161, 153);    // Light Pink
 $pink-3: rgb(204, 93, 120);     // Dark Pink
+$red: rgb(208, 117, 125);
+$yellow: rgb(255, 250, 224);
 
-$alt-blue-1: rgb(130, 199, 211);
-$alt-blue-2: rgb(92, 169, 182);
-
+// Lighten main colors.
 $blue-1: lighten($blue-1, 5%);
 $blue-2: lighten($blue-2, 5%);
-$red: rgb(208, 117, 125);
-$yellow: rgb(255, 250, 210);
-// $yellow: rgba(255, 242, 127, 0.35);
 
 $header-background: $blue-1;
 
@@ -211,7 +208,7 @@ a
 
 .panel
 {
-    background: #fff;
+    background: transparent;
     border-radius: $panel-border-radius;
     display: inline-block;
     padding: 0;
@@ -266,6 +263,7 @@ a
 
 #sidebar
 {
+    background: #fff;
     padding-bottom: 0.75em;
     width: 240px;
 
@@ -378,11 +376,13 @@ a
 
 #content
 {
+    overflow: hidden;
     width: 560px;
 }
 
 #to-do-list
 {
+    background: #e6e6e6;
     font-size: $content-font-size;
 
     & p.empty
@@ -457,34 +457,34 @@ form.to-do-editor
         padding-top: 0;
     }
 
-    #new-to-do-datetime
+    #new-to-do-schedule
     {
         background: darken(#f6f6f6, 2%);
         border-top: 1px solid #ddd;
         display: none;
 
-        & .field
+        & > .field
         {
             text-align: left;
             width: 28em;
+
+            & > label
+            {
+                margin-right: 0.5em;
+                text-align: center;
+                width: 4em;
+            }
 
             & + .field
             {
                 margin-left: 0;
                 margin-top: 1em;
             }
-        }
 
-        & label
-        {
-            margin-right: 0.5em;
-            text-align: center;
-            width: 4em;
-        }
-
-        & input + input
-        {
-            margin-left: 0.5em;
+            & input + input
+            {
+                margin-left: 0.5em;
+            }
         }
     }
 
@@ -723,6 +723,7 @@ form.to-do-editor
 
 .to-do
 {
+    background: #fff;
     cursor: default;
     display: block;
     margin: 0;
@@ -732,12 +733,12 @@ form.to-do-editor
 
     &:hover
     {
-        & > .date
+        & > .to-do-info
         {
             display: none;
         }
 
-        & > .details
+        & > .to-do-actions > .to-do-options
         {
             display: inline-block;
         }
@@ -746,6 +747,13 @@ form.to-do-editor
     &.expanded
     {
         height: auto;
+        margin: $to-do-padding 0;
+
+        & + .to-do
+        {
+            // TODO: Jagged edges.
+            border-top: none;
+        }
 
         & .to-do-title
         {
@@ -758,11 +766,114 @@ form.to-do-editor
                 white-space: normal;
             }
         }
+
+        & > .to-do-info
+        {
+            display: block;
+            margin-bottom: $to-do-padding;
+            padding: 0;
+            padding-left: 20px + (2 * $to-do-padding);
+            position: static;
+
+            & > .to-do-detail
+            {
+                display: inline-block;
+
+                &.to-do-datetime
+                {
+                    background: url('schedule.png') transparent left center no-repeat;
+                    padding-left: 28px;
+                }
+            }
+        }
+
+        & > .to-do-actions
+        {
+            background: #f6f6f6;
+            border-top: 1px solid #ddd;
+            display: block;
+            height: 20px;
+            line-height: 20px;
+            padding: $to-do-padding;
+            position: relative;
+            right: auto;
+            top: auto;
+
+            & > .to-do-details
+            {
+                display: inline-block;
+                left: $to-do-padding;
+                position: absolute;
+
+                & > .to-do-detail
+                {
+                    display: inline-block;
+                }
+            }
+
+            & > .to-do-options
+            {
+                background: transparent;
+                box-shadow: none;
+                display: inline-block;
+
+                & > .to-do-option
+                {
+                    & + .to-do-option
+                    {
+                        margin-left: 24px;
+                    }
+
+                    &:after
+                    {
+                        display: inline-block;
+                    }
+
+                    &.later,
+                    &.today,
+                    &.repeat,
+                    &.edit
+                    {
+                        &:hover:after
+                        {
+                            color: $blue-1;
+                        }
+                    }
+
+                    &.repeat
+                    {
+                        display: inline-block;
+                    }
+
+                    &.delete
+                    {
+                        &:hover:after
+                        {
+                            color: $red;
+                        }
+                    }
+                }
+            }
+        }
+
+        & > input[type="checkbox"]:checked ~ .to-do-actions
+        {
+            & > .to-do-options,
+            {
+                background: #f6f6f6;
+                box-shadow: none;
+            }
+        }
     }
 
     & + &
     {
         border-top: 1px dashed #ddd;
+
+        &.expanded
+        {
+            border-top: none;
+        }
     }
 
     & > input[type="checkbox"]
@@ -798,8 +909,8 @@ form.to-do-editor
                 width: 100%;
             }
 
-            & ~ .date,
-            & ~ .details
+            & ~ .to-do-info,
+            & ~ .to-do-actions > .to-do-options
             {
                 background: $yellow;
                 box-shadow: -$to-do-padding 0 8px 8px $yellow;
@@ -829,180 +940,231 @@ form.to-do-editor
             white-space: nowrap;
         }
     }
+}
+    
+.to-do-actions
+{
+    position: absolute;
+    right: $to-do-padding;
+    text-align: right;
+    top: $to-do-padding;
+}
 
-    & .date
+.to-do-info
+{
+    background: #fff;
+    box-shadow: -$to-do-padding 0 8px 8px #fff;
+    color: #999;
+    display: inline-block;
+    line-height: 20px;
+    position: absolute;
+    right: $to-do-padding;
+    top: $to-do-padding;
+}
+
+.to-do-detail,
+.to-do-option
+{
+    background-position: left center;
+    background-repeat: no-repeat;
+    display: inline-block;
+    height: 20px;
+    line-height: 20px;
+    min-width: 16px;
+    outline: none;
+    text-decoration: none;
+    text-transform: capitalize;
+    vertical-align: baseline;
+
+    &.later
     {
-        background: #fff;
-        box-shadow: -$to-do-padding 0 8px 8px #fff;
-        color: #999;
-        display: inline-block;
-        height: 20px;
-        line-height: 20px;
-        position: absolute;
-        right: $to-do-padding;
-        top: $to-do-padding;
+        background-image: url('later.png');
+
+        &:after
+        {
+            content: "Later";
+        }
     }
 
-    & > .details
+    &.today
     {
-        background: #fff;
-        box-shadow: -$to-do-padding 0 8px 8px #fff;
-        display: none;
-        position: absolute;
-        right: $to-do-padding;
-        top: $to-do-padding;
+        background-image: url('today.png');
 
-        & > .detail
+        &:after
         {
-            background-position: left center;
-            background-repeat: no-repeat;
-            color: #555;
-            display: inline-block;
-            height: 20px;
-            line-height: 20px;
-            min-width: 16px;
-            outline: none;
-            text-decoration: none;
-            text-transform: capitalize;
-            vertical-align: baseline;
+            content: "Today";
+        }
+    }
+
+    &.edit
+    {
+        background-image: url('edit.png');
+
+        &:after
+        {
+            content: "Edit";
+        }
+    }
+
+    &.delete
+    {
+        background-image: url('delete.png');
+
+        &:after
+        {
+            content: "Delete";
+        }
+    }
+
+    &:after
+    {
+        color: #aaa;
+        display: none;
+        height: 20px;
+        line-height: 20px;
+        padding-left: 24px;
+    }
+}
+
+.to-do-detail
+{
+    display: none;
+
+    &.to-do-repeatable
+    {
+        background-image: url('repeat.png');
+
+        &:after
+        {
+            content: "Repeatable";
+        }
+    }
+
+    &:after
+    {
+        display: inline-block;
+    }
+
+    & + &
+    {
+        margin-left: 24px;
+    }
+}
+
+.to-do-datetime,
+{
+    display: inline-block;
+}
+
+.to-do-option
+{
+    color: #555;
+
+    &.later:hover
+    {
+        background-image: url('later-selected.png');
+    }
+
+    &.today:hover
+    {
+        background-image: url('today-selected.png');
+    }
+
+    &.edit:hover
+    {
+        background-image: url('edit-selected.png');
+    }
+
+    &.delete:hover
+    {
+        background-image: url('delete-selected.png');
+    }
+
+    & + .to-do-option
+    {
+        margin-left: 12px;
+    }
+}
+
+.to-do-options
+{
+    background: #fff;
+    box-shadow: -$to-do-padding 0 8px 8px #fff;
+    display: none;
+    height: 20px;
+    line-height: 20px;
+
+    &.selected
+    {
+        display: inline-block;
+
+        & > .to-do-option
+        {
+            margin-left: 0;
 
             &.later
             {
-                background-image: url('later.png');
-
-                &:after
-                {
-                    content: "Later";
-                }
-
-                &:hover
-                {
-                    background-image: url('later-selected.png');
-                }
+                background-image: url('later-selected.png');
             }
 
             &.today
             {
-                background-image: url('today.png');
-
-                &:after
-                {
-                    content: "Today";
-                }
-
-                &:hover
-                {
-                    background-image: url('today-selected.png');
-                }
+                background-image: url('today-selected.png');
             }
 
             &.edit
             {
-                background-image: url('edit.png');
-
-                &:after
-                {
-                    content: "Edit";
-                }
-
-                &:hover
-                {
-                    background-image: url('edit-selected.png');
-                }
+                background-image: url('edit-selected.png');
             }
 
             &.delete
             {
-                background-image: url('delete.png');
+                background-image: url('delete-selected.png');
 
                 &:after
                 {
                     color: $delete-color;
-                    content: "Delete";
-                }
-
-                &:hover
-                {
-                    background-image: url('delete-selected.png');
                 }
             }
 
             &:after
             {
                 color: $blue-1;
-                display: none;
-                height: 20px;
-                line-height: 20px;
-                padding-left: 24px;
+                display: inline-block;
             }
+        }
+    }
 
-            & + .detail
+    & > .to-do-option
+    {
+        outline: none;
+    }
+
+    & > .to-do-change
+    {
+        border: none;
+        border-left: 1px solid #ccc;
+        color: #777;
+        display: inline-block;
+        margin: 0;
+        margin-left: 12px;
+        padding: 0;
+        padding-left: 12px;
+
+        & > a
+        {
+            & + a
             {
-                margin-left: 12px;
+                margin-left: 0.5em;
             }
         }
 
-        &.selected
+        & > p
         {
-            display: inline-block;
-
-            & > .detail
-            {
-                margin-left: 0;
-
-                &.later
-                {
-                    background-image: url('later-selected.png');
-                }
-
-                &.today
-                {
-                    background-image: url('today-selected.png');
-                }
-
-                &.edit
-                {
-                    background-image: url('edit-selected.png');
-                }
-
-                &.delete
-                {
-                    background-image: url('delete-selected.png');
-                }
-
-                &:after
-                {
-                    display: inline-block;
-                }
-            }
-        }
-
-        & > .change
-        {
-            border: none;
-            border-left: 1px solid #ccc;
-            color: #777;
             display: inline-block;
             margin: 0;
-            margin-left: 12px;
+            margin-right: 12px;
             padding: 0;
-            padding-left: 12px;
-
-            & > a
-            {
-                & + a
-                {
-                    margin-left: 0.5em;
-                }
-            }
-
-            & > p
-            {
-                display: inline-block;
-                margin: 0;
-                margin-right: 12px;
-                padding: 0;
-            }
         }
     }
 }
