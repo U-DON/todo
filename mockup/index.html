@@ -91,59 +91,59 @@
                 <p class="empty">Nothing to do. Yet. :)</p>
                 <div class="to-do">
                     <input id="1" type="checkbox" /><label class="to-do-checkbox" for="1"></label><label class="to-do-title"><a href="#" title="Task 1">Work out</a></label>
+                    <div class="to-do-info">
+                        <div class="to-do-detail to-do-today"></div>
+                        <div class="to-do-repeatable to-do-detail"></div>
+                    </div>
                     <div class="to-do-actions">
-                        <div class="to-do-details">
-                            <div class="to-do-repeatable to-do-detail"></div>
-                        </div>
                         <div class="to-do-options">
-                            <a class="later to-do-option" href="#"></a>
-                            <a class="edit to-do-option" href="#"></a>
-                            <a class="delete to-do-option" href="#"></a>
+                            <a class="to-do-later to-do-option" href="#"></a>
+                            <a class="to-do-edit to-do-option" href="#"></a>
+                            <a class="to-do-delete to-do-option" href="#"></a>
                         </div>
                     </div>
                 </div>
                 <div class="to-do">
                     <input id="2" type="checkbox" /><label class="to-do-checkbox" for="2"></label><label class="to-do-title"><a href="#">Doctor's appointment</a></label>
                     <div class="to-do-info">
+                        <div class="to-do-later to-do-detail"></div>
                         <div class="to-do-datetime to-do-detail">02/14/2014</div>
                     </div>
                     <div class="to-do-actions">
                         <div class="to-do-options">
-                            <a class="today to-do-option" href="#"></a>
-                            <a class="edit to-do-option" href="#"></a>
-                            <a class="delete to-do-option" href="#"></a>
+                            <a class="to-do-today to-do-option" href="#"></a>
+                            <a class="to-do-edit to-do-option" href="#"></a>
+                            <a class="to-do-delete to-do-option" href="#"></a>
                         </div>
                     </div>
                 </div>
                 <div class="to-do">
                     <input id="3" type="checkbox" /><label class="to-do-checkbox" for="3"></label><label class="to-do-title"><a href="#" title="Task 3 With A Super Long Name Like This One Blahblahblah Some Superduperlong Words">Task 3 With A Super Long Name Like This One Blahblahblah Some Superduperlong Words And Then Some This Title Is Long</a></label>
                     <div class="to-do-info">
+                        <div class="to-do-today to-do-detail"></div>
+                        <div class="to-do-repeatable to-do-detail"></div>
                         <div class="to-do-datetime to-do-detail">Today @ 3:42pm</div>
                     </div>
                     <div class="to-do-actions">
-                        <div class="to-do-details">
-                            <div class="to-do-repeatable to-do-detail"></div>
-                        </div>
                         <div class="to-do-options">
-                            <a class="later to-do-option" href="#"></a>
-                            <a class="edit to-do-option" href="#"></a>
-                            <a class="delete to-do-option" href="#"></a>
+                            <a class="to-do-later to-do-option" href="#"></a>
+                            <a class="to-do-edit to-do-option" href="#"></a>
+                            <a class="to-do-delete to-do-option" href="#"></a>
                         </div>
                     </div>
                 </div>
                 <div class="to-do">
                     <input id="4" type="checkbox" /><label class="to-do-checkbox" for="4"></label><label class="to-do-title"><a href="#">Practice guitar</a></label>
                     <div class="to-do-info">
+                        <div class="to-do-today to-do-detail"></div>
+                        <div class="to-do-repeatable to-do-detail"></div>
                         <div class="to-do-datetime to-do-detail">Tomorrow</div>
                     </div>
                     <div class="to-do-actions">
-                        <div class="to-do-details">
-                            <div class="to-do-repeatable to-do-detail"></div>
-                        </div>
                         <div class="to-do-options">
-                            <a class="later to-do-option" href="#"></a>
-                            <a class="edit to-do-option" href="#"></a>
-                            <a class="delete to-do-option" href="#"></a>
+                            <a class="to-do-later to-do-option" href="#"></a>
+                            <a class="to-do-edit to-do-option" href="#"></a>
+                            <a class="to-do-delete to-do-option" href="#"></a>
                         </div>
                     </div>
                 </div>
@@ -232,13 +232,13 @@
                 var question;
 
                 switch (label) {
-                    case "today":
-                        question = "Do this later?";
-                        break;
-                    case "later":
+                    case "to-do-today":
                         question = "Do this today?";
                         break;
-                    case "delete":
+                    case "to-do-later":
+                        question = "Do this later?";
+                        break;
+                    case "to-do-delete":
                         question = "Discard forever?";
                         break;
                 }
@@ -247,7 +247,7 @@
                     class: "to-do-change",
                 });
 
-                if (label === "edit")
+                if (label === "to-do-edit")
                 {
                     change.append($("<p />", {
                         text: "Making changes."

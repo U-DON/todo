@@ -10,8 +10,8 @@ $red: rgb(208, 117, 125);
 $yellow: rgb(255, 250, 224);
 
 // Lighten main colors.
-$blue-1: lighten($blue-1, 5%);
-$blue-2: lighten($blue-2, 5%);
+// $blue-1: lighten($blue-1, 5%);
+// $blue-2: lighten($blue-2, 5%);
 
 $header-background: $blue-1;
 
@@ -757,8 +757,10 @@ form.to-do-editor
 
         & .to-do-title
         {
+            font-size: 16px;
+            font-weight: bold;
             height: auto;
-            
+
             & > a
             {
                 height: auto;
@@ -770,19 +772,24 @@ form.to-do-editor
         & > .to-do-info
         {
             display: block;
-            margin-bottom: $to-do-padding;
             padding: 0;
+            padding-bottom: $to-do-padding;
             padding-left: 20px + (2 * $to-do-padding);
             position: static;
 
             & > .to-do-detail
             {
-                display: inline-block;
+                display: block;
 
                 &.to-do-datetime
                 {
                     background: url('schedule.png') transparent left center no-repeat;
                     padding-left: 28px;
+                }
+
+                & + .to-do-detail
+                {
+                    margin-top: $to-do-padding;
                 }
             }
         }
@@ -798,18 +805,6 @@ form.to-do-editor
             position: relative;
             right: auto;
             top: auto;
-
-            & > .to-do-details
-            {
-                display: inline-block;
-                left: $to-do-padding;
-                position: absolute;
-
-                & > .to-do-detail
-                {
-                    display: inline-block;
-                }
-            }
 
             & > .to-do-options
             {
@@ -829,10 +824,9 @@ form.to-do-editor
                         display: inline-block;
                     }
 
-                    &.later,
-                    &.today,
-                    &.repeat,
-                    &.edit
+                    &.to-do-later,
+                    &.to-do-today,
+                    &.to-do-edit
                     {
                         &:hover:after
                         {
@@ -840,12 +834,7 @@ form.to-do-editor
                         }
                     }
 
-                    &.repeat
-                    {
-                        display: inline-block;
-                    }
-
-                    &.delete
+                    &.to-do-delete
                     {
                         &:hover:after
                         {
@@ -918,30 +907,32 @@ form.to-do-editor
         }
     }
 
-    & > label
-    {
-        display: inline-block;
-        height: 20px;
-        line-height: 20px;
-        padding: $to-do-padding;
-        padding-left: 20px + (2 * $to-do-padding);
-
-        & a
-        {
-            color: #333;
-            display: inline-block;
-            height: 20px;
-            line-height: 20px;
-            max-width: 480px;
-            outline: none;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            text-decoration: none;
-            white-space: nowrap;
-        }
-    }
 }
-    
+
+.to-do-checkbox,
+.to-do-title
+{
+    display: inline-block;
+    height: 20px;
+    line-height: 20px;
+    padding: $to-do-padding;
+    padding-left: 20px + (2 * $to-do-padding);
+}
+
+.to-do-title > a
+{
+    color: #333;
+    display: inline-block;
+    height: 20px;
+    line-height: 20px;
+    max-width: 480px;
+    outline: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
 .to-do-actions
 {
     position: absolute;
@@ -967,7 +958,6 @@ form.to-do-editor
 {
     background-position: left center;
     background-repeat: no-repeat;
-    display: inline-block;
     height: 20px;
     line-height: 20px;
     min-width: 16px;
@@ -976,7 +966,7 @@ form.to-do-editor
     text-transform: capitalize;
     vertical-align: baseline;
 
-    &.later
+    &.to-do-later
     {
         background-image: url('later.png');
 
@@ -986,7 +976,7 @@ form.to-do-editor
         }
     }
 
-    &.today
+    &.to-do-today
     {
         background-image: url('today.png');
 
@@ -996,7 +986,7 @@ form.to-do-editor
         }
     }
 
-    &.edit
+    &.to-do-edit
     {
         background-image: url('edit.png');
 
@@ -1006,7 +996,7 @@ form.to-do-editor
         }
     }
 
-    &.delete
+    &.to-do-delete
     {
         background-image: url('delete.png');
 
@@ -1018,11 +1008,9 @@ form.to-do-editor
 
     &:after
     {
-        color: #aaa;
         display: none;
         height: 20px;
         line-height: 20px;
-        padding-left: 24px;
     }
 }
 
@@ -1043,41 +1031,43 @@ form.to-do-editor
     &:after
     {
         display: inline-block;
-    }
-
-    & + &
-    {
-        margin-left: 24px;
+        padding-left: 28px;
     }
 }
 
-.to-do-datetime,
+.to-do-datetime
 {
     display: inline-block;
 }
 
 .to-do-option
 {
-    color: #555;
+    color: #999;
+    display: inline-block;
 
-    &.later:hover
+    &.to-do-later:hover
     {
         background-image: url('later-selected.png');
     }
 
-    &.today:hover
+    &.to-do-today:hover
     {
         background-image: url('today-selected.png');
     }
 
-    &.edit:hover
+    &.to-do-edit:hover
     {
         background-image: url('edit-selected.png');
     }
 
-    &.delete:hover
+    &.to-do-delete:hover
     {
         background-image: url('delete-selected.png');
+    }
+
+    &:after
+    {
+        padding-left: 24px;
     }
 
     & + .to-do-option
@@ -1102,22 +1092,22 @@ form.to-do-editor
         {
             margin-left: 0;
 
-            &.later
+            &.to-do-later
             {
                 background-image: url('later-selected.png');
             }
 
-            &.today
+            &.to-do-today
             {
                 background-image: url('today-selected.png');
             }
 
-            &.edit
+            &.to-do-edit
             {
                 background-image: url('edit-selected.png');
             }
 
-            &.delete
+            &.to-do-delete
             {
                 background-image: url('delete-selected.png');
 
