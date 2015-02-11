@@ -47,69 +47,6 @@ $to-do-padding: 18px;
     user-select: none;
 }
 
-@mixin checked-input
-{
-    @include unselectable;
-
-    cursor: pointer;
-    display: inline-block;
-
-    & > input
-    {
-        display: none;
-
-        &:checked
-        {
-            & + label
-            {
-                background: $input-selected-background-color;
-                border: 1px solid $input-selected-border-color;
-                color: #fff;
-
-                &:before
-                {
-                    background-color: #fff;
-                    background-position: center center;
-                    background-repeat: no-repeat;
-                    border-right: 1px solid $input-selected-background-color;
-                }
-            }
-        }
-    }
-
-    & > label
-    {
-        background: $input-default-background-color;
-        border: 1px solid $input-default-border-color;
-        border-radius: 4px;
-        color: #555;
-        cursor: pointer;
-        display: inline-block;
-        height: 1.5em;
-        line-height: 1.5em;
-        margin: 0;
-        padding: 0.25em 0;
-        padding-left: 0;
-        text-align: center;
-        width: 7em;
-
-        &:before
-        {
-            background: #fff;
-            border-bottom-left-radius: 3px;
-            border-right: 1px solid $input-default-border-color;
-            border-top-left-radius: 3px;
-            content: "";
-            float: left;
-            margin: 0;
-            margin-top: -0.25em;
-            padding: 0;
-            height: 2em;
-            width: 2em;
-        }
-    }
-}
-
 @mixin text-input($height: 2em)
 {
     display: inline-block;
@@ -494,11 +431,11 @@ form.to-do-editor
         font-size: $content-font-size;
         margin: 0;
         padding: 0;
-        vertical-align: top;
+        vertical-align: middle;
 
         & + .field
         {
-            margin-left: 1em;
+            margin-left: 24px;
         }
     }
 
@@ -514,11 +451,23 @@ form.to-do-editor
         border: 1px solid #ddd;
         border-right: none;
         display: inline-block;
-        height: 2em;
-        line-height: 2em;
-        margin: 0 0.75em;
+        height: 48px;
+        line-height: 48px;
+        margin: 0 24px;
         width: 0;
-        vertical-align: top;
+        vertical-align: middle;
+    }
+
+    & .to-do-option
+    {
+        background-position: center top;
+        cursor: pointer;
+        padding-top: 24px;
+
+        &:after
+        {
+            display: none;
+        }
     }
 
     & .schedule
@@ -528,10 +477,11 @@ form.to-do-editor
         border-radius: 4px;
         cursor: pointer;
         display: inline-block;
-        line-height: 2em;
-        height: 2em;
+        line-height: 32px;
+        height: 32px;
         margin: 0;
         padding: 0;
+        vertical-align: middle;
 
         &.selected
         {
@@ -554,42 +504,43 @@ form.to-do-editor
         }
     }
 
-    & .cancel
+    & .radio-field
     {
-        background: $delete-color;
-        border: 1px solid transparent;
-        border-radius: 4px;
-        cursor: pointer;
-        display: inline-block;
-        line-height: 2em;
-        height: 2em;
-        margin: 0;
-        padding: 0;
-
-        & > a
+        & > input
         {
-            color: #fff;
-            margin: 0;
-            outline: none;
-            padding: 0 1em;
-            text-decoration: none;
-        }
+            display: none;
 
-        &:hover
-        {
-            background: lighten($delete-color, 5%);
+            &:checked + label
+            {
+                color: $blue-1;
+
+                &.to-do-later
+                {
+                    background-image: url('later-selected.png');
+                }
+
+                &.to-do-today
+                {
+                    background-image: url('today-selected.png');
+                }
+            }
         }
     }
 
     & .checkbox-field
     {
-        @include checked-input;
-
-        & > input[type="checkbox"]:checked
+        & > input
         {
-            & + label:before
+            display: none;
+
+            &:checked + label
             {
-                background-image: url('repeat.png');
+                color: $blue-1;
+
+                &.to-do-repeatable
+                {
+                    background-image: url('repeat-selected.png');
+                }
             }
         }
     }
@@ -622,32 +573,6 @@ form.to-do-editor
         & > input[type="time"]
         {
             width: 8em;
-        }
-    }
-
-    & .radio-field
-    {
-        @include checked-input;
-
-        & > input[type="radio"]
-        {
-            &:checked + label
-            {
-                &[for="new-to-do-later"]:before
-                {
-                    background-image: url('later.png');
-                }
-
-                &[for="new-to-do-today"]:before
-                {
-                    background-image: url('today.png');
-                }
-            }
-        }
-
-        & + .radio-field
-        {
-            margin-left: 0.5em;
         }
     }
 
@@ -757,7 +682,6 @@ form.to-do-editor
 
         & .to-do-title
         {
-            font-size: 16px;
             font-weight: bold;
             height: auto;
 
@@ -907,6 +831,34 @@ form.to-do-editor
         }
     }
 
+
+    & > .to-do-actions .to-do-option
+    {
+        &:hover
+        {
+            color: $blue-1;
+        }
+
+        &.to-do-later:hover
+        {
+            background-image: url('later-selected.png');
+        }
+
+        &.to-do-today:hover
+        {
+            background-image: url('today-selected.png');
+        }
+
+        &.to-do-edit:hover
+        {
+            background-image: url('edit-selected.png');
+        }
+
+        &.to-do-delete:hover
+        {
+            background-image: url('delete-selected.png');
+        }
+    }
 }
 
 .to-do-checkbox,
@@ -986,6 +938,16 @@ form.to-do-editor
         }
     }
 
+    &.to-do-repeatable
+    {
+        background-image: url('repeat.png');
+
+        &:after
+        {
+            content: "Repeatable";
+        }
+    }
+
     &.to-do-edit
     {
         background-image: url('edit.png');
@@ -1018,16 +980,6 @@ form.to-do-editor
 {
     display: none;
 
-    &.to-do-repeatable
-    {
-        background-image: url('repeat.png');
-
-        &:after
-        {
-            content: "Repeatable";
-        }
-    }
-
     &:after
     {
         display: inline-block;
@@ -1044,26 +996,6 @@ form.to-do-editor
 {
     color: #999;
     display: inline-block;
-
-    &.to-do-later:hover
-    {
-        background-image: url('later-selected.png');
-    }
-
-    &.to-do-today:hover
-    {
-        background-image: url('today-selected.png');
-    }
-
-    &.to-do-edit:hover
-    {
-        background-image: url('edit-selected.png');
-    }
-
-    &.to-do-delete:hover
-    {
-        background-image: url('delete-selected.png');
-    }
 
     &:after
     {
@@ -1100,6 +1032,11 @@ form.to-do-editor
             &.to-do-today
             {
                 background-image: url('today-selected.png');
+            }
+
+            &.to-do-repeatable
+            {
+                background-image: url('repeat-selected.png');
             }
 
             &.to-do-edit

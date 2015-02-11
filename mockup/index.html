@@ -49,16 +49,16 @@
                     <div id="new-to-do-options" class="field-set">
                         <div class="radio-field field">
                             <input id="new-to-do-later" name="current" type="radio" value="0" checked />
-                            <label for="new-to-do-later">Later</label>
+                            <label for="new-to-do-later" class="to-do-later to-do-option">Later</label>
                         </div>
                         <div class="radio-field field">
                             <input id="new-to-do-today" name="current" type="radio" value="0" />
-                            <label for="new-to-do-today">Today</label>
+                            <label for="new-to-do-today" class="to-do-today to-do-option">Today</label>
                         </div>
                         <div class="divider"></div>
                         <div class="checkbox-field field">
                             <input id="new-to-do-repeat" name="repeat" type="checkbox" />
-                            <label for="new-to-do-repeat">Repeat</label>
+                            <label for="new-to-do-repeat" class="to-do-repeatable to-do-option">Repeat</label>
                         </div>
                         <div class="divider"></div>
                         <div class="schedule">
@@ -71,6 +71,7 @@
                             <input id="new-to-do-date" name="date" type="date" placeholder="Date" />
                             <input id="new-to-do-time" name="time" type="time" placeholder="Time?" />
                         </div>
+                        <!--
                         <div class="select-field field">
                             <label>Repeat</label>
                             <div class="select-input">
@@ -84,6 +85,7 @@
                             </div>
                             <p>Every <input type="text" value="1" /> Days</p>
                         </div>
+                        -->
                     </div>
                 </form>
             </section>
@@ -218,7 +220,7 @@
             closeEdit($(this).parent().parent());
         });
 
-        $(".to-do-option").click(function () {
+        $(".to-do-options > .to-do-option").click(function () {
             var that = this;
             var options = $(this).parent();
             var otherDetails = $(this).siblings();
