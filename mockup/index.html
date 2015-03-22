@@ -3,6 +3,9 @@
     <link rel="stylesheet" href="normalize.css" />
     <link rel="stylesheet" href="style.css" />
     <script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
+    <script src="http://fb.me/react-with-addons-0.13.1.min.js"></script>
+    <script src="http://fb.me/JSXTransformer-0.13.1.js"></script>
+    <script type="text/jsx" src="actionist.js"></script>
 </head>
 <body>
     <div id="main">
@@ -37,248 +40,114 @@
             </div>
         </div>
         <div id="content" class="panel">
-            <header>
-                <h2>Actionist</h2>
-            </header>
-            <section>
-                <form id="new-to-do-form" method="POST">
-                    <div id="new-to-do-title" class="text-field field">
-                        <input name="title" type="text" placeholder="What will you do?" />
-                        <input type="submit" value="Add" />
-                    </div>
-                    <div id="new-to-do-options" class="field-set">
-                        <div class="radio-field field">
-                            <input id="new-to-do-later" name="current" type="radio" value="0" checked />
-                            <label for="new-to-do-later" class="to-do-later to-do-option">Later</label>
+            <div class="panel">
+                <header>
+                    <h2>Actionist</h2>
+                </header>
+                <section>
+                    <form id="new-to-do-form" method="POST">
+                        <div id="new-to-do-title" class="text-field field">
+                            <input name="title" type="text" placeholder="What will you do?" />
+                            <input type="submit" value="Add" />
                         </div>
-                        <div class="radio-field field">
-                            <input id="new-to-do-today" name="current" type="radio" value="0" />
-                            <label for="new-to-do-today" class="to-do-today to-do-option">Today</label>
-                        </div>
-                        <div class="divider"></div>
-                        <div class="checkbox-field field">
-                            <input id="new-to-do-repeat" name="repeat" type="checkbox" />
-                            <label for="new-to-do-repeat" class="to-do-repeatable to-do-option">Repeat</label>
-                        </div>
-                        <div class="divider"></div>
-                        <div class="schedule">
-                            <a href="#">Schedule...</a>
-                        </div>
-                    </div>
-                    <div id="new-to-do-schedule" class="field-set">
-                        <div class="datetime-field field">
-                            <label for="new-to-do-date">When</label>
-                            <input id="new-to-do-date" name="date" type="date" placeholder="Date" />
-                            <input id="new-to-do-time" name="time" type="time" placeholder="Time?" />
-                        </div>
-                        <!--
-                        <div class="select-field field">
-                            <label>Repeat</label>
-                            <div class="select-input">
-                                <select>
-                                    <option>Whenever</option>
-                                    <option>Daily</option>
-                                    <option>Weekly</option>
-                                    <option>Monthly</option>
-                                    <option>Yearly</option>
-                                </select>
+                        <div id="new-to-do-options" class="field-set">
+                            <div class="radio-field field">
+                                <input id="new-to-do-later" name="current" type="radio" value="0" checked />
+                                <label for="new-to-do-later" class="to-do-later to-do-option">Later</label>
                             </div>
-                            <p>Every <input type="text" value="1" /> Days</p>
+                            <div class="radio-field field">
+                                <input id="new-to-do-today" name="current" type="radio" value="0" />
+                                <label for="new-to-do-today" class="to-do-today to-do-option">Today</label>
+                            </div>
+                            <div class="divider"></div>
+                            <div class="checkbox-field field">
+                                <input id="new-to-do-repeat" name="repeat" type="checkbox" />
+                                <label for="new-to-do-repeat" class="to-do-repeatable to-do-option">Repeat</label>
+                            </div>
+                            <div class="divider"></div>
+                            <div class="schedule">
+                                <a href="#">Schedule...</a>
+                            </div>
                         </div>
-                        -->
-                    </div>
-                </form>
-            </section>
-            <section id="to-do-list">
-                <p class="empty">Nothing to do. Yet. :)</p>
-                <div class="to-do">
-                    <input id="1" type="checkbox" /><label class="to-do-checkbox" for="1"></label><label class="to-do-title"><a href="#" title="Task 1">Work out</a></label>
-                    <div class="to-do-info">
-                        <div class="to-do-detail to-do-today"></div>
-                        <div class="to-do-repeatable to-do-detail"></div>
-                    </div>
-                    <div class="to-do-actions">
-                        <div class="to-do-options">
+                        <div id="new-to-do-schedule" class="field-set">
+                            <div class="datetime-field field">
+                                <label for="new-to-do-date">When</label>
+                                <input id="new-to-do-date" name="date" type="date" placeholder="Date" />
+                                <input id="new-to-do-time" name="time" type="time" placeholder="Time?" />
+                            </div>
+                            <!--
+                            <div class="select-field field">
+                                <label>Repeat</label>
+                                <div class="select-input">
+                                    <select>
+                                        <option>Whenever</option>
+                                        <option>Daily</option>
+                                        <option>Weekly</option>
+                                        <option>Monthly</option>
+                                        <option>Yearly</option>
+                                    </select>
+                                </div>
+                                <p>Every <input type="text" value="1" /> Days</p>
+                            </div>
+                            -->
+                        </div>
+                    </form>
+                </section>
+                <section id="to-do-list">
+                    <p class="empty">Nothing to do. Yet. :)</p>
+                    <div class="to-do">
+                        <input id="1" type="checkbox" /><label class="to-do-checkbox" for="1"></label><label class="to-do-title"><a href="#" title="Task 1">Work out</a></label>
+                        <div class="to-do-info">
+                            <div class="to-do-detail to-do-today"></div>
+                            <div class="to-do-repeatable to-do-detail"></div>
+                        </div>
+                        <div class="to-do-actions">
                             <a class="to-do-later to-do-option" href="#"></a>
                             <a class="to-do-edit to-do-option" href="#"></a>
                             <a class="to-do-delete to-do-option" href="#"></a>
                         </div>
                     </div>
-                </div>
-                <div class="to-do">
-                    <input id="2" type="checkbox" /><label class="to-do-checkbox" for="2"></label><label class="to-do-title"><a href="#">Doctor's appointment</a></label>
-                    <div class="to-do-info">
-                        <div class="to-do-later to-do-detail"></div>
-                        <div class="to-do-datetime to-do-detail">02/14/2014</div>
-                    </div>
-                    <div class="to-do-actions">
-                        <div class="to-do-options">
+                    <div class="to-do">
+                        <input id="2" type="checkbox" /><label class="to-do-checkbox" for="2"></label><label class="to-do-title"><a href="#">Doctor's appointment</a></label>
+                        <div class="to-do-info">
+                            <div class="to-do-later to-do-detail"></div>
+                            <div class="to-do-datetime to-do-detail">02/14/2014</div>
+                        </div>
+                        <div class="to-do-actions">
                             <a class="to-do-today to-do-option" href="#"></a>
                             <a class="to-do-edit to-do-option" href="#"></a>
                             <a class="to-do-delete to-do-option" href="#"></a>
                         </div>
                     </div>
-                </div>
-                <div class="to-do">
-                    <input id="3" type="checkbox" /><label class="to-do-checkbox" for="3"></label><label class="to-do-title"><a href="#" title="Task 3 With A Super Long Name Like This One Blahblahblah Some Superduperlong Words">Task 3 With A Super Long Name Like This One Blahblahblah Some Superduperlong Words And Then Some This Title Is Long</a></label>
-                    <div class="to-do-info">
-                        <div class="to-do-today to-do-detail"></div>
-                        <div class="to-do-repeatable to-do-detail"></div>
-                        <div class="to-do-datetime to-do-detail">Today @ 3:42pm</div>
-                    </div>
-                    <div class="to-do-actions">
-                        <div class="to-do-options">
+                    <div class="to-do">
+                        <input id="3" type="checkbox" /><label class="to-do-checkbox" for="3"></label><label class="to-do-title"><a href="#" title="Task 3 With A Super Long Name Like This One Blahblahblah Some Superduperlong Words">Task 3 With A Super Long Name Like This One Blahblahblah Some Superduperlong Words And Then Some This Title Is Long</a></label>
+                        <div class="to-do-info">
+                            <div class="to-do-today to-do-detail"></div>
+                            <div class="to-do-repeatable to-do-detail"></div>
+                            <div class="to-do-datetime to-do-detail">Today @ 3:42pm</div>
+                        </div>
+                        <div class="to-do-actions">
                             <a class="to-do-later to-do-option" href="#"></a>
                             <a class="to-do-edit to-do-option" href="#"></a>
                             <a class="to-do-delete to-do-option" href="#"></a>
                         </div>
                     </div>
-                </div>
-                <div class="to-do">
-                    <input id="4" type="checkbox" /><label class="to-do-checkbox" for="4"></label><label class="to-do-title"><a href="#">Practice guitar</a></label>
-                    <div class="to-do-info">
-                        <div class="to-do-today to-do-detail"></div>
-                        <div class="to-do-repeatable to-do-detail"></div>
-                        <div class="to-do-datetime to-do-detail">Tomorrow</div>
-                    </div>
-                    <div class="to-do-actions">
-                        <div class="to-do-options">
+                    <div class="to-do">
+                        <input id="4" type="checkbox" /><label class="to-do-checkbox" for="4"></label><label class="to-do-title"><a href="#">Practice guitar</a></label>
+                        <div class="to-do-info">
+                            <div class="to-do-today to-do-detail"></div>
+                            <div class="to-do-repeatable to-do-detail"></div>
+                            <div class="to-do-datetime to-do-detail">Tomorrow</div>
+                        </div>
+                        <div class="to-do-actions">
                             <a class="to-do-later to-do-option" href="#"></a>
                             <a class="to-do-edit to-do-option" href="#"></a>
                             <a class="to-do-delete to-do-option" href="#"></a>
                         </div>
                     </div>
-                </div>
-            </section>
+                </section>
+            </div>
         </div>
     </div>
-    <script type="text/javascript">
-        // Hide new to-do form if user clicks anywhere other than the form
-        // or individual to-do items.
-        $(document).mouseup(function (e) {
-            var newToDoForm = $("#new-to-do-form");
-            var workspace = newToDoForm.add("#to-do-list");
-            if (!workspace.is(e.target)
-                && workspace.has(e.target).length === 0)
-            {
-                newToDoForm.children("div.field-set:visible").hide();
-            }
-        });
-
-        // Expand the new to-do form when focusing on the title input.
-        $("#new-to-do-form div.text-field input").focus(function () {
-            $("#new-to-do-form .field-set:hidden:not(#new-to-do-schedule)").show();
-            var datetimeFieldSet = $("#new-to-do-schedule");
-            var scheduleButton = $("#new-to-do-form div.schedule");
-            if (scheduleButton.hasClass("selected"))
-            {
-                datetimeFieldSet.show();
-            }
-        });
-
-        // Expand the date and time fields when scheduling a new to-do.
-        $("#new-to-do-form .schedule").click(function () {
-            var datetimeFieldSet = $("#new-to-do-schedule");
-            if (datetimeFieldSet.is(":visible"))
-            {
-                $(this).removeClass("selected");
-                datetimeFieldSet.hide();
-            }
-            else
-            {
-                $(this).addClass("selected");
-                datetimeFieldSet.show();
-            }
-        });
-
-        $("#new-to-do-form .cancel").click(function () {
-            $("#new-to-do-form div.field-set:visible").hide();
-        });
-
-        $(".to-do-title a").click(function () {
-            var toDoItem = $(this).parent().parent();
-            if (toDoItem.hasClass("expanded"))
-                toDoItem.removeClass("expanded")
-            else
-                toDoItem.addClass("expanded")
-        });
-
-        // Details display logic. Expanding and closing the controls.
-
-        var closeEdit = function (options) {
-            var option = $(options.children(".to-do-option:visible")[0]);
-            if (options.hasClass("selected"))
-            {
-                options.children(".to-do-change").remove();
-                option.text("");
-                options.removeClass("selected")
-                option.siblings().show();
-            }
-        }
-
-        $(".to-do-options").on("click", ".no", function () {
-            closeEdit($(this).parent().parent());
-        });
-
-        $(".to-do-options > .to-do-option").click(function () {
-            var that = this;
-            var options = $(this).parent();
-            var otherDetails = $(this).siblings();
-            if (options.hasClass("selected"))
-            {
-                closeEdit(options);
-            }
-            else
-            {
-                var label = $(that).attr('class').split(" ")[0];
-                var question;
-
-                switch (label) {
-                    case "to-do-today":
-                        question = "Do this today?";
-                        break;
-                    case "to-do-later":
-                        question = "Do this later?";
-                        break;
-                    case "to-do-delete":
-                        question = "Discard forever?";
-                        break;
-                }
-
-                var change = $("<div />", {
-                    class: "to-do-change",
-                });
-
-                if (label === "to-do-edit")
-                {
-                    change.append($("<p />", {
-                        text: "Making changes."
-                    })).append($("<a />", {
-                        class: "no",
-                        href: "#",
-                        text: "Done"
-                    }));
-                }
-                else
-                {
-                    change.append($("<p />", {
-                        text: question
-                    })).append($("<a />", {
-                        class: "yes",
-                        href: "#",
-                        text: "Yes"
-                    })).append($("<a />", {
-                        class: "no",
-                        href: "#",
-                        text: "No"
-                    }));
-                }
-
-                otherDetails.hide();
-                options.addClass("selected")
-                $(this).after(change);
-            }
-        });
-    </script>
 </body>
 </html>

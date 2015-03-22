@@ -7,7 +7,7 @@ $pink-1: rgb(212, 81, 113);     // Medium Pink
 $pink-2: rgb(255, 161, 153);    // Light Pink
 $pink-3: rgb(204, 93, 120);     // Dark Pink
 $red: rgb(208, 117, 125);
-$yellow: rgb(255, 250, 224);
+$yellow: rgb(255, 250, 210);
 
 // Lighten main colors.
 // $blue-1: lighten($blue-1, 5%);
@@ -94,16 +94,6 @@ body
     color: $content-font-color;
     font-family: "Helvetica Neue", Arial, sans-serif;
     text-rendering: optimizeLegibility;
-
-    & > header
-    {
-        background: $header-background;
-        color: #fff;
-        height: 40px;
-        line-height: 40px;
-        margin: 0;
-        padding: 0 1em;
-    }
 }
 
 h1,
@@ -663,7 +653,7 @@ form.to-do-editor
             display: none;
         }
 
-        & > .to-do-actions > .to-do-options
+        & > .to-do-actions
         {
             display: inline-block;
         }
@@ -722,6 +712,7 @@ form.to-do-editor
         {
             background: #f6f6f6;
             border-top: 1px solid #ddd;
+            box-shadow: none;
             display: block;
             height: 20px;
             line-height: 20px;
@@ -730,40 +721,33 @@ form.to-do-editor
             right: auto;
             top: auto;
 
-            & > .to-do-options
+            & > .to-do-option
             {
-                background: transparent;
-                box-shadow: none;
-                display: inline-block;
-
-                & > .to-do-option
+                & + .to-do-option
                 {
-                    & + .to-do-option
-                    {
-                        margin-left: 24px;
-                    }
+                    margin-left: 24px;
+                }
 
-                    &:after
-                    {
-                        display: inline-block;
-                    }
+                &:after
+                {
+                    display: inline-block;
+                }
 
-                    &.to-do-later,
-                    &.to-do-today,
-                    &.to-do-edit
+                &.to-do-later,
+                &.to-do-today,
+                &.to-do-edit
+                {
+                    &:hover:after
                     {
-                        &:hover:after
-                        {
-                            color: $blue-1;
-                        }
+                        color: $blue-1;
                     }
+                }
 
-                    &.to-do-delete
+                &.to-do-delete
+                {
+                    &:hover:after
                     {
-                        &:hover:after
-                        {
-                            color: $red;
-                        }
+                        color: $red;
                     }
                 }
             }
@@ -771,11 +755,8 @@ form.to-do-editor
 
         & > input[type="checkbox"]:checked ~ .to-do-actions
         {
-            & > .to-do-options,
-            {
-                background: #f6f6f6;
-                box-shadow: none;
-            }
+            background: #f6f6f6;
+            box-shadow: none;
         }
     }
 
@@ -823,7 +804,7 @@ form.to-do-editor
             }
 
             & ~ .to-do-info,
-            & ~ .to-do-actions > .to-do-options
+            & ~ .to-do-actions
             {
                 background: $yellow;
                 box-shadow: -$to-do-padding 0 8px 8px $yellow;
@@ -861,6 +842,13 @@ form.to-do-editor
     }
 }
 
+.to-do-info > .to-do-detail,
+.to-do-actions > .to-do-option
+{
+    height: 20px;
+    line-height: 20px;
+}
+
 .to-do-checkbox,
 .to-do-title
 {
@@ -883,6 +871,15 @@ form.to-do-editor
     text-overflow: ellipsis;
     text-decoration: none;
     white-space: nowrap;
+}
+
+.to-do-title-edit
+{
+    background: #f6f6f6;
+    border: 1px solid #ddd;
+    padding: 6px 8px;
+    margin-top: -2px;
+    width: 420px;
 }
 
 .to-do-actions
@@ -910,8 +907,6 @@ form.to-do-editor
 {
     background-position: left center;
     background-repeat: no-repeat;
-    height: 20px;
-    line-height: 20px;
     min-width: 16px;
     outline: none;
     text-decoration: none;
@@ -1008,7 +1003,7 @@ form.to-do-editor
     }
 }
 
-.to-do-options
+.to-do-actions
 {
     background: #fff;
     box-shadow: -$to-do-padding 0 8px 8px #fff;
