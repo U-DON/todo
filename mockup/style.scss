@@ -7,7 +7,7 @@ $pink-1: rgb(212, 81, 113);     // Medium Pink
 $pink-2: rgb(255, 161, 153);    // Light Pink
 $pink-3: rgb(204, 93, 120);     // Dark Pink
 $red: rgb(208, 117, 125);
-$yellow: rgb(255, 250, 210);
+$yellow: rgb(255, 250, 225);
 
 // Lighten main colors.
 // $blue-1: lighten($blue-1, 5%);
@@ -307,7 +307,7 @@ a
     width: 560px;
 }
 
-#to-do-list
+#to-do-list-section
 {
     background: #e6e6e6;
     font-size: $content-font-size;
@@ -688,7 +688,7 @@ form.to-do-editor
             display: block;
             padding: 0;
             padding-bottom: $to-do-padding;
-            padding-left: 20px + (2 * $to-do-padding);
+            padding-left: 22px + (2 * $to-do-padding);
             position: static;
 
             & > .to-do-detail
@@ -856,7 +856,7 @@ form.to-do-editor
     height: 20px;
     line-height: 20px;
     padding: $to-do-padding;
-    padding-left: 20px + (2 * $to-do-padding);
+    padding-left: 22px + (2 * $to-do-padding);
 }
 
 .to-do-title > a

@@ -90,8 +90,8 @@ var ToDoForm = React.createClass({
 var ToDoList = React.createClass({
     getInitialState : function () {
         return {
-            data: [
-                {
+            data: {
+                1: {
                     id: 1,
                     title: "Work out",
                     dateTime: {},
@@ -99,7 +99,7 @@ var ToDoList = React.createClass({
                     current: true,
                     repeatable: true
                 },
-                {
+                2: {
                     id: 2,
                     title: "Doctor's appointment",
                     dateTime: {
@@ -109,7 +109,7 @@ var ToDoList = React.createClass({
                     current: false,
                     repeatable: false
                 },
-                {
+                3: {
                     id: 3,
                     title: "Task 3 With A Super Long Name Like This One Blahblahblah Some Superduperlong Words And Then Some This Title Is Long",
                     dateTime: {
@@ -120,7 +120,7 @@ var ToDoList = React.createClass({
                     current: true,
                     repeatable: true
                 },
-                {
+                4: {
                     id: 4,
                     title: "Practice guitar",
                     dateTime: {},
@@ -128,25 +128,37 @@ var ToDoList = React.createClass({
                     current: true,
                     repeatable: true
                 }
-            ]
+            }
         };
     },
 
+    deleteItem: function (id) {
+        this.state.data[id] = null;
+        this.setState({data: this.state.data});
+    },
+
     render: function () {
-        var toDoItems = this.state.data.map(function (toDoItem) {
-            return (
-                <ToDoItem id={toDoItem.id}
-                          title={toDoItem.title}
-                          dateTime={toDoItem.dateTime}
-                          done={toDoItem.done}
-                          current={toDoItem.current}
-                          repeatable={toDoItem.repeatable}>
-                </ToDoItem>
-            );
+        var that = this;
+        var toDoItems = Object.keys(this.state.data).map(function (id) {
+            var toDoItem = that.state.data[id];
+            if (toDoItem)
+            {
+                return (
+                    <ToDoItem
+                        id={toDoItem.id}
+                        title={toDoItem.title}
+                        dateTime={toDoItem.dateTime}
+                        done={toDoItem.done}
+                        current={toDoItem.current}
+                        repeatable={toDoItem.repeatable}
+                        onDelete={that.deleteItem}
+                    />
+                );
+            }
         });
 
         if (toDoItems.length)
-            return (<section id="to-do-list">{toDoItems}</section>);
+            return (<div id="to-do-list">{toDoItems}</div>);
         else
             return (<p className="empty">Nothing to do. Yet. :)</p>);
     }
@@ -155,8 +167,25 @@ var ToDoList = React.createClass({
 var ToDoItem = React.createClass({
     getInitialState: function () {
         return {
-            expanded: false
+            expanded: false,
+            editing: false,
+            title: this.props.title,
+            done: this.props.done,
+            current: this.props.current
         };
+    },
+
+    componentDidUpdate: function () {
+        if (this.state.editing)
+        {
+            var titleInput = this.getDOMNode().querySelector(".to-do-title-edit");
+            titleInput.focus();
+            titleInput.value = this.props.title;
+        }
+    },
+
+    delete: function () {
+        this.props.onDelete(this.props.id);
     },
 
     expand: function (e) {
@@ -166,18 +195,22 @@ var ToDoItem = React.createClass({
         });
     },
 
-    editTitle: function () {
-        var titleLabel = $(todo.children(".to-do-title")[0]);
-        var titleText = $(titleLabel.children("a")[0]);
-        var editTitle = $("<input />", {
-            class: "to-do-title-edit",
-            type: "text",
-            value: titleText.text()
+    edit: function (activateEditing) {
+        if (activateEditing)
+            this.setState({expanded: true, editing: true});
+        else
+            this.setState({editing: false});
+    },
+
+    save: function () {
+        var newTitle = React.findDOMNode(this.refs.titleInput).value.trim();
+        this.setState({editing: false, title: newTitle});
+    },
+
+    toggleCurrent: function () {
+        this.setState(function (previousState, currentProps) {
+            return {current: !previousState.current};
         });
-        todo.addClass("expanded");
-        titleLabel.append(editTitle);
-        titleText.hide();
-        editTitle.focus();
     },
 
     render: function () {
@@ -192,20 +225,31 @@ var ToDoItem = React.createClass({
             dateTimeDetail = <div className="to-do-detail to-do-datetime">{dateTimeString}</div>
         }
 
+        var title;
+        if (this.state.editing)
+            title = <input className="to-do-title-edit" type="text" ref="titleInput" />;
+        else
+            title = <a href="#" title={this.state.title} onClick={this.expand}>{this.state.title}</a>;
 
         return (
-            <div className={"to-do" + (this.state.expanded ? " expanded" : "")}>
-                <input id={"checkbox-" + this.props.id} type="checkbox" />
-                <label className="to-do-checkbox" htmlFor={"checkbox-" + this.props.id}></label>
+            <div id={"to-do-" + this.props.id} className={"to-do" + (this.state.expanded ? " expanded" : "")}>
+                <input id={"to-do-checkbox-" + this.props.id} type="checkbox" checked={this.state.done} />
+                <label className="to-do-checkbox" htmlFor={"to-do-checkbox-" + this.props.id}></label>
                 <label className="to-do-title">
-                    <a href="#" title={this.props.title} onClick={this.expand}>{this.props.title}</a>
+                    {title}
                 </label>
                 <div className="to-do-info">
-                    <div className={"to-do-detail " + (this.props.current ? "to-do-today" : "to-do-later")}></div>
-                    {this.props.repeatable ? <div className="to-do-repeatable to-do-detail"></div> : null}
+                    <div className={"to-do-detail " + (this.state.current ? "to-do-today" : "to-do-later")}></div>
+                    {this.state.repeatable ? <div className="to-do-repeatable to-do-detail"></div> : null}
                     {dateTimeDetail}
                 </div>
-                <ToDoActions />
+                <ToDoActions
+                    current={this.state.current}
+                    onToggleCurrent={this.toggleCurrent}
+                    onEditAction={this.edit}
+                    onDeleteAction={this.delete}
+                    onSaveChanges={this.save}
+                />
             </div>
         );
     }
@@ -221,20 +265,46 @@ var ToDoActions = React.createClass({
     activateOption: function (optionType) {
         this.setState(function (previousState, currentProps) {
             if (previousState.activeOption === optionType)
-                return {activeOption: null};
+            {
+                this.cancelAction();
+            }
             else
+            {
+                if (optionType === ToDoOption.Type.Edit)
+                    this.props.onEditAction(true);
                 return {activeOption: optionType};
+            }
         });
     },
 
-    cancelChoice: function () {
+    cancelAction: function () {
+        if (this.state.activeOption === ToDoOption.Type.Edit)
+            this.props.onEditAction(false);
         this.setState({activeOption: null});
     },
 
-    confirmChoice: function () {
+    confirmAction: function () {
+        switch (this.state.activeOption)
+        {
+            case ToDoOption.Type.Today:
+            case ToDoOption.Type.Later:
+                this.props.onToggleCurrent();
+                break;
+            case ToDoOption.Type.Edit:
+                this.props.onSaveChanges();
+                break;
+            case ToDoOption.Type.Delete:
+                this.props.onDeleteAction();
+                break;
+            default:
+                console.error("ToDoActions.confirmAction: Invalid option type: " + this.state.activeOption);
+        }
+        this.cancelAction();
     },
 
     render: function () {
+        // Show all options if no option has been chosen.
+        // If one has been selected, show only that option with its prompt.
         if (this.state.activeOption === null)
         {
             return (
@@ -247,6 +317,7 @@ var ToDoActions = React.createClass({
         }
         else
         {
+            var actionPrompt;
             switch (this.state.activeOption)
             {
                 case ToDoOption.Type.Today:
@@ -262,16 +333,16 @@ var ToDoActions = React.createClass({
                     actionPrompt = "Discard forever?";
                     break;
                 default:
-                    console.error("ToDoOption.actionPrompt got invalid type: " + this.state.activeOption);
-                    actionPrompt = "";
+                    console.error("ToDoAction.render: Active option has invalid type: " + this.state.activeOption);
             }
+
             var changePrompt = (
                 <div className="to-do-change">
                     <p>{actionPrompt}</p>
-                    <a className="yes" href="#" onClick={this.confirmChoice}>
+                    <a className="yes" href="#" onClick={this.confirmAction}>
                         {this.state.activeOption === ToDoOption.Type.Edit ? "Save" : "Yes"}
                     </a>
-                    <a className="no" href="#" onClick={this.cancelChoice}>
+                    <a className="no" href="#" onClick={this.cancelAction}>
                         {this.state.activeOption === ToDoOption.Type.Edit ? "Cancel" : "No"}
                     </a>
                 </div>
@@ -288,30 +359,32 @@ var ToDoActions = React.createClass({
 });
 
 var ToDoOption = React.createClass({
-    typeClassName: function () {
-        switch (this.props.type)
-        {
-            case ToDoOption.Type.Today:
-                return "to-do-today";
-            case ToDoOption.Type.Later:
-                return "to-do-later";
-            case ToDoOption.Type.Edit:
-                return "to-do-edit";
-            case ToDoOption.Type.Delete:
-                return "to-do-delete";
-            default:
-                console.error("ToDoOption.typeClassName got invalid type: " + this.props.type);
-                return "";
-        }
-    },
-
     activate: function () {
         this.props.onActivate(this.props.type);
     },
 
     render: function () {
+        var typeClassName;
+        switch (this.props.type)
+        {
+            case ToDoOption.Type.Today:
+                typeClassName = "to-do-today";
+                break;
+            case ToDoOption.Type.Later:
+                typeClassName = "to-do-later";
+                break;
+            case ToDoOption.Type.Edit:
+                typeClassName = "to-do-edit";
+                break;
+            case ToDoOption.Type.Delete:
+                typeClassName = "to-do-delete";
+                break;
+            default:
+                console.error("ToDoOption.typeClassName: Got invalid type: " + this.props.type);
+        }
+
         return (
-            <a className={"to-do-option " + this.typeClassName()} href="#" onClick={this.activate}></a>
+            <a className={"to-do-option " + typeClassName} href="#" onClick={this.activate}></a>
         );
     }
 });
@@ -324,10 +397,11 @@ ToDoOption.Type =  {
 };
 
 React.render(
-    <div className="panel">
-    <header><h2>Actionist</h2></header>
-    <ToDoForm />
-    <ToDoList />
-    </div>,
-    document.getElementById("content")
+    <ToDoList />,
+    document.getElementById("to-do-list-section")
+);
+
+React.render(
+    <ToDoForm />,
+    document.getElementById("new-to-do-form-section")
 );

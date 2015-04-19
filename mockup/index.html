@@ -40,61 +40,61 @@
             </div>
         </div>
         <div id="content" class="panel">
-            <div class="panel">
-                <header>
-                    <h2>Actionist</h2>
-                </header>
-                <section>
-                    <form id="new-to-do-form" method="POST">
-                        <div id="new-to-do-title" class="text-field field">
-                            <input name="title" type="text" placeholder="What will you do?" />
-                            <input type="submit" value="Add" />
+            <header>
+                <h2>Actionist</h2>
+            </header>
+            <section id="new-to-do-form-section">
+                <form id="new-to-do-form" method="POST">
+                    <div id="new-to-do-title" class="text-field field">
+                        <input name="title" type="text" placeholder="What will you do?" />
+                        <input type="submit" value="Add" />
+                    </div>
+                    <div id="new-to-do-options" class="field-set">
+                        <div class="radio-field field">
+                            <input id="new-to-do-later" name="current" type="radio" value="0" checked />
+                            <label for="new-to-do-later" class="to-do-later to-do-option">Later</label>
                         </div>
-                        <div id="new-to-do-options" class="field-set">
-                            <div class="radio-field field">
-                                <input id="new-to-do-later" name="current" type="radio" value="0" checked />
-                                <label for="new-to-do-later" class="to-do-later to-do-option">Later</label>
-                            </div>
-                            <div class="radio-field field">
-                                <input id="new-to-do-today" name="current" type="radio" value="0" />
-                                <label for="new-to-do-today" class="to-do-today to-do-option">Today</label>
-                            </div>
-                            <div class="divider"></div>
-                            <div class="checkbox-field field">
-                                <input id="new-to-do-repeat" name="repeat" type="checkbox" />
-                                <label for="new-to-do-repeat" class="to-do-repeatable to-do-option">Repeat</label>
-                            </div>
-                            <div class="divider"></div>
-                            <div class="schedule">
-                                <a href="#">Schedule...</a>
-                            </div>
+                        <div class="radio-field field">
+                            <input id="new-to-do-today" name="current" type="radio" value="0" />
+                            <label for="new-to-do-today" class="to-do-today to-do-option">Today</label>
                         </div>
-                        <div id="new-to-do-schedule" class="field-set">
-                            <div class="datetime-field field">
-                                <label for="new-to-do-date">When</label>
-                                <input id="new-to-do-date" name="date" type="date" placeholder="Date" />
-                                <input id="new-to-do-time" name="time" type="time" placeholder="Time?" />
-                            </div>
-                            <!--
-                            <div class="select-field field">
-                                <label>Repeat</label>
-                                <div class="select-input">
-                                    <select>
-                                        <option>Whenever</option>
-                                        <option>Daily</option>
-                                        <option>Weekly</option>
-                                        <option>Monthly</option>
-                                        <option>Yearly</option>
-                                    </select>
-                                </div>
-                                <p>Every <input type="text" value="1" /> Days</p>
-                            </div>
-                            -->
+                        <div class="divider"></div>
+                        <div class="checkbox-field field">
+                            <input id="new-to-do-repeat" name="repeat" type="checkbox" />
+                            <label for="new-to-do-repeat" class="to-do-repeatable to-do-option">Repeat</label>
                         </div>
-                    </form>
-                </section>
-                <section id="to-do-list">
-                    <p class="empty">Nothing to do. Yet. :)</p>
+                        <div class="divider"></div>
+                        <div class="schedule">
+                            <a href="#">Schedule...</a>
+                        </div>
+                    </div>
+                    <div id="new-to-do-schedule" class="field-set">
+                        <div class="datetime-field field">
+                            <label for="new-to-do-date">When</label>
+                            <input id="new-to-do-date" name="date" type="date" placeholder="Date" />
+                            <input id="new-to-do-time" name="time" type="time" placeholder="Time?" />
+                        </div>
+                        <!--
+                        <div class="select-field field">
+                            <label>Repeat</label>
+                            <div class="select-input">
+                                <select>
+                                    <option>Whenever</option>
+                                    <option>Daily</option>
+                                    <option>Weekly</option>
+                                    <option>Monthly</option>
+                                    <option>Yearly</option>
+                                </select>
+                            </div>
+                            <p>Every <input type="text" value="1" /> Days</p>
+                        </div>
+                        -->
+                    </div>
+                </form>
+            </section>
+            <section id="to-do-list-section">
+                <p class="empty">Nothing to do. Yet. :)</p>
+                <div id="to-do-list">
                     <div class="to-do">
                         <input id="1" type="checkbox" /><label class="to-do-checkbox" for="1"></label><label class="to-do-title"><a href="#" title="Task 1">Work out</a></label>
                         <div class="to-do-info">
@@ -145,8 +145,8 @@
                             <a class="to-do-delete to-do-option" href="#"></a>
                         </div>
                     </div>
-                </section>
-            </div>
+                </div>
+            </section>
         </div>
     </div>
 </body>
