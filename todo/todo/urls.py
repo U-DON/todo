@@ -1,13 +1,7 @@
 from django.conf.urls import patterns, include, url
 
-from tastypie.api import Api
-
-from profiles.api import UserResource
+# from profiles.api import UserResource
 from tasks.api import TaskResource
-
-api = Api(api_name='api')
-api.register(UserResource())
-api.register(TaskResource())
 
 # Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
@@ -25,5 +19,5 @@ urlpatterns = patterns('',
     # url(r'^admin/', include(admin.site.urls)),
     url(r'^', include('tasks.urls', namespace='tasks')),
     url(r'^', include('profiles.urls', namespace='profiles')),
-    url(r'^', include(api.urls)),
+    url(r'^api/tasks/', include(TaskResource.urls())),
 )

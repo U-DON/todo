@@ -1,94 +1,32 @@
-from django.conf.urls import url
-from django.contrib.auth import get_user_model
-from django.core.urlresolvers import NoReverseMatch
+from django.conf import settings
 
-from tastypie import fields
-from tastypie.authentication import SessionAuthentication
-from tastypie.bundle import Bundle
-from tastypie.resources import ModelResource, trailing_slash
-
-from profiles.api import UserAuthorization, UserResource
+import redis
+from restless.dj import DjangoResource
+from restless.preparers import FieldsPreparer
 
 from .models import Task
 
-class TaskResource(ModelResource):
-    user = fields.ForeignKey(UserResource, 'user')
-    current = fields.BooleanField(default=False)
-    done = fields.BooleanField(default=False)
-    routine = fields.BooleanField(default=False)
+class TaskResource(DjangoResource):
+    preparer = FieldsPreparer(fields={
+        'id': 'id',
+        'title': 'title',
+        'repeatable': 'is_repeatable'
+    })
 
-    class Meta:
-        always_return_data = True
-        authentication = SessionAuthentication()
-        authorization = UserAuthorization()
-        fields = ['id', 'title']
-        queryset = Task.objects.all()
-        resource_name = 'todo'
+    def prepare(self, data):
+        prepped = super(TaskResource, self).prepare(data)
+        # Check 'current' and 'done' by querying Redis.
+        redis_client = redis.StrictRedis(connection_pool=settings.REDIS_POOL)
+        prepped['current'] = redis_client.sismember('todo:current', prepped['id'])
+        prepped['done'] = redis_client.sismember('todo:done', prepped['id'])
+        return prepped
 
-    def get_object_list(self, request):
-        if request.path == self.get_resource_uri(url_name='api_get_current_tasks'):
-            return Task.objects.current()
-        if request.path == self.get_resource_uri(url_name='api_get_later_tasks'):
-            return Task.objects.later()
-        if request.path == self.get_resource_uri(url_name='api_get_done_tasks'):
-            return Task.objects.done()
-        return super(TaskResource, self).get_object_list(request)
+    def is_authenticated(self):
+        return True
+        # return self.request.user.is_authenticated()
 
-    def prepend_urls(self):
-        return [
-            url(r'^(?P<resource_name>%s)/now%s$' % (self._meta.resource_name, trailing_slash()), self.wrap_view('get_list'), name='api_get_current_tasks'),
-            url(r'^(?P<resource_name>%s)/later%s$' % (self._meta.resource_name, trailing_slash()), self.wrap_view('get_list'), name='api_get_later_tasks'),
-            url(r'^(?P<resource_name>%s)/done%s$' % (self._meta.resource_name, trailing_slash()), self.wrap_view('get_list'), name='api_get_done_tasks'),
-        ]
+    def list(self):
+        return Task.objects.all()
 
-    def dehydrate_user(self, bundle):
-        return bundle.obj.user
-
-    def dehydrate_current(self, bundle):
-        return bundle.obj.is_current()
-
-    def dehydrate_done(self, bundle):
-        return bundle.obj.is_done()
-
-    def dehydrate_routine(self, bundle):
-        return bundle.obj.is_routine
-
-    def dehydrate(self, bundle):
-        done_time = bundle.obj.epoch_done_time()
-        if done_time is not None:
-            bundle.data['doneTime'] = done_time
-        return bundle
-
-    def hydrate(self, bundle):
-        bundle.obj.is_routine = bundle.data['routine']
-        return bundle
-
-    def hydrate_user(self, bundle):
-        bundle.data['user'] = get_user_model().objects.get(pk=bundle.request.user.pk)
-        return bundle
-
-    def get_resource_uri(self, bundle_or_obj=None, url_name='api_dispatch_list'):
-        if bundle_or_obj is not None:
-            url_name = 'api_dispatch_detail'
-        try:
-            return self._build_reverse_url('{url_name}'.format(url_name=url_name), kwargs=self.resource_uri_kwargs(bundle_or_obj))
-        except NoReverseMatch:
-            return ''
-
-    def obj_create(self, bundle, **kwargs):
-        bundle = super(TaskResource, self).obj_create(bundle, **kwargs)
-        bundle.obj.set_current(bundle.data['current'])
-        bundle.obj.set_done(bundle.data['done'])
-        return bundle
-
-    def obj_delete(self, bundle, **kwargs):
-        bundle.obj = self.obj_get(bundle=bundle, **kwargs)
-        bundle.obj.set_current(False)
-        bundle.obj.set_done(False)
-        return super(TaskResource, self).obj_delete(bundle, **kwargs)
-
-    def obj_update(self, bundle, skip_errors=False, **kwargs):
-        bundle = super(TaskResource, self).obj_update(bundle, skip_errors, **kwargs)
-        bundle.obj.set_current(bundle.data['current'])
-        bundle.obj.set_done(bundle.data['done'])
-        return bundle
+    def detail(self, pk):
+        return Task.objects.get(id=pk)

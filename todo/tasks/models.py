@@ -3,7 +3,6 @@ from datetime import datetime
 import dateutil.parser
 
 from django.conf import settings
-from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils import timezone
 
@@ -34,7 +33,7 @@ class TaskManager(models.Manager):
         """Returns all tasks queued for later."""
         current_tasks = self.current_task_ids()
         return self.exclude(pk__in=current_tasks).exclude(
-            is_routine=False,
+            is_repeatable=False,
             history__isnull=False
         )
 
@@ -49,16 +48,16 @@ class TaskManager(models.Manager):
         return self.filter(
             models.Q(pk__in=done_tasks) |
             models.Q(
-                is_routine=False,
+                is_repeatable=False,
                 history__isnull=False
             )
         )
 
 class Task(models.Model):
     description = models.TextField()
-    is_routine = models.BooleanField(default=False)
+    is_repeatable = models.BooleanField(default=False)
     title = models.CharField(max_length=200)
-    user = models.ForeignKey(get_user_model(), related_name='tasks')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='tasks')
 
     objects = TaskManager()
 
@@ -78,7 +77,7 @@ class Task(models.Model):
     def is_done(self):
         """Returns True if the task is done.
 
-        A routine is done if it has been completed today (exists in the set \
+        A repeatable is done if it has been completed today (exists in the set \
         of current done tasks).
 
         A reminder is done if it has been completed ever (exists in the set \
@@ -87,7 +86,7 @@ class Task(models.Model):
         """
         redis_client = redis.StrictRedis(connection_pool=settings.REDIS_POOL)
         is_done_today = redis_client.sismember('todo:done', self.pk)
-        if self.is_routine:
+        if self.is_repeatable:
             return is_done_today 
         else:
             return is_done_today or self.is_archived()
@@ -101,7 +100,7 @@ class Task(models.Model):
         If the task is a reminder that has been archived, do nothing.
 
         """
-        if not self.is_routine and self.is_archived():
+        if not self.is_repeatable and self.is_archived():
             return
         redis_client = redis.StrictRedis(connection_pool=settings.REDIS_POOL)
         if current:
@@ -120,7 +119,7 @@ class Task(models.Model):
         If the task is a reminder that has been archived, remove its history.
 
         """
-        if not self.is_routine and self.is_archived():
+        if not self.is_repeatable and self.is_archived():
             if not done:
                 self.history.all()[0].delete()
             return
@@ -142,7 +141,7 @@ class Task(models.Model):
     def done_time(self):
         """Returns the time (in UTC) the task was completed.
 
-        For routines, return the most recent done time.
+        For repeatable tasks, return the most recent done time.
 
         """
         if self.is_archived():

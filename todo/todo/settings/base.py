@@ -1,4 +1,3 @@
-import djcelery
 from unipath import Path
 
 PROJECT_DIR = Path(__file__).ancestor(3)
@@ -114,13 +113,8 @@ INSTALLED_APPS = (
     # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
-    'djcelery',
     'gunicorn',
-    'south',
-    # Include `django-nose` after `south` to make sure `django-nose`'s test command is used instead of South's;
-    # South installs its own test command that turns off migrations during testing. (https://github.com/jbalogh/django-nose#using-with-south)
-    'django_nose',
-    'tastypie',
+    # 'django_nose',
     'profiles',
     'tasks',
 )
@@ -169,11 +163,5 @@ AUTH_USER_MODEL = 'profiles.User'
 LOGIN_URL = '/login/'
 LOGOUT_URL = '/logout/'
 LOGIN_REDIRECT_URL = '/'
-
-djcelery.setup_loader()
-
-SOUTH_TESTS_MIGRATE = False
-
-TASTYPIE_ALLOW_MISSING_SLASH = True
 
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'

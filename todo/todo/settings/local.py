@@ -11,7 +11,7 @@ DATABASES = {
         'NAME': 'todo',
         'USER': '',
         'PASSWORD': '',
-        'HOST': 'localhost',
+        'HOST': '',
         'PORT': '',
     }
 }
@@ -36,8 +36,6 @@ TEST_REDIS_CONF['port'] = 6380
 REDIS_POOL = redis.ConnectionPool(**REDIS_CONF)
 
 BROKER_URL = "redis://{host}:{port}/{db}".format(**REDIS_CONF)
-
-CELERY_RESULT_BACKEND = BROKER_URL
 
 BROKER_TRANSPORT_OPTIONS = {
     'visibility_timeout': 86400

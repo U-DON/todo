@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
+from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 from django.db import models
 
 class UserManager(BaseUserManager):
@@ -15,8 +15,8 @@ class UserManager(BaseUserManager):
             raise ValueError("Password is required.")
 
         user = self.model(
-            name=name,
-            email=self.normalize_email(email)
+            email=self.normalize_email(email),
+            name=name
         )
 
         user.set_password(password)
@@ -26,8 +26,8 @@ class UserManager(BaseUserManager):
     def create_superuser(self, email, name, password):
         """Creates and saves a superuser with a given email, name, and password."""
         user = self.create_user(
-            name=name,
             email=self.normalize_email(email),
+            name=name,
             password=password
         )
 
@@ -38,7 +38,7 @@ class UserManager(BaseUserManager):
 
         return user
 
-class User(AbstractBaseUser, PermissionsMixin):
+class User(AbstractBaseUser):
     email = models.EmailField(
         max_length=255,
         unique=True,
